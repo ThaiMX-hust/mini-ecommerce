@@ -119,6 +119,29 @@ entity "REVIEW" as RV {
     created_at: TIMESTAMP
 }
 
+entity "CART" as Cart {
+    *cart_id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>> --ON DELETE CASCADE
+    total_items : INT
+    total_price : DECIMAL(12,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "CART_ITEMS" as CI {
+    *cart_item_id : UUID <<PK>>
+    --
+    cart_id : UUID <<FK>> --ON DELETE CASCADE
+    product_id : UUID <<FK>> -- SET NULL
+    quantity : INT
+    raw_unit_price : DECIMAL(12,2)
+    final_unit_price: DECIMAL(12,2)
+    raw_subtotal : DECIMAL(12,2)
+    final_subtotal: DECIMAL(12,2)
+    added_at : TIMESTAMP
+}
+
 entity "USER_VOUCHER_HISTORY" as UVH{
     *user_id: UUID <<PK, FK>> -- DELETE ON CASCADE
     *voucher_id: UUID <<PK, FK>> -- DELETE ON CASCADE
@@ -156,5 +179,8 @@ U ||--o{ RV : "reviews on"
 
 U ||--o{ UVH : "uses"
 VC ||--o{ UVH : "used by"
+
+U ||--|| Cart : "has one cart"
+Cart ||--o{ CI
 
 @enduml
