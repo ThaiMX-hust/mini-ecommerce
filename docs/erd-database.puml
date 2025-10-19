@@ -21,11 +21,24 @@ entity "PRODUCT" as P {
     name : VARCHAR(255)
     description : TEXT
     raw_price : DECIMAL(12,2)
-    image_url : VARCHAR(255)
+    image_urls : JSONB
     stock_quantity : INT
     created_at : TIMESTAMP
     updated_at : TIMESTAMP
     deleted_at : TIMESTAMP?
+}
+
+entity "CATEGORY" as C {
+    *category_id: UUID <<PK>>
+    --
+    category_code: VARCHAR(20)
+    category_name: VARCHAR(100)
+    category_description: TEXT?
+}
+
+entity "PRODUCT_CATEGORIES" as PC {
+    *category_id: UUID <<PK, FK>> --ON DELETE CASCADE
+    *product_id: UUID <<PK, FK>>  -- ON DELETE CASCADE
 }
 
 entity "PRODUCT_PROMOTIONS" as P_P {
@@ -55,6 +68,7 @@ entity "ORDER" as O {
 
 entity "ORDER_ITEMS" as OI {
     *order_item_id : UUID <<PK>>
+    --
     order_id : UUID <<FK>>  -- ON DELETE CASCADE
     product_id : UUID <<FK>>  -- RESTRICTED
     quantity : INT
@@ -94,6 +108,39 @@ entity "ADJUSTMENT" as ADJ {
   updated_at : TIMESTAMP
 }
 
+entity "REVIEW" as RV {
+    *review_id: UUID <<PK>>
+    --
+    product_id: UUID <<FK>> -- ON DELETE CASCADE
+    by_user_id: UUID <<FK>> -- SET NULL
+    rating: INT (1-10) (every 2 units = 1 star)
+    comment: TEXT?
+    image_urls: JSONB?
+    created_at: TIMESTAMP
+}
+
+entity "USER_VOUCHER_HISTORY" as UVH{
+    *user_id: UUID <<PK, FK>> -- DELETE ON CASCADE
+    *voucher_id: UUID <<PK, FK>> -- DELETE ON CASCADE
+    --
+    used_at: TIMESTAMP
+}
+
+entity "VOUCHER" as VC {
+    *voucher_id : UUID <<PK>>
+    --
+    voucher_code : VARCHAR(50) <<UNIQUE>>
+    voucher_name : VARCHAR(255)
+    quantity: INT
+    description : TEXT?
+    is_active : BOOLEAN
+    rule : JSONB --attr for defining voucher rules
+    created_by_user : UUID?
+    updated_by_user : UUID?
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
 U ||--o{ O : "places"
 O ||--o{ OI : "contains"
 O ||--o{ OSH : "has history"
@@ -101,5 +148,13 @@ OS ||--o{ OSH : "used as"
 P ||--o{ OI : "in items"
 P ||--o{ P_P : "has promotions"
 O ||--o{ ADJ : "has adjustments"
+
+P ||--o{ PC : "categorized as"
+C ||--o{ PC : "has products"
+P ||--o{ RV : "has review"
+U ||--o{ RV : "reviews on"
+
+U ||--o{ UVH : "uses"
+VC ||--o{ UVH : "used by"
 
 @enduml
