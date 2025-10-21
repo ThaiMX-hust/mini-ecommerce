@@ -1,0 +1,8 @@
+model Category {
+    category_id          String  @id @default(uuid())
+    category_code        String
+    category_name        String
+    category_description String?
+
+    productCategories ProductCategories[]
+}

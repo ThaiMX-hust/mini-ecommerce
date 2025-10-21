@@ -1,0 +1,14 @@
+model CartItems {
+    cart_item_id     String   @id @default(uuid())
+    cart_id          String
+    product_id       String?
+    quantity         Int
+    raw_unit_price   Decimal
+    final_unit_price Decimal
+    raw_subtotal     Decimal
+    final_subtotal   Decimal
+    added_at         DateTime @default(now())
+
+    cart    Cart     @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade)
+    product Product? @relation(fields: [product_id], references: [product_id], onDelete: SetNull)
+}

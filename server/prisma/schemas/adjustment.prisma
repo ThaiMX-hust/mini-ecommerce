@@ -1,0 +1,13 @@
+model Adjustment {
+    adjustment_id   String         @id @default(uuid())
+    order_id        String
+    adjustment_type AdjustmentType
+    value_type      ValueType
+    value           Decimal
+    applied_amount  Decimal
+    reason          String?
+    created_at      DateTime       @default(now())
+    updated_at      DateTime       @updatedAt
+
+    order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+}

@@ -1,0 +1,11 @@
+model OrderStatusHistory {
+    order_status_history_id String   @id @default(uuid())
+    order_id                String
+    order_status_id         String
+    changed_at              DateTime @default(now())
+    changed_by              String?
+    note                    String?
+
+    order  Order       @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+    status OrderStatus @relation(fields: [order_status_id], references: [order_status_id], onDelete: Restrict)
+}

@@ -1,0 +1,10 @@
+model UserVoucherHistory {
+    user_id    String
+    voucher_id String
+    used_at    DateTime @default(now())
+
+    user    User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+    voucher Voucher @relation(fields: [voucher_id], references: [voucher_id], onDelete: Cascade)
+
+    @@id([user_id, voucher_id])
+}

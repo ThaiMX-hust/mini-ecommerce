@@ -1,0 +1,19 @@
+model Order {
+    //Primary key
+    order_id String @id @default(uuid())
+
+    user_id String //FK
+    user    User   @relation(fields: [user_id], references: [user_id], onDelete: SetNull)
+
+    receiver_name      String
+    phone              String
+    address            String
+    raw_total_amount   Decimal
+    final_total_amount Decimal
+    created_at         DateTime @default(now())
+    updated_at         DateTime @updatedAt
+
+    items       OrderItems[]
+    history     OrderStatusHistory[]
+    adjustments Adjustment[]
+}
