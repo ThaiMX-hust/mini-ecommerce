@@ -1,0 +1,186 @@
+@startuml "db"
+!theme plain
+
+entity "USER" as U {
+    *user_id : UUID <<PK>>
+    --
+    first_name: VARCHAR(20)
+    last_name: VARCHAR(20)
+    email : VARCHAR(255) <<UNIQUE>>
+    avatar_url: VARCHAR(300)?
+    password_hash : VARCHAR(255)
+    role: ENUM('CUSTOMER', 'ADMIN')
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+    deleted_at : TIMESTAMP?
+}
+
+entity "PRODUCT" as P {
+    *product_id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    description : TEXT
+    raw_price : DECIMAL(12,2)
+    image_urls : JSONB
+    stock_quantity : INT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+    deleted_at : TIMESTAMP?
+}
+
+entity "CATEGORY" as C {
+    *category_id: UUID <<PK>>
+    --
+    category_code: VARCHAR(20)
+    category_name: VARCHAR(100)
+    category_description: TEXT?
+}
+
+entity "PRODUCT_CATEGORIES" as PC {
+    *category_id: UUID <<PK, FK>> --ON DELETE CASCADE
+    *product_id: UUID <<PK, FK>>  -- ON DELETE CASCADE
+}
+
+entity "PRODUCT_PROMOTIONS" as P_P {
+    *promotion_id : UUID <<PK>>
+    --
+    product_id : UUID <<FK>>  -- ON DELETE CASCADE
+    promotion_name : VARCHAR(400)
+    promotion_description : VARCHAR(1000)
+    promotion_type : ENUM('PERCENTAGE','FIXED')
+    promotion_status : ENUM('DRAFT','RUNNING','EXPIRED','ARCHIVED')
+    start_at : TIMESTAMP
+    end_at : TIMESTAMP
+}
+
+entity "ORDER" as O {
+    *order_id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    receiver_name : VARCHAR(100)
+    phone : VARCHAR(20)
+    address : VARCHAR(255)
+    raw_total_amount : DECIMAL(12,2)
+    final_total_amount : DECIMAL(12,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "ORDER_ITEMS" as OI {
+    *order_item_id : UUID <<PK>>
+    --
+    order_id : UUID <<FK>>  -- ON DELETE CASCADE
+    product_id : UUID <<FK>>  -- RESTRICTED
+    quantity : INT
+    unit_price : DECIMAL(12,2)
+    promotion : DECIMAL(12,2)
+    final_price : DECIMAL(12,2)
+    subtotal : DECIMAL(12,2)
+}
+
+entity "ORDER_STATUS" as OS {
+    *order_status_id: UUID <<PK>>
+    --
+    order_status_code: VARCHAR(31)
+    order_status_name: VARCHAR(100)
+}
+
+entity "ORDER_STATUS_HISTORY" as OSH {
+    *order_status_history_id : UUID <<PK>>
+    --
+    order_id : UUID <<FK>>  -- ON DELETE CASCADE
+    order_status_id : UUID <<FK>>  -- RESTRICTED
+    changed_at : TIMESTAMP
+    changed_by : UUID?      -- SET NULL
+    note : TEXT?
+}
+
+entity "ADJUSTMENT" as ADJ {
+  *adjustment_id : UUID <<PK>>
+  --
+  order_id : UUID <<FK>>  -- ON DELETE CASCADE
+  adjustment_type : ENUM('VOUCHER','FLASHSALE','COMBO','MANUAL')
+  value_type : ENUM('PERCENTAGE','FIXED')
+  value : DECIMAL(12,2)
+  applied_amount : DECIMAL(12,2)
+  reason : TEXT?
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "REVIEW" as RV {
+    *review_id: UUID <<PK>>
+    --
+    product_id: UUID <<FK>> -- ON DELETE CASCADE
+    by_user_id: UUID <<FK>> -- SET NULL
+    rating: INT (1-10) (every 2 units = 1 star)
+    comment: TEXT?
+    image_urls: JSONB?
+    created_at: TIMESTAMP
+}
+
+entity "CART" as Cart {
+    *cart_id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>> --ON DELETE CASCADE
+    total_items : INT
+    total_price : DECIMAL(12,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "CART_ITEMS" as CI {
+    *cart_item_id : UUID <<PK>>
+    --
+    cart_id : UUID <<FK>> --ON DELETE CASCADE
+    product_id : UUID <<FK>> -- SET NULL
+    quantity : INT
+    raw_unit_price : DECIMAL(12,2)
+    final_unit_price: DECIMAL(12,2)
+    raw_subtotal : DECIMAL(12,2)
+    final_subtotal: DECIMAL(12,2)
+    added_at : TIMESTAMP
+}
+
+entity "USER_VOUCHER_HISTORY" as UVH{
+    *user_id: UUID <<PK, FK>> -- DELETE ON CASCADE
+    *voucher_id: UUID <<PK, FK>> -- DELETE ON CASCADE
+    --
+    used_at: TIMESTAMP
+}
+
+entity "VOUCHER" as VC {
+    *voucher_id : UUID <<PK>>
+    --
+    voucher_code : VARCHAR(50) <<UNIQUE>>
+    voucher_name : VARCHAR(255)
+    quantity: INT
+    description : TEXT?
+    is_active : BOOLEAN
+    rule : JSONB --attr for defining voucher rules
+    created_by_user : UUID?
+    updated_by_user : UUID?
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+U ||--o{ O : "places"
+O ||--o{ OI : "contains"
+O ||--o{ OSH : "has history"
+OS ||--o{ OSH : "used as"
+P ||--o{ OI : "in items"
+P ||--o{ P_P : "has promotions"
+O ||--o{ ADJ : "has adjustments"
+
+P ||--o{ PC : "categorized as"
+C ||--o{ PC : "has products"
+P ||--o{ RV : "has review"
+U ||--o{ RV : "reviews on"
+
+U ||--o{ UVH : "uses"
+VC ||--o{ UVH : "used by"
+
+U ||--|| Cart : "has one cart"
+Cart ||--o{ CI
+
+@enduml
