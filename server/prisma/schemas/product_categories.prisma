@@ -1,0 +1,8 @@
+model ProductCategories {
+    category_id String    @default(uuid())
+    product_id  String
+    Category    Category? @relation(fields: [category_id], references: [category_id], onDelete: Cascade)
+    Product     Product   @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+
+    @@id([category_id, product_id])
+}
