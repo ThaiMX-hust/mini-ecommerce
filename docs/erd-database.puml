@@ -23,6 +23,7 @@ entity "PRODUCT" as P {
     raw_price : DECIMAL(12,2)
     image_urls : JSONB
     stock_quantity : INT
+    is_disabled: BOOLEAN
     created_at : TIMESTAMP
     updated_at : TIMESTAMP
     deleted_at : TIMESTAMP?
