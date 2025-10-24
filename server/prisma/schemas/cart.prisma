@@ -2,7 +2,7 @@ model Cart {
     cart_id     String   @id @default(uuid())
     user_id     String
     total_items Int
-    total_price Decimal
+    total_price Decimal  @db.Decimal(12, 2)
     created_at  DateTime @default(now())
     updated_at  DateTime @updatedAt
 

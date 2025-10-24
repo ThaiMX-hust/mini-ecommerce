@@ -1,15 +1,13 @@
 model Voucher {
-    voucher_id      String   @id @default(uuid())
-    voucher_code    String   @unique
-    voucher_name    String
-    quantity        Int
-    description     String?
-    is_active       Boolean
-    rule            Json
-    created_by_user String?
-    updated_by_user String?
-    created_at      DateTime @default(now())
-    updated_at      DateTime @updatedAt
+    voucher_id   String   @id @default(uuid())
+    voucher_code String   @unique
+    voucher_name String
+    quantity     Int
+    description  String?
+    is_active    Boolean
+    rule         Json
+    created_at   DateTime @default(now())
+    updated_at   DateTime @updatedAt
 
     usedBy UserVoucherHistory[]
 }

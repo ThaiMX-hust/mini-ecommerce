@@ -6,9 +6,3 @@ datasource db {
     provider = "mysql"
     url      = env("DATABASE_URL")
 }
-
-//Global enum
-enum ValueDiscountType {
-    PERCENTAGE
-    FIXED
-}
