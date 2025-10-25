@@ -1,0 +1,4 @@
+enum ValueDiscountType {
+    PERCENTAGE
+    FIXED
+}

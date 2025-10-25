@@ -1,0 +1,22 @@
+model Product {
+    //Primary key
+    product_id String @id @default(uuid())
+
+    //Attr
+    name              String
+    description       String
+    raw_price         Decimal             @db.Decimal(12, 2)
+    image_urls        Json
+    stock_quantity    Int
+    is_disabled       Boolean
+    created_at        DateTime            @default(now())
+    updated_at        DateTime            @updatedAt
+    deleted_at        DateTime?           @map("deleted_at")
+    CartItems         CartItems[]
+    OrderItems        OrderItems[]
+    ProductPromotions ProductPromotions[]
+    Review            Review[]
+    ProductCategories ProductCategories[]
+
+    @@map("product")
+}

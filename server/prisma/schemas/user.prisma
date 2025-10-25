@@ -1,0 +1,26 @@
+enum UserRole {
+    CUSTOMER
+    ADMIN
+}
+
+model User {
+    //Primary key
+    user_id String @id @default(uuid())
+
+    //Attr
+    first_name         String
+    last_name          String
+    email              String               @unique
+    avatar_url         String?
+    password_hash      String
+    role               UserRole
+    created_at         DateTime             @default(now())
+    updated_at         DateTime             @updatedAt
+    deleted_at         DateTime?
+    Cart               Cart[]
+    Order              Order[]
+    Review             Review[]
+    UserVoucherHistory UserVoucherHistory[]
+
+    @@map("user")
+}

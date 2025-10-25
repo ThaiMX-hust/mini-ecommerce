@@ -1,0 +1,12 @@
+model Review {
+    review_id  String   @id @default(uuid())
+    product_id String
+    by_user_id String?
+    rating     Int
+    comment    String?
+    image_urls Json?
+    created_at DateTime @default(now())
+
+    product Product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+    user    User?   @relation(fields: [by_user_id], references: [user_id], onDelete: SetNull)
+}

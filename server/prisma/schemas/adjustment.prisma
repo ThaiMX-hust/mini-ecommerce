@@ -1,0 +1,20 @@
+enum AdjustmentType {
+    VOUCHER
+    FLASHSALE
+    COMBO
+    MANUAL
+}
+
+model Adjustment {
+    adjustment_id   String            @id @default(uuid())
+    order_id        String
+    adjustment_type AdjustmentType
+    value_type      ValueDiscountType
+    value           Decimal           @db.Decimal(12, 2)
+    applied_amount  Decimal           @db.Decimal(12, 2)
+    reason          String?
+    created_at      DateTime          @default(now())
+    updated_at      DateTime          @updatedAt
+
+    order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: Cascade)
+}
