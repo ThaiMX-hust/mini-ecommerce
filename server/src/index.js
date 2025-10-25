@@ -14,6 +14,10 @@ app.get('/api/v1/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Server is running healthy' });
 });
 
+// routes
+app.use('/api/v1/users', require('./routes/users'));
+app.use('/api/v1/auth', require('./routes/auth'));
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
