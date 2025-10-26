@@ -198,7 +198,7 @@ U ||--o{ O : "places"
 O ||--o{ OI : "contains"
 O ||--o{ OSH : "has history"
 OS ||--o{ OSH : "used as"
-P ||--o{ OI : "in items"
+PV ||--o{ OI : "in items"
 P ||--o{ P_P : "has promotions"
 O ||--o{ ADJ : "has adjustments"
 
@@ -213,9 +213,15 @@ VC ||--o{ UVH : "used by"
 U ||--|| Cart : "has one cart"
 Cart ||--o{ CI
 
-PV ||--o{ PVO
-PO ||--o{ POV
-P ||--o{ PO
-POV ||--o{ PVO
+P ||--o{ PV : "has variants"
+PV ||--o{ CI : "in cart"
+
+P ||--o{ PO : "has options"
+PO ||--o{ POV : "has values"
+PV ||--o{ PVO : "maps"
+POV ||--o{ PVO : "maps"
+
+
+
 
 @enduml
