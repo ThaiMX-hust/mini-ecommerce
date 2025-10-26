@@ -20,7 +20,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 201 Created:
     ```json
     {
-      "id": "string",
+      "user_id": "string",
       "first_name": "string",
       "last_name": "string",
       "email": "string",
@@ -47,7 +47,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     {
       "token": "string",
       "user": {
-        "id": "string",
+        "user_id": "string",
         "first_name": "string",
         "last_name": "string",
         "email": "string",
@@ -111,7 +111,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 200 OK:
     ```json
     {
-      "id": "string",
+      "user_id": "string",
       "first_name": "string",
       "last_name": "string",
       "email": "string",
@@ -134,7 +134,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 200 OK:
     ```json
     {
-      "id": "string",
+      "user_id": "string",
       "first_name": "string",
       "last_name": "string",
       "email": "string",
@@ -168,7 +168,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "total_items": "number",
       "items": [
         {
-          "id": "string",
+          "product_id": "string",
           "name": "string",
           "description": "string",
           "category": ["string"],
@@ -187,7 +187,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 200 OK:
     ```json
     {
-      "id": "string",
+      "product_id": "string",
       "name": "string",
       "description": "string",
       "category": ["string"],
@@ -214,10 +214,10 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 201 Created:
     ```json
     {
-      "id": "string",
+      "review_id": "string",
       "product_id": "string",
       "user": {
-        "id": "string",
+        "user_id": "string",
         "first_name": "string",
         "last_name": "string",
         "avatar_url": "string"
@@ -240,10 +240,10 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     {
       "reviews": [
         {
-          "id": "string",
+          "review_id": "string",
           "product_id": "string",
           "user": {
-            "id": "string",
+            "user_id": "string",
             "first_name": "string",
             "last_name": "string",
             "avatar_url": "string"
@@ -272,7 +272,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 201 Created:
     ```json
     {
-      "id": "string",
+      "product_id": "string",
       "name": "string",
       "description": "string",
       "category": ["string"],
@@ -300,7 +300,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 200 OK:
     ```json
     {
-      "id": "string",
+      "product_id": "string",
       "name": "string",
       "description": "string",
       "category": ["string"],
@@ -368,7 +368,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
         {
           "cart_item_id": "string",
           "product": {
-            "id": "string",
+            "product_id": "string",
             "name": "string",
             "description": "string",
             "category": ["string"],
@@ -438,7 +438,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "items": [
         {
           "product": {
-            "id": "string",
+            "product_id": "string",
             "name": "string",
             "description": "string",
             "category": ["string"],
@@ -515,7 +515,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
           "items": [
             {
               "product": {
-                "id": "string",
+                "product_id": "string",
                 "name": "string",
                 "description": "string",
                 "category": ["string"],
@@ -562,7 +562,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "items": [
         {
           "product": {
-            "id": "string",
+            "product_id": "string",
             "name": "string",
             "description": "string",
             "category": ["string"],
