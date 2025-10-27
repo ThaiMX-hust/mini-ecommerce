@@ -11,6 +11,7 @@ model Product {
     created_at     DateTime  @default(now())
     updated_at     DateTime  @updatedAt
     deleted_at     DateTime? @map("deleted_at")
+    restored_at    DateTime?
 
     ProductVariant    ProductVariant[]
     ProductOption     ProductOption[]

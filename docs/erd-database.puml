@@ -25,6 +25,7 @@ entity "PRODUCT" as P {
     created_at : TIMESTAMP
     updated_at : TIMESTAMP
     deleted_at : TIMESTAMP?
+    restored_at: TIMESTAMP?
 }
 
 entity "PRODUCT_OPTION" as PO {
@@ -49,7 +50,6 @@ entity "PRODUCT_VARIANT" as PV {
     raw_price : DECIMAL(12,2)
     stock_quantity : INT
     image_urls: JSONB
-    is_disabled : BOOLEAN
     created_at : TIMESTAMP
     updated_at : TIMESTAMP
 }
