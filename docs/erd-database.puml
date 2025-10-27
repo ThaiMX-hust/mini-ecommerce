@@ -48,6 +48,7 @@ entity "PRODUCT_VARIANT" as PV {
     sku : VARCHAR(100) <<UNIQUE>>
     raw_price : DECIMAL(12,2)
     stock_quantity : INT
+    image_urls: JSONB
     is_disabled : BOOLEAN
     created_at : TIMESTAMP
     updated_at : TIMESTAMP
