@@ -1,0 +1,8 @@
+model ProductOption {
+    product_option_id String @id @default(uuid())
+    option_name       String
+
+    product_id         String
+    Product            Product              @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+    ProductOptionValue ProductOptionValue[]
+}

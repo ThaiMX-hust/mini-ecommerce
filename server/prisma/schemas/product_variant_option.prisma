@@ -1,0 +1,9 @@
+model ProductVariantOption {
+    product_variant_id String
+    option_value_id    String
+
+    ProductOptionValue ProductOptionValue @relation(fields: [option_value_id], references: [option_value_id], onDelete: Cascade)
+    ProductVariant     ProductVariant     @relation(fields: [product_variant_id], references: [product_variant_id], onDelete: Cascade)
+
+    @@id([product_variant_id, option_value_id])
+}
