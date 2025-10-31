@@ -1,0 +1,62 @@
+.optionGroup {
+  margin: 20px 0;
+}
+
+.optionName {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #000000;
+}
+
+/* Hiển thị giá trị đang được chọn bên cạnh tên tùy chọn */
+.optionName span {
+  font-weight: 400;
+  color: #000000;
+  margin-left: 8px;
+}
+
+.valuesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* --- Style cho nút Size --- */
+.sizeButton {
+  padding: 8px 18px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color:#000000;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sizeButton.active {
+  background-color: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+/* --- Style cho ô màu (Color Swatch) --- */
+.colorSwatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #eaeaea;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0; /* Bỏ padding mặc định của button */
+}
+
+.colorSwatch.active {
+  /* Dùng outline để không ảnh hưởng đến layout */
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+.colorSwatch:hover {
+  transform: scale(1.1);
+}

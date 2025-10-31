@@ -1,0 +1,43 @@
+.galleryContainer {
+    display: flex;
+    gap: 16px;
+    /* Dính lại khi cuộn trang */
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+}
+
+.thumbnails {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.thumbnailImage {
+    width: 65px;
+    height: 85px;
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+.thumbnailImage:hover {
+    border-color: #ccc;
+}
+
+.thumbnailImage.active {
+    border-color: #111; /* Màu đen cho ảnh đang được chọn */
+}
+
+.mainImageContainer {
+    flex-grow: 1; /* Chiếm hết không gian còn lại */
+}
+
+.mainImage {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
+}
