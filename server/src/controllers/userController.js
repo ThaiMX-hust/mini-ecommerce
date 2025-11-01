@@ -27,6 +27,16 @@ const register = async (req, res) => {
     }
 }
 
+const getUserByID = async(req, res) => {
+
+}
+
+const updateUserByID = async(req, res) => {
+
+}
+
 module.exports = {
-    register
+    register,
+    getUserByID,
+    updateUserByID
 };

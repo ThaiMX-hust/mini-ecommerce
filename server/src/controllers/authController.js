@@ -20,6 +20,11 @@ const login = async (req, res) => {
     }
 }
 
+const changePassword = async (req, res) => {
+
+}
+
 module.exports = {
-    login
+    login,
+    changePassword,
 };
