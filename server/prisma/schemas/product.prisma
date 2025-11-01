@@ -6,7 +6,6 @@ model Product {
     name           String
     description    String
     image_urls     Json
-    stock_quantity Int
     is_disabled    Boolean
     created_at     DateTime  @default(now())
     updated_at     DateTime  @updatedAt

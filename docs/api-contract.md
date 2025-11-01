@@ -475,7 +475,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
         {
           "product_option_id": "string",
           "option_name": "string",
-          "value": ["string"]
+          "values": ["string"]
         }
       ],
       "variants": [
