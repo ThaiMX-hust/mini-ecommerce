@@ -19,7 +19,7 @@ async function loginUser(email, password) {
         { expiresIn: '1h' }
     );
 
-    const { hashedPassword, ...userWithoutPassword } = user;
+    const { password_hash, ...userWithoutPassword } = user;
 
     return { token, user: userWithoutPassword };
 }
