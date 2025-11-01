@@ -4,9 +4,9 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-async function getProducts(query) {
+async function getProducts(query, isAdmin) {
     const { name, categories, min_price, max_price, page, limit } = query;
-    const { total_items, products } = await productRepository.getProducts(prisma, { name, categories, min_price, max_price, page, limit });
+    const { total_items, products } = await productRepository.getProducts(prisma, { name, categories, min_price, max_price, page, limit }, isAdmin);
     const total_pages = Math.ceil(total_items / limit);
     const items = products.map(product => ({
         product_id: product.product_id,
@@ -27,8 +27,8 @@ async function getProducts(query) {
     }
 }
 
-async function getProductById(productId) {
-    const product = await productRepository.getProductById(prisma, productId);
+async function getProductById(productId, isAdmin) {
+    const product = await productRepository.getProductById(prisma, productId, isAdmin);
     if (!product)
         return null;
 
@@ -51,7 +51,7 @@ async function getProductById(productId) {
     const variants = product.ProductVariant.map(variant => ({
         product_variant_id: variant.product_variant_id,
         sku: variant.sku,
-        price: variant.raw_price,
+        price: Number(variant.raw_price),
         stock: variant.stock_quantity,
         is_disabled: variant.is_disabled,
         images: variant.image_urls,

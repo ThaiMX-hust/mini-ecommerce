@@ -39,7 +39,8 @@ async function getUserByEmail(email) {
             last_name: true,
             email: true,
             password_hash: true,
-            avatar_url: true
+            avatar_url: true,
+            role: true
         }
     });
     return user;

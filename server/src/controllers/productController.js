@@ -12,7 +12,9 @@ const getProducts = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
 
-        const products = await productService.getProducts({ name, categories, min_price, max_price, page, limit });
+        const isAdmin = req.user && req.user.role === 'ADMIN';
+
+        const products = await productService.getProducts({ name, categories, min_price, max_price, page, limit }, isAdmin);
         return res.status(200).json(products);
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -23,7 +25,8 @@ const getProducts = async (req, res) => {
 const getProductById = async (req, res) => {
     try {
         const productId = req.params.productId;
-        const product = await productService.getProductById(productId);
+        const isAdmin = req.user && req.user.role === 'ADMIN';
+        const product = await productService.getProductById(productId, isAdmin);
         if (!product) {
             return res.status(404).json({ error: 'Product not found' });
         }

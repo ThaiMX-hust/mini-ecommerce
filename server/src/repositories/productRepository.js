@@ -1,12 +1,13 @@
 
-async function getProducts(client, query) {
+async function getProducts(client, query, isAdmin) {
     const { name, categories, min_price, max_price, page, limit } = query;
     const where = {
         AND: [
             name ? { name: { contains: name } } : {},
             categories && categories.length > 0 ? { ProductCategories: { some: { category_id: { in: categories } } } } : {},
             min_price ? { ProductVariant: { some: { raw_price: { gte: min_price } } } } : {},
-            max_price ? { ProductVariant: { some: { raw_price: { lte: max_price } } } } : {}
+            max_price ? { ProductVariant: { some: { raw_price: { lte: max_price } } } } : {},
+            !isAdmin ? { is_disabled: false } : {}
         ]
     };
 
@@ -27,13 +28,19 @@ async function getProducts(client, query) {
     return { total_items: count, products };
 }
 
-async function getProductById(client, productId) {
-    const product = await client.product.findUnique({
-        where: { product_id: productId },
+async function getProductById(client, productId, isAdmin) {
+    const product = await client.product.findFirst({
+        where: {
+            AND: [
+                { product_id: productId },
+                !isAdmin ? { is_disabled: false } : {}
+            ]
+        },
         include: {
             ProductCategories: true,
             ProductOption: { include: { ProductOptionValue: true } },
             ProductVariant: {
+                where: !isAdmin ? { is_disabled: false } : {},
                 include: { ProductVariantOption: { include: { ProductOptionValue: true } } }
             }
         }
