@@ -155,8 +155,34 @@ async function addProduct(productData) {
     });
 }
 
+async function updateProduct(productId, productData) {
+    const { name, description, categories, is_disabled, variant_images } = productData;
+
+    const image_urls = [];
+    const updatedProduct = await prisma.$transaction(async (tx) => {
+        return await productRepository.updateProduct(tx, productId, { name, description, categories, is_disabled, image_urls });
+    });
+
+    return {
+        product_id: updatedProduct.product_id,
+        name: updatedProduct.name,
+        description: updatedProduct.description,
+        categories: updatedProduct.ProductCategories.map(c => c.category_id),
+        is_disabled: updatedProduct.is_disabled,
+        created_at: updatedProduct.created_at,
+        updated_at: updatedProduct.updated_at,
+        image_urls: updatedProduct.image_urls,
+    }
+}
+
+async function deleteProduct(productId) {
+    return await productRepository.deleteProduct(prisma, productId);
+}
+
 module.exports = {
     getProducts,
     getProductById,
-    addProduct
+    addProduct,
+    updateProduct,
+    deleteProduct
 };

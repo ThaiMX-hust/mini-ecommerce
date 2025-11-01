@@ -68,8 +68,51 @@ const addProduct = async (req, res) => {
     }
 }
 
+const updateProduct = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const productData = { ...req.body, variant_images: req.files };
+
+        try {
+            if (productData.categories) {
+                productData.categories = JSON.parse(productData.categories);
+            }
+            if (productData.is_disabled !== undefined) {
+                productData.is_disabled = productData.is_disabled === 'true' || productData.is_disabled === true;
+            }
+        } catch (error) {
+            return res.status(400).json({ "error": "Missing or invalid fields" });
+        }
+
+        const updatedProduct = await productService.updateProduct(productId, productData);
+        if (!updatedProduct) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        return res.status(200).json(updatedProduct);
+    } catch (error) {
+        console.error('Error updating product:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const deleteProduct = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const deletedProduct = await productService.deleteProduct(productId);
+        if (!deletedProduct) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        return res.status(204).send();
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 module.exports = {
     getProducts,
     getProductById,
-    addProduct
+    addProduct,
+    updateProduct,
+    deleteProduct
 };

@@ -138,11 +138,49 @@ async function createProductVariantsWithOptions(client, productId, variants) {
     return createdVariants.map(({ createdVariant, options }) => ({ ...createdVariant, options }));
 }
 
+// Need transaction
+async function updateProduct(client, productId, productData) {
+    const { name, description, categories, is_disabled, image_urls } = productData;
+    const data = {};
+    if (name) data.name = name;
+    if (description) data.description = description;
+    if (is_disabled !== undefined) data.is_disabled = is_disabled;
+    if (image_urls) data.image_urls = image_urls;
+
+    if (categories) {
+        await client.productCategories.deleteMany({ where: { product_id: productId } });
+        await createProductCategories(client, productId, categories);
+    }
+
+    return await client.product.update({
+        where: { product_id: productId },
+        data,
+        select: {
+            product_id: true,
+            name: true,
+            description: true,
+            ProductCategories: { select: { category_id: true } },
+            is_disabled: true,
+            created_at: true,
+            updated_at: true,
+            image_urls: true
+        }
+    });
+}
+
+async function deleteProduct(client, productId) {
+    return await client.product.delete({
+        where: { product_id: productId }
+    });
+}
+
 module.exports = {
     getProducts,
     getProductById,
     createProduct,
     createProductCategories,
     createProductOptionsWithValues,
-    createProductVariantsWithOptions
+    createProductVariantsWithOptions,
+    updateProduct,
+    deleteProduct
 };
