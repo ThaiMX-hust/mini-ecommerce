@@ -40,3 +40,11 @@
 .read-the-docs {
   color: #888;
 }
+
+body {
+  margin: 0; /* Xóa bỏ margin mặc định của trình duyệt */
+  font-family: 'Inter', sans-serif; /* Đảm bảo font chữ nhất quán */
+  background-color: #f0f2f5; /* <-- MÀU XÁM NHẠT, SANG TRỌNG */
+  /* Hoặc nếu bạn muốn nền tối như trong ảnh trước đó: */
+  /* background-color: #212121; */
+}

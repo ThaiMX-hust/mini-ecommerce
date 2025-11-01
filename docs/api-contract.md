@@ -1,7 +1,7 @@
 # API Contract – Website Bán sản phẩm
 
 Phiên bản: 1.0
-Ngày cập nhật: 27/10/2025
+Ngày cập nhật: 31/10/2025
 
 ## Tổng quan
 
@@ -167,7 +167,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - URL: /api/v1/products
 - Query Parameters:
   - name: string (optional)
-  - category: string (optional)
+  - categories: [string] (optional)
   - min_price: number (optional)
   - max_price: number (optional)
   - page: number (optional, default: 1)
@@ -186,9 +186,9 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
           "name": "string",
           "description": "string",
           "categories": ["string"],
-          "price": "number",
+          "min_price": "number",
+          "max_price": "number",
           "image_url": "string",
-          "stock": "number"
         }
       ]
     }
@@ -230,7 +230,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
             {
               "product_option_id": "string",
               "option_name": "string",
-              "values": [{ "option_value_id": "string", "value": "string" }]
+              "value": { "option_value_id": "string", "value": "string" }
             }
           ]
         }
@@ -291,22 +291,20 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
             {
               "product_option_id": "b0859f28-0cda-4a4d-a3d1-d75cf54fc285",
               "option_name": "Color",
-              "values": [
+              "values":
                 {
                   "option_value_id": "1dbe7b26-c189-45ac-8d29-6602bd0d11f0",
                   "value": "Black"
                 }
-              ]
             },
             {
               "product_option_id": "660a1b2a-1f02-4fdc-8817-7ce143a47a42",
               "option_name": "Size",
-              "values": [
+              "value": 
                 {
                   "option_value_id": "e2094432-9c54-486e-9fd3-d02fc3a542b9",
                   "value": "M"
                 }
-              ]
             }
           ]
         },
@@ -321,22 +319,20 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
             {
               "product_option_id": "b0859f28-0cda-4a4d-a3d1-d75cf54fc285",
               "option_name": "Color",
-              "values": [
+              "values":
                 {
                   "option_value_id": "a80c6ae2-6ba6-4af8-8f53-2b05757df33b",
                   "value": "White"
                 }
-              ]
             },
             {
               "product_option_id": "660a1b2a-1f02-4fdc-8817-7ce143a47a42",
               "option_name": "Size",
-              "values": [
+              "value":
                 {
                   "option_value_id": "41552ad4-fc52-4697-823a-7c97c29bde1a",
                   "value": "L"
                 }
-              ]
             }
           ]
         }
@@ -426,7 +422,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 | `is_disabled`      | -                | boolean (default = false) | Không bắt buộc | Xác định xem sản phẩm có bị ẩn hay không                    |
 | `options`          | -                | Object[]                  | Bắt buộc       | Danh sách các options chi tiết thuộc về sản phẩm            |
 | `options`          | `option_name`    | string                    | Bắt buộc       | Tên option                                                  |
-| `options`          | `value`          | string                    | Bắt buộc       | Giá trị tương ứng của option                                |
+| `options`          | `values`         | string[]                  | Bắt buộc       | Giá trị tương ứng của option                                |
 | `variants`         | -                | Object[]                  | Bắt buộc       | Danh sách variants của sản phẩm                             |
 | `variants`         | `sku`            | string                    | Bắt buộc       | Mã định danh duy nhất cho từng variant (Stock Keeping Unit) |
 |                    | `raw_price`      | string                    | Bắt buộc       | Giá gốc                                                     |
@@ -435,7 +431,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 |                    | `is_disabled`    | boolean                   | Bắt buộc       | Xác định xem variant hiện tại có đang tắt hay không         |
 |                    | `options`        | object[]                  | Bắt buộc       | Danh sách các option cụ thể của variant                     |
 | `variants.options` | `option_name`    | string                    | Bắt buộc       | Tên option                                                  |
-|                    | `value`          | string[]                  | Bắt buộc       | Các giá trị của option ứng với variant                      |
+|                    | `value`          | string                    | Bắt buộc       | Các giá trị của option ứng với variant                      |
 
 - Metadata
   ```json
@@ -443,9 +439,9 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     "name": "string",
     "description": "string",
     "categories": ["string"],
-    "is_disabled": "boolean"
+    "is_disabled": "boolean",
     "options": [
-      {"option_name": "string", "value": "string"}
+      {"option_name": "string", "values": ["string"]}
     ],
     "variants": [
       {
@@ -455,7 +451,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
         "image_indexes:": ["number"],
         "is_disabled": "boolean",
         "options": [
-          {"option_name": "string", "value": ["string"]}
+          {"option_name": "string", "value": "string"}
         ]
       }
     ]
@@ -479,12 +475,12 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
         {
           "product_option_id": "string",
           "option_name": "string",
-          "value": ["string"]
+          "values": ["string"]
         }
       ],
       "variants": [
         {
-          "prouct_variant_id": "string",
+          "product_variant_id": "string",
           "sku": "string",
           "raw_price": "string",
           "stock_quantity": "number",
@@ -494,7 +490,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
             {
               "product_option_id": "string",
               "option_name": "string",
-              "value": ["string"]
+              "value": "string"
             }
           ],
           "created_at": "timestamp"
@@ -514,12 +510,13 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Content-Type: application/json
 - Mô tả body
 
-| Trường chính  | Kiểu     | Yêu cầu        | Mô tả                                   |
-| ------------- | -------- | -------------- | --------------------------------------- |
-| `name`        | string   | Không bắt buộc | Tên sản phẩm hiển thị                   |
-| `description` | string   | Không bắt buộc | Mô tả chi tiết về sản phẩm              |
-| `categories`  | string[] | Không bắt buộc | Danh sách category mà sản phẩm thuộc về |
-| `is_disabled` | boolean  | Không bắt buộc | Ẩn/hiện sản phẩm                        |
+| Trường chính      | Kiểu     | Yêu cầu        | Mô tả                                   |
+| -------------     | -------- | -------------- | --------------------------------------- |
+| `name`            | string   | Không bắt buộc | Tên sản phẩm hiển thị                   |
+| `description`     | string   | Không bắt buộc | Mô tả chi tiết về sản phẩm              |
+| `categories`      | string[] | Không bắt buộc | Danh sách category mà sản phẩm thuộc về |
+| `is_disabled`     | boolean  | Không bắt buộc | Ẩn/hiện sản phẩm                        |
+| `variant_images`  | file[]   | Không bắt buộc | Ảnh mới                                 |
 
 - Body
 
@@ -529,7 +526,8 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     "name": "string",
     "description": "string",
     "categories": ["string"],
-    "is_disabled": "boolean"
+    "is_disabled": "boolean",
+    "variant_images": ["file"]
   }
   ```
 
@@ -541,9 +539,10 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "name": "string",
       "description": "string",
       "categories": ["string"],
-      "is_disabled": "boolean"
+      "is_disabled": "boolean",
       "created_at": "timestamp",
-      "updated_at": "timestamp"
+      "updated_at": "timestamp",
+      "image_urls": ["string"]
     }
     ```
   - 400 Bad Request: { "error": "Missing or invalid fields" }
@@ -612,7 +611,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 | `options`        | -                   | object[] | Không bắt buộc              | Danh sách option ứng với variant              |
 | `options`        | `product_option_id` | string   | Bắt buộc nếu truyền options | Tham chiếu option gốc                         |
 | `options`        | `option_name`       | string   | Bắt buộc nếu truyền options | Denormalized name                             |
-| `options`        | `value`             | string[] | Bắt buộc nếu truyền options | Giá trị của option                            |
+| `options`        | `value`             | string   | Bắt buộc nếu truyền options | Giá trị của option                            |
 
 - Metadata
 
@@ -626,7 +625,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     {
       "product_option_id": "string",
       "option_name": "string",
-      "value": ["string"]
+      "value": "string"
     }
   ]
 }
@@ -648,7 +647,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       {
         "product_option_id": "string",
         "option_name": "string",
-        "value": ["string"]
+        "value": "string"
       }
     ],
     "created_at": "timestamp",
@@ -672,16 +671,10 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 
 ### 3.10 Soft-delete sản phẩm
 
-- Method: PATCH
+- Method: GET
 - URL: /api/v1/products/{product_id}/soft-delete
 - Headers: Authorization: Bearer {admin_token}
 - Content-Type: application/json
-
-- Request Body:
-
-```json
-{}
-```
 
 - Response:
 
@@ -697,18 +690,12 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 
   - 401 Unauthorized {error: "Unauthorized"}
 
-### 3.10 Khôi phục sản phẩm
+### 3.11 Khôi phục sản phẩm
 
-- Method: PATCH
+- Method: GET
 - URL: /api/v1/products/{product_id}/restore
 - Headers: Authorization: Bearer {admin_token}
 - Content-Type: application/json
-
-- Request Body:
-
-```json
-{}
-```
 
 - Response:
 
