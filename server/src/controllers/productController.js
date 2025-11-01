@@ -3,13 +3,16 @@ const productService = require('../services/productService');
 const getProducts = async (req, res) => {
     try {
         const name = req.query.name;
-        const categories = req.query.categories;
-        const minPrice = Number(req.query.minPrice);
-        const maxPrice = Number(req.query.maxPrice);
+        let categories = req.query.categories;
+        if (categories && !Array.isArray(categories)) {
+            categories = [categories];
+        }
+        const min_price = Number(req.query.min_price);
+        const max_price = Number(req.query.max_price);
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
 
-        const products = await productService.getProducts({ name, categories, minPrice, maxPrice, page, limit });
+        const products = await productService.getProducts({ name, categories, min_price, max_price, page, limit });
         return res.status(200).json(products);
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -34,9 +37,26 @@ const getProductById = async (req, res) => {
 const addProduct = async (req, res) => {
     try {
         const productData = req.body;
-        productData.categories = JSON.parse(productData.categories);
-        productData.options = JSON.parse(productData.options);
-        productData.variants = JSON.parse(productData.variants);
+
+        try {
+            const requiredFields = ['name', 'description', 'categories', 'options', 'variants'];
+            const missing = requiredFields.filter(f => !productData[f] || (Array.isArray(productData[f]) && productData[f].length === 0));
+            if (missing.length > 0) {
+                throw new Error('Missing fields');
+            }
+
+            productData.categories = JSON.parse(productData.categories);
+            productData.options = JSON.parse(productData.options);
+            productData.variants = JSON.parse(productData.variants);
+            for (const opt of productData.options) {
+                if (!opt.option_name || !Array.isArray(opt.values) || opt.values.length === 0) {
+                    return res.status(400).json({ error: 'Each option must have option_name and non-empty values array' });
+                }
+            }
+        } catch (error) {
+            return res.status(400).json({ "error": "Missing or invalid fields" });
+        }    
+
         productData.variants_images = req.files;
 
         const newProduct = await productService.addProduct(productData);

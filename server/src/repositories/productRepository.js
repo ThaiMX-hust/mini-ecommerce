@@ -1,4 +1,31 @@
 
+async function getProducts(client, query) {
+    const { name, categories, min_price, max_price, page, limit } = query;
+    const where = {
+        AND: [
+            name ? { name: { contains: name } } : {},
+            categories && categories.length > 0 ? { ProductCategories: { some: { category_id: { in: categories } } } } : {},
+            min_price ? { ProductVariant: { some: { raw_price: { gte: min_price } } } } : {},
+            max_price ? { ProductVariant: { some: { raw_price: { lte: max_price } } } } : {}
+        ]
+    };
+
+    const count = await client.product.count({ where });
+    const products = await client.product.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+            product_id: true,
+            name: true,
+            description: true,
+            image_urls: true,
+            ProductCategories: { select: { category_id: true } },
+            ProductVariant: { select: { raw_price: true } }
+        }
+    });
+    return { total_items: count, products };
+}
 
 async function getProductById(client, productId) {
     const product = await client.product.findUnique({
@@ -112,6 +139,7 @@ async function createProductVariantsWithOptions(client, productId, variants) {
 }
 
 module.exports = {
+    getProducts,
     getProductById,
     createProduct,
     createProductCategories,
