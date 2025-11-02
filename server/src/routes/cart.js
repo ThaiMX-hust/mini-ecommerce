@@ -1,16 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { getCart, addToCart, updateItemQuantityFromCart, deleteItemFromCart } = require('../controllers/cartController')
-const { verifyToken } = require('../middleware/validators/jwtTokenValidator');
-const { verifyRole } = require('../middleware/validators/roleValidator');
-const { cartTest } = require('../controllers/cartController');
 
-router.get('/', verifyToken, verifyRole('customer'), cartTest);
+const cartControler = require('../controllers/cartController')
+const { authenticate, authenticateOptional } = require('../middleware/authenticate');
 
-router.post('/', verifyToken, verifyRole('customer'), addToCart)
+router.get('/', authenticateOptional, cartControler.cartTest);
 
-router.patch('/:cart_item_id', verifyToken, verifyRole('customer'), updateItemQuantityFromCart)
+router.post('/', authenticate, cartControler.addToCart)
 
-router.delete('/:cart_item_id', verifyToken, verifyRole('customer'), deleteItemFromCart)
+router.patch('/:cart_item_id', authenticate, cartControler.updateItemQuantityFromCart)
+
+router.delete('/:cart_item_id', authenticate, cartControler.deleteItemFromCart)
 
 module.exports = router;

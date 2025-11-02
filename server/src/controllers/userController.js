@@ -53,18 +53,18 @@ const registerAdmin = async (req, res) => {
     }
 }
 
-const getUserByID = async(req, res) => {
-
+const getUser = async(req, res) => {
+    return res.status(200)
 }
 
-const updateUserByID = async(req, res) => {
-
+const updateUser = async(req, res) => {
+    return res.status(200)
 }
 
 
 module.exports = {
     register,
     registerAdmin,
-    getUserByID,
-    updateUserByID
+    getUser,
+    updateUser
 };

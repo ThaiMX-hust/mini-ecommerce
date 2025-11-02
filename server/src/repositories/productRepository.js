@@ -1,7 +1,12 @@
 const { PrismaClient } = require("@prisma/client")
 
 const prisma = new PrismaClient()
-async function getProducts(client, query, isAdmin) {
+
+function getPrismaClientInstance(){
+    return prisma
+}
+
+async function getProducts(query, isAdmin) {
     const { name, categories, min_price, max_price, page, limit } = query;
     const where = {
         AND: [
@@ -9,12 +14,12 @@ async function getProducts(client, query, isAdmin) {
             categories && categories.length > 0 ? { ProductCategories: { some: { category_id: { in: categories } } } } : {},
             min_price ? { ProductVariant: { some: { raw_price: { gte: min_price } } } } : {},
             max_price ? { ProductVariant: { some: { raw_price: { lte: max_price } } } } : {},
-            !isAdmin ? { is_disabled: false } : {}
+            !isAdmin ? { is_disabled: false } : {} 
         ]
     };
 
-    const count = await client.product.count({ where });
-    const products = await client.product.findMany({
+    const count = await prisma.product.count({ where });
+    const products = await prisma.product.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
@@ -30,8 +35,8 @@ async function getProducts(client, query, isAdmin) {
     return { total_items: count, products };
 }
 
-async function getProductById(client, productId, isAdmin) {
-    const product = await client.product.findFirst({
+async function getProductById(productId, isAdmin) {
+    const product = await prisma.product.findFirst({
         where: {
             AND: [
                 { product_id: productId },
@@ -49,6 +54,7 @@ async function getProductById(client, productId, isAdmin) {
     });
     return product;
 }
+
 
 async function getProductVariantById(client = prisma, product_variant_id) {
   const productVariant = await client.productVariant.findUnique({
@@ -186,7 +192,7 @@ async function createProductVariantsWithOptions(client, productId, variants) {
 }
 
 // Need transaction
-async function updateProduct(client, productId, productData) {
+async function updateProduct(productId, productData) {
     const { name, description, categories, is_disabled, image_urls } = productData;
     const data = {};
     if (name) data.name = name;
@@ -195,11 +201,11 @@ async function updateProduct(client, productId, productData) {
     if (image_urls) data.image_urls = image_urls;
 
     if (categories) {
-        await client.productCategories.deleteMany({ where: { product_id: productId } });
+        await prisma.productCategories.deleteMany({ where: { product_id: productId } });
         await createProductCategories(client, productId, categories);
     }
 
-    return await client.product.update({
+    return await prisma.product.update({
         where: { product_id: productId },
         data,
         select: {
@@ -215,13 +221,14 @@ async function updateProduct(client, productId, productData) {
     });
 }
 
-async function deleteProduct(client, productId) {
-    return await client.product.delete({
+async function deleteProduct(productId) {
+    return await prisma.product.delete({
         where: { product_id: productId }
     });
 }
 
 module.exports = {
+    getPrismaClientInstance,
     getProducts,
     getProductById,
     getProductVariantById,

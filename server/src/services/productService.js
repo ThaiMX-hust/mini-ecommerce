@@ -1,12 +1,8 @@
 const productRepository = require('../repositories/productRepository');
 
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
-
 async function getProducts(query, isAdmin) {
     const { name, categories, min_price, max_price, page, limit } = query;
-    const { total_items, products } = await productRepository.getProducts(prisma, { name, categories, min_price, max_price, page, limit }, isAdmin);
+    const { total_items, products } = await productRepository.getProducts({ name, categories, min_price, max_price, page, limit }, isAdmin);
     const total_pages = Math.ceil(total_items / limit);
     const items = products.map(product => ({
         product_id: product.product_id,
@@ -28,7 +24,7 @@ async function getProducts(query, isAdmin) {
 }
 
 async function getProductById(productId, isAdmin) {
-    const product = await productRepository.getProductById(prisma, productId, isAdmin);
+    const product = await productRepository.getProductById(productId, isAdmin);
     if (!product)
         return null;
 
@@ -79,7 +75,7 @@ async function addProduct(productData) {
     // TODO: upload images and get URLs
     const image_urls = [];
 
-    return await prisma.$transaction(async (tx) => {
+    return await productRepository.getPrismaClientInstance().$transaction(async (tx) => {
         // Create product
         const createdProduct = await productRepository.createProduct(tx, name, description, image_urls, is_disabled === true || is_disabled === 'true');
 
@@ -159,7 +155,7 @@ async function updateProduct(productId, productData) {
     const { name, description, categories, is_disabled, variant_images } = productData;
 
     const image_urls = [];
-    const updatedProduct = await prisma.$transaction(async (tx) => {
+    const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) => {
         return await productRepository.updateProduct(tx, productId, { name, description, categories, is_disabled, image_urls });
     });
 
@@ -176,7 +172,7 @@ async function updateProduct(productId, productData) {
 }
 
 async function deleteProduct(productId) {
-    return await productRepository.deleteProduct(prisma, productId);
+    return await productRepository.deleteProduct(productId);
 }
 
 module.exports = {
