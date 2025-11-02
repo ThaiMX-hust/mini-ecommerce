@@ -25,7 +25,7 @@ async function loginUser(email, password) {
     );
 
 
-    const { hashedPassword, ...userWithoutPassword } = user;
+    const { password_hashed, ...userWithoutPassword } = user;
 
     return { token, user: userWithoutPassword };
 }

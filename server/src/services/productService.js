@@ -4,12 +4,31 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-async function getProducts(query) {
-    const { name, categories, minPrice, maxPrice, page, limit } = query;
+async function getProducts(query, isAdmin) {
+    const { name, categories, min_price, max_price, page, limit } = query;
+    const { total_items, products } = await productRepository.getProducts(prisma, { name, categories, min_price, max_price, page, limit }, isAdmin);
+    const total_pages = Math.ceil(total_items / limit);
+    const items = products.map(product => ({
+        product_id: product.product_id,
+        name: product.name,
+        description: product.description,
+        categories: product.ProductCategories.map(c => c.category_id),
+        min_price: Math.min(...product.ProductVariant.map(v => v.raw_price)),
+        max_price: Math.max(...product.ProductVariant.map(v => v.raw_price)),
+        image_url: product.image_urls[0] || null,
+    }));
+
+    return {
+        page,
+        limit,
+        total_pages,
+        total_items,
+        items
+    }
 }
 
-async function getProductById(productId) {
-    const product = await productRepository.getProductById(prisma, productId);
+async function getProductById(productId, isAdmin) {
+    const product = await productRepository.getProductById(prisma, productId, isAdmin);
     if (!product)
         return null;
 
@@ -32,7 +51,7 @@ async function getProductById(productId) {
     const variants = product.ProductVariant.map(variant => ({
         product_variant_id: variant.product_variant_id,
         sku: variant.sku,
-        price: variant.raw_price,
+        price: Number(variant.raw_price),
         stock: variant.stock_quantity,
         is_disabled: variant.is_disabled,
         images: variant.image_urls,
@@ -136,8 +155,34 @@ async function addProduct(productData) {
     });
 }
 
+async function updateProduct(productId, productData) {
+    const { name, description, categories, is_disabled, variant_images } = productData;
+
+    const image_urls = [];
+    const updatedProduct = await prisma.$transaction(async (tx) => {
+        return await productRepository.updateProduct(tx, productId, { name, description, categories, is_disabled, image_urls });
+    });
+
+    return {
+        product_id: updatedProduct.product_id,
+        name: updatedProduct.name,
+        description: updatedProduct.description,
+        categories: updatedProduct.ProductCategories.map(c => c.category_id),
+        is_disabled: updatedProduct.is_disabled,
+        created_at: updatedProduct.created_at,
+        updated_at: updatedProduct.updated_at,
+        image_urls: updatedProduct.image_urls,
+    }
+}
+
+async function deleteProduct(productId) {
+    return await productRepository.deleteProduct(prisma, productId);
+}
+
 module.exports = {
     getProducts,
     getProductById,
-    addProduct
+    addProduct,
+    updateProduct,
+    deleteProduct
 };

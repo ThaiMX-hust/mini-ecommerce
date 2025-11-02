@@ -291,7 +291,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
             {
               "product_option_id": "b0859f28-0cda-4a4d-a3d1-d75cf54fc285",
               "option_name": "Color",
-              "values":
+              "value":
                 {
                   "option_value_id": "1dbe7b26-c189-45ac-8d29-6602bd0d11f0",
                   "value": "Black"
@@ -319,7 +319,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
             {
               "product_option_id": "b0859f28-0cda-4a4d-a3d1-d75cf54fc285",
               "option_name": "Color",
-              "values":
+              "value":
                 {
                   "option_value_id": "a80c6ae2-6ba6-4af8-8f53-2b05757df33b",
                   "value": "White"
@@ -431,7 +431,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 |                    | `is_disabled`    | boolean                   | Bắt buộc       | Xác định xem variant hiện tại có đang tắt hay không         |
 |                    | `options`        | object[]                  | Bắt buộc       | Danh sách các option cụ thể của variant                     |
 | `variants.options` | `option_name`    | string                    | Bắt buộc       | Tên option                                                  |
-|                    | `value`          | string                    | Bắt buộc       | Các giá trị của option ứng với variant                      |
+|                    | `value`          | string                    | Bắt buộc       | Giá trị của option ứng với variant                      |
 
 - Metadata
   ```json
