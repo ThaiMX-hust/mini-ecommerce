@@ -12,6 +12,9 @@ const login = async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
+        result.user.cart_id = result.user.Cart.cart_id
+        delete result.user.Cart
+        
         console.log('User logged in:', result);
         return res.status(200).json(result);
     } catch (error) {
@@ -20,6 +23,11 @@ const login = async (req, res) => {
     }
 }
 
+const changePassword = async (req, res) => {
+
+}
+
 module.exports = {
-    login
+    login,
+    changePassword,
 };

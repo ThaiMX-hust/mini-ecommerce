@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
+
 const productController = require('../controllers/productController');
 
 const { authenticate, requireAdmin, authenticateOptional } = require('../middleware/authenticate');
 const upload = require('../middleware/upload');
+
 
 router.get('/', authenticateOptional, productController.getProducts);
 router.get('/:productId', authenticateOptional, productController.getProductById);

@@ -787,10 +787,15 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
           "product": {
             "product_id": "string",
             "name": "string",
-            "description": "string",
-            "category": ["string"],
-            "price": "number",
-            "image_url": "string"
+            "categories": ["string"]
+          },
+          "variant": {
+            "product_variant_id": "string",
+            "sku": "string",
+            "raw_price": "string",
+            "final_price": "string",
+            "image_urls": ["string"],
+            "options": [{ "option_name": "string", "value": ["string"] }]
           },
           "quantity": "number"
         }
