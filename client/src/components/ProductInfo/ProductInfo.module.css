@@ -1,0 +1,109 @@
+/* === MAIN CONTAINER === */
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+/* === TYPOGRAPHY & BASIC INFO === */
+.brand {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #060606;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: 2rem; /* 32px */
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 8px 0;
+  color: #111;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #000000;
+  margin-bottom: 16px;
+}
+
+/* === PRICING SECTION === */
+.priceContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.currentPrice {
+  color: #111;
+}
+
+.oldPrice {
+  color: #999;
+  text-decoration: line-through;
+  font-size: 1rem;
+}
+
+.saleTag {
+  background-color: #e74c3c;
+  color: white;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+/* === STOCK & URGENCY === */
+.stock {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.stock.inStock {
+  color: #27ae60; /* Green */
+}
+
+.stock.outOfStock {
+  color: #e74c3c; /* Red */
+}
+
+.priceUnavailable {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+/* === ADD TO CART BUTTON === */
+.addToCartButton {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #111;
+  background-color: #111;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.addToCartButton:hover:not(:disabled) {
+  background-color: #333;
+  border-color: #333;
+}
+
+.addToCartButton:disabled {
+  background-color: #ccc;
+  border-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}

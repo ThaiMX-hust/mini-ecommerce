@@ -20,13 +20,43 @@ entity "PRODUCT" as P {
     --
     name : VARCHAR(255)
     description : TEXT
-    raw_price : DECIMAL(12,2)
     image_urls : JSONB
-    stock_quantity : INT
     is_disabled: BOOLEAN
     created_at : TIMESTAMP
     updated_at : TIMESTAMP
     deleted_at : TIMESTAMP?
+    restored_at: TIMESTAMP?
+}
+
+entity "PRODUCT_OPTION" as PO {
+    *product_option_id : UUID <<PK>>
+    --
+    product_id : UUID <<FK>>
+    option_name : VARCHAR(50) 
+}
+
+entity "PRODUCT_OPTION_VALUE" as POV {
+    *option_value_id : UUID <<PK>>
+    --
+    product_option_id : UUID <<FK>>
+    value : VARCHAR(50)
+}
+
+entity "PRODUCT_VARIANT" as PV {
+    *product_variant_id : UUID <<PK>>
+    --
+    product_id : UUID <<FK>>
+    sku : VARCHAR(100) <<UNIQUE>>
+    raw_price : DECIMAL(12,2)
+    stock_quantity : INT
+    image_urls: JSONB
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "PRODUCT_VARIANT_OPTION" as PVO {
+    *product_variant_id : UUID <<FK, PK>>
+    *option_value_id : UUID <<FK, PK>>
 }
 
 entity "CATEGORY" as C {
@@ -71,7 +101,7 @@ entity "ORDER_ITEMS" as OI {
     *order_item_id : UUID <<PK>>
     --
     order_id : UUID <<FK>>  -- ON DELETE CASCADE
-    product_id : UUID <<FK>>  -- RESTRICTED
+    product_variant_id : UUID <<FK>>  -- RESTRICTED
     quantity : INT
     unit_price : DECIMAL(12,2)
     promotion : DECIMAL(12,2)
@@ -134,7 +164,7 @@ entity "CART_ITEMS" as CI {
     *cart_item_id : UUID <<PK>>
     --
     cart_id : UUID <<FK>> --ON DELETE CASCADE
-    product_id : UUID <<FK>> -- SET NULL
+    product_variant_id : UUID <<FK>> -- SET NULL
     quantity : INT
     raw_unit_price : DECIMAL(12,2)
     final_unit_price: DECIMAL(12,2)
@@ -169,7 +199,7 @@ U ||--o{ O : "places"
 O ||--o{ OI : "contains"
 O ||--o{ OSH : "has history"
 OS ||--o{ OSH : "used as"
-P ||--o{ OI : "in items"
+PV ||--o{ OI : "in items"
 P ||--o{ P_P : "has promotions"
 O ||--o{ ADJ : "has adjustments"
 
@@ -183,5 +213,16 @@ VC ||--o{ UVH : "used by"
 
 U ||--|| Cart : "has one cart"
 Cart ||--o{ CI
+
+P ||--o{ PV : "has variants"
+PV ||--o{ CI : "in cart"
+
+P ||--o{ PO : "has options"
+PO ||--o{ POV : "has values"
+PV ||--o{ PVO : "maps"
+POV ||--o{ PVO : "maps"
+
+
+
 
 @enduml

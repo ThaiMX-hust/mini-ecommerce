@@ -1,0 +1,58 @@
+.pageContainer {
+  max-width: 1200px;
+  margin: 40px auto;
+  background-color: #fff;
+  
+  /* Thêm khoảng đệm bên trong để nội dung không bị sát viền */
+  padding: 40px; 
+  
+  /* Bo tròn các góc để trông mềm mại hơn */
+  border-radius: 8px; 
+  
+  /* Thêm hiệu ứng đổ bóng nhẹ để tạo chiều sâu */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); 
+  
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.mainContent {  
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Bố cục 2 cột */
+  gap: 50px; /* Tăng khoảng cách giữa 2 cột */
+  margin-bottom: 50px;
+}
+
+/* === LOADING & ERROR STATES === */
+.loadingContainer, .errorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  font-size: 18px;
+  color: #666;
+}
+
+.errorContainer {
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 992px) {
+  .mainContent {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+    .pageContainer {
+        padding: 0 15px;
+    }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

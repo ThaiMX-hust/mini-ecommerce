@@ -1,14 +1,14 @@
 model CartItems {
-    cart_item_id     String   @id @default(uuid())
-    cart_id          String
-    product_id       String?
-    quantity         Int
-    raw_unit_price   Decimal  @db.Decimal(12, 2)
-    final_unit_price Decimal  @db.Decimal(12, 2)
-    raw_subtotal     Decimal  @db.Decimal(12, 2)
-    final_subtotal   Decimal  @db.Decimal(12, 2)
-    added_at         DateTime @default(now())
+    cart_item_id       String   @id @default(uuid())
+    cart_id            String
+    product_variant_id String?
+    quantity           Int
+    raw_unit_price     Decimal  @db.Decimal(12, 2)
+    final_unit_price   Decimal  @db.Decimal(12, 2)
+    raw_subtotal       Decimal  @db.Decimal(12, 2)
+    final_subtotal     Decimal  @db.Decimal(12, 2)
+    added_at           DateTime @default(now())
 
-    cart    Cart     @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade, onUpdate: Restrict)
-    product Product? @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: Cascade)
+    cart            Cart            @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade, onUpdate: Restrict)
+    product_variant ProductVariant? @relation(fields: [product_variant_id], references: [product_variant_id], onDelete: Cascade, onUpdate: Cascade)
 }

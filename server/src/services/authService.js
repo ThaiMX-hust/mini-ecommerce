@@ -13,13 +13,11 @@ async function loginUser(email, password) {
         return null;
     }
 
-    const token = jwt.sign(
-        { id: user.id, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-    );
+    const jwtPayload = { id: user.user_id, email: user.email, role: user.role };
+        
+    const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '1h' } );
 
-    const { hashedPassword, ...userWithoutPassword } = user;
+    const { password_hash, ...userWithoutPassword } = user;
 
     return { token, user: userWithoutPassword };
 }
