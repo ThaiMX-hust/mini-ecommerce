@@ -1,4 +1,6 @@
+const { PrismaClient } = require("@prisma/client")
 
+const prisma = new PrismaClient()
 
 async function getProductById(client, productId) {
     const product = await client.product.findUnique({
@@ -13,6 +15,44 @@ async function getProductById(client, productId) {
     });
     return product;
 }
+
+async function getProductVariantById(client = prisma, product_variant_id) {
+  const productVariant = await client.productVariant.findUnique({
+    where: { product_variant_id },
+    include: {
+      Product: {
+        select: {
+          product_id: true,
+          name: true,
+          description: true,
+          image_urls: true,
+          is_disabled: true,
+        },
+      },
+      ProductVariantOption: {
+        include: {
+          ProductOptionValue: {
+            select: {
+              option_value_id: true,
+              value: true,
+              ProductOption: {
+                select: {
+                  product_option_id: true,
+                  option_name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return productVariant
+}
+
+
+
 
 async function createProduct(client, name, description, image_urls, is_disabled) {
     return await client.product.create({
@@ -113,6 +153,7 @@ async function createProductVariantsWithOptions(client, productId, variants) {
 
 module.exports = {
     getProductById,
+    getProductVariantById,
     createProduct,
     createProductCategories,
     createProductOptionsWithValues,
