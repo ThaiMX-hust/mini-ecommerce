@@ -1,14 +1,16 @@
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { getProductById } from '../api/productApi'
+import { getProductById, getProductReviews } from '../api/productApi'
 import styles from './ProductDetailPage.module.css';
 
 import ImageGallery from '../components/ImageGallery/ImageGallery';
 import ProductInfo from '../components/ProductInfo/ProductInfo';
-
+import ProductReviews from '../components/ProductReviews/ProductReviews';
 
 // test
 import { mockProductData } from '../_mocks/mockProductData';
+import { mockReviewsData } from '../_mocks/mockReviewsData';
+
 
 const ProductDetailPage = () =>{
     const { productId } = useParams();
@@ -19,18 +21,26 @@ const ProductDetailPage = () =>{
     const [quantity, setQuantity] = useState (1);
     const [loading, setLoading] = useState (true);
     const [error, setError] = useState(null);
+    const [reviews, setReviews] = useState([]);
 
 
     // Uncomment phần này để dùng mock data
     useEffect(() => {
-    const fetchMockProductData = () => {
+    const fetchMockData = () => {
       setLoading(true);
       setError(null);
       setTimeout(() => {
-        const data = mockProductData;
-        setProductData(data);
-        if (data && data.variants && data.variants.length > 0) {
-          const initialVariant = data.variants[0];
+        // Lấy dữ liệu sản phẩm
+        const productData = mockProductData;
+        setProductData(productData);
+
+        // Lấy dữ liệu review
+        const reviewsData = mockReviewsData;
+        setReviews(reviewsData.reviews); // <-- THÊM DÒNG NÀY
+
+        // Khởi tạo variant mặc định (giữ nguyên)
+        if (productData && productData.variants && productData.variants.length > 0) {
+          const initialVariant = productData.variants[0];
           setActiveVariant(initialVariant);
           const initialSelections = {};
           initialVariant.options.forEach(opt => {
@@ -38,10 +48,12 @@ const ProductDetailPage = () =>{
           });
           setSelectedOptions(initialSelections);
         }
+        
         setLoading(false);
-      }, 500); // Giả lập độ trễ mạng 0.5 giây
+      }, 500);
     };
-    fetchMockProductData();
+
+    fetchMockData();
   }, [productId]);
 
 
@@ -51,9 +63,13 @@ const ProductDetailPage = () =>{
     //         try{
     //             setLoading(true);
     //             setError(null);
-    //             const response = await getProductById(productId);
-    //             const data = response.data;
+    //             const [productResponse, reviewsResponse] = await Promise.all([
+    //             getProductById(productId),
+    //             getProductReviews(productId)
+    //             ]);
+    //             const data = productResponse.data;
     //             setProductData(data);
+    //             setReviews(reviewsResponse.data.reviews);
     //             if(data.variants && data.variants.length > 0){
     //                 const initialVariant = data.variants[0];
     //                 setActiveVariant(initialVariant);
@@ -141,6 +157,7 @@ const ProductDetailPage = () =>{
                 onAddToCart={handleAddToCart}
             />
             </div>
+            <ProductReviews reviews={reviews} />
         </div>
     );
 };
