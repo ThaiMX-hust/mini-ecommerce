@@ -18,6 +18,9 @@ app.get('/api/v1/health', (req, res) => {
 app.use('/api/v1/users', require('./routes/users'));
 app.use('/api/v1/auth', require('./routes/auth'));
 
+app.use('/api/v1/cart', require('./routes/cart'));
+app.use('/api/v1/products', require('./routes/products'));
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

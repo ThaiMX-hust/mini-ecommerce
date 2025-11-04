@@ -14,12 +14,18 @@ async function loginUser(email, password) {
     }
 
     const token = jwt.sign(
-        { id: user.id, email: user.email },
+        {
+            user_id: user.user_id,
+            cart_id: user.Cart?.cart_id || null,
+            email: user.email,
+            role: user.role,
+        },
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
     );
 
-    const { hashedPassword, ...userWithoutPassword } = user;
+
+    const { password_hashed, ...userWithoutPassword } = user;
 
     return { token, user: userWithoutPassword };
 }
