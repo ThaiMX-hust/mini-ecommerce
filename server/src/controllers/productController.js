@@ -159,6 +159,21 @@ const deleteProduct = async (req, res) => {
     }
 }
 
+const deleteProductVariant = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const product_variant_id = req.params.product_variant_id;
+        const deletedVariant = await productService.deleteProductVariant(product_id, product_variant_id);
+        if (!deletedVariant) {
+            return res.status(404).json({ error: 'Product or variant not found' });
+        }
+        return res.status(204).send();
+    } catch (error) {
+        console.error('Error deleting variant:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 module.exports = {
     getProducts,
     getProductById,
@@ -166,5 +181,6 @@ module.exports = {
     updateProduct,
     updateProductOption,
     updateProductVariant,
-    deleteProduct
+    deleteProduct,
+    deleteProductVariant
 };

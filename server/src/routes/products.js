@@ -14,5 +14,6 @@ router.patch('/:product_id', authenticate, requireAdmin, upload.array('variants_
 router.patch('/:product_id/options/:product_option_id', authenticate, requireAdmin, productController.updateProductOption);
 router.patch('/:product_id/variants/:product_variant_id', authenticate, requireAdmin, upload.array('variants_images'), productController.updateProductVariant);
 router.delete('/:product_id', authenticate, requireAdmin, productController.deleteProduct);
+router.delete('/:product_id/variants/:product_variant_id', authenticate, requireAdmin, productController.deleteProductVariant);
 
 module.exports = router;

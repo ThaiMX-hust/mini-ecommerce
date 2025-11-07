@@ -323,6 +323,12 @@ async function deleteProduct(product_id) {
     });
 }
 
+async function deleteProductVariant(client, product_variant_id) {
+    return await client.productVariant.delete({
+        where: { product_variant_id }
+    });
+}
+
 module.exports = {
     getPrismaClientInstance,
     getProducts,
@@ -336,5 +342,6 @@ module.exports = {
     updateProduct,
     deleteProduct,
     updateProductOption,
-    updateProductVariant
+    updateProductVariant,
+    deleteProductVariant
 };

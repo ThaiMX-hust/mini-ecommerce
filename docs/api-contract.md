@@ -719,8 +719,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Response:
   - 204 No Content
   - 401 Unauthorized: { "error": "Unauthorized" }
-  - 404 Not Found: { "error": "Product not found" }
-  - 404 Not Found: {"error": "Product variant not found"}
+  - 404 Not Found: { "error": "Product or variant not found" }
 
 ## 4. Giỏ hàng
 

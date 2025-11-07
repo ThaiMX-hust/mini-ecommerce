@@ -238,6 +238,16 @@ async function deleteProduct(product_id) {
     return await productRepository.deleteProduct(product_id);
 }
 
+async function deleteProductVariant(product_id, product_variant_id) {
+    const prisma = productRepository.getPrismaClientInstance();
+    const productVariant = await productRepository.getProductVariantById(prisma, product_variant_id);
+
+    if (productVariant.product_id !== product_id)
+        return null;
+
+    return await productRepository.deleteProductVariant(prisma, product_variant_id);
+}
+
 module.exports = {
     getProducts,
     getProductById,
@@ -245,5 +255,6 @@ module.exports = {
     updateProduct,
     updateProductOption,
     updateProductVariant,
-    deleteProduct
+    deleteProduct,
+    deleteProductVariant
 };
