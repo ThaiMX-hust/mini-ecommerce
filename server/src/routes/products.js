@@ -17,5 +17,7 @@ router.delete('/:product_id', authenticate, requireAdmin, productController.dele
 router.delete('/:product_id/variants/:product_variant_id', authenticate, requireAdmin, productController.deleteProductVariant);
 router.post('/:product_id/reviews', authenticate, productController.addReview);
 router.get('/:product_id/reviews', productController.getReviews);
+router.get('/:product_id/soft-delete', authenticate, requireAdmin, productController.softDelete);
+router.get('/:product_id/restore', authenticate, requireAdmin, productController.restore);
 
 module.exports = router;

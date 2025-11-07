@@ -205,7 +205,35 @@ const getReviews = async (req, res) => {
         }
         return res.status(200).json(reviews);
     } catch (error) {
-        console.error('Error adding review:', error);
+        console.error('Error getting review:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const softDelete = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const result = await productService.softDelete(product_id);
+        if (!result) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error('Error soft deleting product:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const restore = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const result = await productService.restore(product_id);
+        if (!result) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error('Error restoring product:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
@@ -220,5 +248,7 @@ module.exports = {
     deleteProduct,
     deleteProductVariant,
     addReview,
-    getReviews
+    getReviews,
+    softDelete,
+    restore
 };

@@ -6,7 +6,7 @@ function getPrismaClientInstance(){
     return prisma;
 }
 
-async function getProducts(query, getDisabled = false, client = prisma) {
+async function getProducts(query, getDisabled = false, getDeleted = false, client = prisma) {
     const { name, categories, min_price, max_price, page, limit } = query;
     const where = {
         AND: [
@@ -14,7 +14,8 @@ async function getProducts(query, getDisabled = false, client = prisma) {
             categories && categories.length > 0 ? { ProductCategories: { some: { category_id: { in: categories } } } } : {},
             min_price ? { ProductVariant: { some: { raw_price: { gte: min_price } } } } : {},
             max_price ? { ProductVariant: { some: { raw_price: { lte: max_price } } } } : {},
-            !getDisabled ? { is_disabled: false } : {} 
+            !getDisabled ? { is_disabled: false } : {},
+            !getDeleted ? { deleted_at: null } : {}
         ]
     };
 
@@ -35,12 +36,13 @@ async function getProducts(query, getDisabled = false, client = prisma) {
     return { total_items: count, products };
 }
 
-async function getProductById(productId, getDisabled = false, client = prisma) {
+async function getProductById(productId, getDisabled = false, getDeleted = false, client = prisma) {
     const product = await client.product.findFirst({
         where: {
             AND: [
                 { product_id: productId },
-                !getDisabled ? { is_disabled: false } : {}
+                !getDisabled ? { is_disabled: false } : {},
+                !getDeleted ? { deleted_at: null } : {}
             ]
         },
         include: {
@@ -351,6 +353,25 @@ async function getReviewsWithUserInfo(product_id, client = prisma) {
     });
 }
 
+async function softDelete(product_id, client = prisma) {
+    return await client.product.update({
+        where: { product_id },
+        data: {
+            deleted_at: new Date()
+        }
+    });
+}
+
+async function restore(product_id, client = prisma) {
+    return await client.product.update({
+        where: { product_id },
+        data: {
+            deleted_at: null,
+            restored_at: new Date()
+        }
+    });
+}
+
 module.exports = {
     getPrismaClientInstance,
     getProducts,
@@ -367,5 +388,7 @@ module.exports = {
     updateProductVariant,
     deleteProductVariant,
     addReview,
-    getReviewsWithUserInfo
+    getReviewsWithUserInfo,
+    softDelete,
+    restore
 };

@@ -3,7 +3,7 @@ const userService = require('../services/userService');
 
 async function getProducts(query, isAdmin) {
     const { name, categories, min_price, max_price, page, limit } = query;
-    const { total_items, products } = await productRepository.getProducts({ name, categories, min_price, max_price, page, limit }, isAdmin);
+    const { total_items, products } = await productRepository.getProducts({ name, categories, min_price, max_price, page, limit }, isAdmin, isAdmin);
     const total_pages = Math.ceil(total_items / limit);
     const items = products.map(product => ({
         product_id: product.product_id,
@@ -25,7 +25,7 @@ async function getProducts(query, isAdmin) {
 }
 
 async function getProductById(product_id, isAdmin) {
-    const product = await productRepository.getProductById(product_id, isAdmin);
+    const product = await productRepository.getProductById(product_id, isAdmin, isAdmin);
     if (!product)
         return null;
 
@@ -299,6 +299,30 @@ async function getReviews(product_id) {
     };
 }
 
+async function softDelete(product_id) {
+    const product = await productRepository.softDelete(product_id);
+    if (!product)
+        return null;
+
+    return {
+        product_id: product.product_id,
+        is_deleted: true,
+        deleted_at: product.deleted_at
+    };
+}
+
+async function restore(product_id) {
+    const product = await productRepository.restore(product_id);
+    if (!product)
+        return null;
+
+    return {
+        product_id: product.product_id,
+        is_deleted: false,
+        restored_at: product.restored_at
+    };
+}
+
 module.exports = {
     getProducts,
     getProductById,
@@ -309,5 +333,7 @@ module.exports = {
     deleteProduct,
     deleteProductVariant,
     addReview,
-    getReviews
+    getReviews,
+    softDelete,
+    restore
 };

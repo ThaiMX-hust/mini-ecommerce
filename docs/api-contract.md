@@ -674,7 +674,6 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Method: GET
 - URL: /api/v1/products/{product_id}/soft-delete
 - Headers: Authorization: Bearer {admin_token}
-- Content-Type: application/json
 
 - Response:
 
@@ -695,7 +694,6 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Method: GET
 - URL: /api/v1/products/{product_id}/restore
 - Headers: Authorization: Bearer {admin_token}
-- Content-Type: application/json
 
 - Response:
 
