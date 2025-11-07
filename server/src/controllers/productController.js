@@ -174,6 +174,42 @@ const deleteProductVariant = async (req, res) => {
     }
 }
 
+const addReview = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const by_user_id = req.user.user_id;
+        const { rating, comment } = req.body;
+
+        if (!rating || !comment) {
+            return res.status(400).json({ error: 'Missing or invalid fields' });
+        }
+
+        const review = { rating, comment, by_user_id };
+        const result = await productService.addReview(product_id, review);
+        if (!result) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        return res.status(201).json(result);
+    } catch (error) {
+        console.error('Error adding review:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const getReviews = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const reviews = await productService.getReviews(product_id);
+        if (!reviews) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        return res.status(200).json(reviews);
+    } catch (error) {
+        console.error('Error adding review:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 module.exports = {
     getProducts,
     getProductById,
@@ -182,5 +218,7 @@ module.exports = {
     updateProductOption,
     updateProductVariant,
     deleteProduct,
-    deleteProductVariant
+    deleteProductVariant,
+    addReview,
+    getReviews
 };

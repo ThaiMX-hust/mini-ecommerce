@@ -6,7 +6,7 @@ function getPrismaClientInstance(){
     return prisma;
 }
 
-async function getProducts(query, getDisabled) {
+async function getProducts(query, getDisabled = false, client = prisma) {
     const { name, categories, min_price, max_price, page, limit } = query;
     const where = {
         AND: [
@@ -18,8 +18,8 @@ async function getProducts(query, getDisabled) {
         ]
     };
 
-    const count = await prisma.product.count({ where });
-    const products = await prisma.product.findMany({
+    const count = await client.product.count({ where });
+    const products = await client.product.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
@@ -35,8 +35,8 @@ async function getProducts(query, getDisabled) {
     return { total_items: count, products };
 }
 
-async function getProductById(productId, getDisabled) {
-    const product = await prisma.product.findFirst({
+async function getProductById(productId, getDisabled = false, client = prisma) {
+    const product = await client.product.findFirst({
         where: {
             AND: [
                 { product_id: productId },
@@ -329,6 +329,28 @@ async function deleteProductVariant(client, product_variant_id) {
     });
 }
 
+async function addReview(product_id, review, client = prisma) {
+    const { rating, comment, by_user_id } = review;
+    return await client.review.create({
+        data: { product_id, rating, comment, by_user_id }
+    });
+}
+
+async function getReviewsWithUserInfo(product_id, client = prisma) {
+    return await client.review.findMany({
+        where: { product_id },
+        orderBy: { created_at: 'desc' },
+        include: { user: {
+            select: {
+                user_id: true,
+                first_name: true,
+                last_name: true,
+                avatar_url: true
+            }
+        }}
+    });
+}
+
 module.exports = {
     getPrismaClientInstance,
     getProducts,
@@ -343,5 +365,7 @@ module.exports = {
     deleteProduct,
     updateProductOption,
     updateProductVariant,
-    deleteProductVariant
+    deleteProductVariant,
+    addReview,
+    getReviewsWithUserInfo
 };

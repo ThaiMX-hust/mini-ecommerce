@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const userService = require('./userService');
+const userRepository = require('../repositories/userRepository');
+
+async function getUserHashedPassword(user_id) {
+    return await userRepository.getUserHashedPassword(user_id);
+}
 
 async function loginUser(email, password) {
     const user = await userService.getUserByEmail(email);
@@ -8,7 +13,8 @@ async function loginUser(email, password) {
         return null;
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    const password_hash = await getUserHashedPassword(user.user_id);
+    const isPasswordValid = await bcrypt.compare(password, password_hash);
     if (!isPasswordValid) {
         return null;
     }
@@ -24,10 +30,13 @@ async function loginUser(email, password) {
         { expiresIn: '1h' }
     );
 
-
-    const { password_hashed, ...userWithoutPassword } = user;
-
-    return { token, user: userWithoutPassword };
+    return { token, user: {
+        user_id: user.user_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        avatar_url: user.avatar_url
+    } };
 }
 
 module.exports = {

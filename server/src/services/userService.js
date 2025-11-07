@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
-const { PrismaClient } = require('@prisma/client');
+const userRepository = require('../repositories/userRepository');
 
-const prisma = new PrismaClient();
+const {PrismaClient} = require('@prisma/client');
+
+const prisma = new PrismaClient()
 
 async function registerUser(userData) {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
@@ -36,8 +38,7 @@ async function registerUser(userData) {
     })
 
     return {
-        user: newUser,
-        cart: newCart
+        user: newUser
     };
 }
 
@@ -68,20 +69,17 @@ async function registerAdmin(userData){
     return newUser;
 }
 
+async function getUserById(user_id) {
+    return await userRepository.getUserById(user_id);
+}
+
 async function getUserByEmail(email) {
-    const user = await prisma.user.findUnique({
-        where: { email },
-        include: {
-            Cart: {
-                select: {cart_id: true}
-            }
-        }
-    });
-    return user;
+    return await userRepository.getUserByEmail(email);
 }
 
 module.exports = {
     registerUser,
     registerAdmin,
+    getUserById,
     getUserByEmail
 };

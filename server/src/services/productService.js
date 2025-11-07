@@ -1,4 +1,5 @@
 const productRepository = require('../repositories/productRepository');
+const userService = require('../services/userService');
 
 async function getProducts(query, isAdmin) {
     const { name, categories, min_price, max_price, page, limit } = query;
@@ -20,7 +21,7 @@ async function getProducts(query, isAdmin) {
         total_pages,
         total_items,
         items
-    }
+    };
 }
 
 async function getProductById(product_id, isAdmin) {
@@ -248,6 +249,56 @@ async function deleteProductVariant(product_id, product_variant_id) {
     return await productRepository.deleteProductVariant(prisma, product_variant_id);
 }
 
+async function addReview(product_id, review) {
+    const product = productRepository.getProductById(product_id);
+    if (!product)
+        return null;
+
+    const user = await userService.getUserById(review.by_user_id);
+    if (!user)
+        return null;
+
+    const result = await productRepository.addReview(product_id, review);
+
+    return {
+        review_id: result.review_id,
+        product_id: result.product_id,
+        user: {
+            user_id: user.user_id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            avatar_url: user.avatar_url
+        },
+        rating: result.rating,
+        comment: result.comment,
+        created_at: result.created_at
+    };
+}
+
+async function getReviews(product_id) {
+    const product = await productRepository.getProductById(product_id);
+    if (!product)
+        return null;
+
+    const reviews = await productRepository.getReviewsWithUserInfo(product_id);
+
+    return {
+        reviews: reviews.map(r => ({
+            review_id: r.review_id,
+            product_id: r.product_id,
+            user: {
+                user_id: r.user.user_id,
+                first_name: r.user.first_name,
+                last_name: r.user.last_name,
+                avatar_url: r.user.avatar_url
+            },
+            rating: r.rating,
+            comment: r.comment,
+            created_at: r.created_at
+        }))
+    };
+}
+
 module.exports = {
     getProducts,
     getProductById,
@@ -256,5 +307,7 @@ module.exports = {
     updateProductOption,
     updateProductVariant,
     deleteProduct,
-    deleteProductVariant
+    deleteProductVariant,
+    addReview,
+    getReviews
 };
