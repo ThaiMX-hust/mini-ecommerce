@@ -8,9 +8,10 @@ const upload = require('../middleware/upload');
 
 
 router.get('/', authenticateOptional, productController.getProducts);
-router.get('/:productId', authenticateOptional, productController.getProductById);
+router.get('/:product_id', authenticateOptional, productController.getProductById);
 router.post('/', authenticate, requireAdmin, upload.array('variants_images'), productController.addProduct);
-router.patch('/:productId', authenticate, requireAdmin, upload.array('variants_images'), productController.updateProduct);
-router.delete('/:productId', authenticate, requireAdmin, productController.deleteProduct);
+router.patch('/:product_id', authenticate, requireAdmin, upload.array('variants_images'), productController.updateProduct);
+router.patch('/:product_id/options/:product_option_id', authenticate, requireAdmin, productController.updateProductOption);
+router.delete('/:product_id', authenticate, requireAdmin, productController.deleteProduct);
 
 module.exports = router;

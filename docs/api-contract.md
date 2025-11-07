@@ -588,7 +588,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 
   - 400 Bad Request { "error": "Missing or invalid fields" }
   - 401 Unauthorized { "error": "Unauthorized" }
-  - 404 Not Found { "error": "Variant not found" }
+  - 404 Not Found { "error": "Product or option not found" }
 
 ### 3.8 Cập nhật một variant của sản phẩm
 

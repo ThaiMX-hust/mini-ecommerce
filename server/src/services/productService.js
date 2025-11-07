@@ -23,8 +23,8 @@ async function getProducts(query, isAdmin) {
     }
 }
 
-async function getProductById(productId, isAdmin) {
-    const product = await productRepository.getProductById(productId, isAdmin);
+async function getProductById(product_id, isAdmin) {
+    const product = await productRepository.getProductById(product_id, isAdmin);
     if (!product)
         return null;
 
@@ -151,13 +151,13 @@ async function addProduct(productData) {
     });
 }
 
-async function updateProduct(productId, productData) {
+async function updateProduct(product_id, productData) {
     const { name, description, categories, is_disabled, variant_images } = productData;
 
     const image_urls = [];
-    const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) => {
-        return await productRepository.updateProduct(tx, productId, { name, description, categories, is_disabled, image_urls });
-    });
+    const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) => 
+        await productRepository.updateProduct(tx, product_id, { name, description, categories, is_disabled, image_urls })
+    );
 
     return {
         product_id: updatedProduct.product_id,
@@ -171,8 +171,34 @@ async function updateProduct(productId, productData) {
     }
 }
 
-async function deleteProduct(productId) {
-    return await productRepository.deleteProduct(productId);
+async function updateProductOption(product_id, product_option_id, optionData) {
+    const { option_name, value } = optionData;
+
+    const prisaClient = productRepository.getPrismaClientInstance();
+
+    const product = await productRepository.getProductById(product_id);
+    if (!product)
+        return null;
+    
+    const productOption = await productRepository.getProductOptionById(prisaClient, product_option_id);
+    if (!productOption || productOption.product_id !== product_id)
+        return null;
+
+    const updatedProductOption = await prisaClient.$transaction(async (tx) => {
+        return await productRepository.updateProductOption(tx, product_option_id, option_name, value);
+    });
+
+    return {
+        product_id: updatedProductOption.product_id,
+        option_name: updatedProductOption.option_name,
+        value: updatedProductOption.ProductOptionValue.map(pov => pov.value),
+        created_at: updatedProductOption.created_at,
+        updated_at: updatedProductOption.updated_at
+    }
+}
+
+async function deleteProduct(product_id) {
+    return await productRepository.deleteProduct(product_id);
 }
 
 module.exports = {
@@ -180,5 +206,6 @@ module.exports = {
     getProductById,
     addProduct,
     updateProduct,
+    updateProductOption,
     deleteProduct
 };
