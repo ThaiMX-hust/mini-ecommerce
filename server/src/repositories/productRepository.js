@@ -104,6 +104,51 @@ async function getProductOptionById(client, product_option_id) {
     });
 }
 
+async function getProductOptions(client, product_id) {
+    const product = await client.product.findUnique({
+        where: { product_id },
+        include: { ProductOption: { include: { ProductOptionValue: true } } }
+    });
+
+    return product?.ProductOption;
+}
+
+// Need transaction
+async function updateProductVariant(client, product_variant_id, variantData) {
+    const { sku, raw_price, stock_quantity, image_urls, options } = variantData;
+    const productVariant = await client.productVariant.update({
+        where: { product_variant_id },
+        data: {
+            ...(sku && { sku }),
+            ...(raw_price && { raw_price }),
+            ...(stock_quantity && { stock_quantity }),
+            ...(image_urls && {image_urls})
+        }
+    });
+
+    if (Array.isArray(options) && options.length > 0) {
+        const productOptions = await getProductOptions(client, productVariant.product_id);
+        
+        // Delete options
+        await client.productVariantOption.deleteMany({
+            where: { product_variant_id }
+        });
+        console.log(productOptions);
+        // Add options
+        const optionValueIds = options.map(option =>
+            productOptions.find(po => po.product_option_id === option.product_option_id)
+                .ProductOptionValue.find(pov => pov.value === option.value)
+                .option_value_id
+        );
+        
+        await client.productVariantOption.createMany({
+            data: optionValueIds.map(option_value_id => ({ product_variant_id, option_value_id }))
+        });
+    }
+
+    return await getProductVariantById(client, product_variant_id);
+}
+
 // Need transaction
 async function updateProductOption(client, product_option_id, option_name, values) {
     await client.productOption.update({
@@ -111,7 +156,7 @@ async function updateProductOption(client, product_option_id, option_name, value
         data: option_name ? { option_name } : {}
     });
 
-    if (Array.isArray(values)) {
+    if (Array.isArray(values) && values.length > 0) {
         const existingValues = await client.productOptionValue.findMany({
             where: { product_option_id },
         });
@@ -290,5 +335,6 @@ module.exports = {
     createProductVariantsWithOptions,
     updateProduct,
     deleteProduct,
-    updateProductOption
+    updateProductOption,
+    updateProductVariant
 };

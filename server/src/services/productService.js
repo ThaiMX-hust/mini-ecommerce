@@ -174,17 +174,17 @@ async function updateProduct(product_id, productData) {
 async function updateProductOption(product_id, product_option_id, optionData) {
     const { option_name, value } = optionData;
 
-    const prisaClient = productRepository.getPrismaClientInstance();
+    const prismaClient = productRepository.getPrismaClientInstance();
 
     const product = await productRepository.getProductById(product_id);
     if (!product)
         return null;
     
-    const productOption = await productRepository.getProductOptionById(prisaClient, product_option_id);
+    const productOption = await productRepository.getProductOptionById(prismaClient, product_option_id);
     if (!productOption || productOption.product_id !== product_id)
         return null;
 
-    const updatedProductOption = await prisaClient.$transaction(async (tx) => {
+    const updatedProductOption = await prismaClient.$transaction(async (tx) => {
         return await productRepository.updateProductOption(tx, product_option_id, option_name, value);
     });
 
@@ -194,7 +194,44 @@ async function updateProductOption(product_id, product_option_id, optionData) {
         value: updatedProductOption.ProductOptionValue.map(pov => pov.value),
         created_at: updatedProductOption.created_at,
         updated_at: updatedProductOption.updated_at
-    }
+    };
+}
+
+async function updateProductVariant(product_id, product_variant_id, variantData) {
+    const { sku, raw_price, stock_quantity, image_indexes, options, variant_images } = variantData;
+
+    const prismaClient = productRepository.getPrismaClientInstance();
+
+    const product = await productRepository.getProductById(product_id);
+    if (!product)
+        return null;
+    
+    const productVariant = await productRepository.getProductVariantById(prismaClient, product_variant_id);
+    if (!productVariant || productVariant.product_id !== product_id)
+        return null;
+
+    const image_urls = [];  // TODO: upload images
+    const newData = { sku, raw_price, stock_quantity, image_urls, options };
+
+    const updatedProductVariant = await prismaClient.$transaction(async (tx) => {
+        return await productRepository.updateProductVariant(tx, product_variant_id, newData);
+    });
+
+    return {
+        product_variant_id: updatedProductVariant.product_variant_id,
+        product_id: updatedProductVariant.product_id,
+        sku: updatedProductVariant.sku,
+        raw_price: updatedProductVariant.raw_price,
+        stock_quantity: updatedProductVariant.stock_quantity,
+        image_urls: updatedProductVariant.image_urls,
+        options: updatedProductVariant.ProductVariantOption.map(pvo => ({
+            product_option_id: pvo.ProductOptionValue.ProductOption.product_option_id,
+            option_name: pvo.ProductOptionValue.ProductOption.option_name,
+            value: pvo.ProductOptionValue.value
+        })),
+        created_at: updatedProductVariant.created_at,
+        updated_at: updatedProductVariant.updated_at
+    };
 }
 
 async function deleteProduct(product_id) {
@@ -207,5 +244,6 @@ module.exports = {
     addProduct,
     updateProduct,
     updateProductOption,
+    updateProductVariant,
     deleteProduct
 };

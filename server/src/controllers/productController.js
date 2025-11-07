@@ -115,6 +115,36 @@ const updateProductOption = async (req, res) => {
     }
 }
 
+const updateProductVariant = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const product_variant_id = req.params.product_variant_id;
+        
+        let { sku, raw_price, stock_quantity, image_indexes, options } = req.body;
+
+        try {
+            raw_price = raw_price ? Number(raw_price) : null;
+            stock_quantity = stock_quantity ? parseInt(stock_quantity) : null;
+            image_indexes = image_indexes ? JSON.parse(image_indexes) : null;
+            options = options ? JSON.parse(options) : null;
+        } catch (error) {
+            return res.status(400).json({ "error": "Missing or invalid fields" });
+        }
+
+        const variantData = { sku, raw_price, stock_quantity, image_indexes, options };
+        variantData.variant_images = req.files;
+        
+        const updatedVariant = await productService.updateProductVariant(product_id, product_variant_id, variantData);
+        if (!updatedVariant) {
+            return res.status(404).json({ error: 'Product or variant not found' });
+        }
+        return res.status(200).json(updatedVariant);
+    } catch (error) {
+        console.error('Error updating product variant:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 const deleteProduct = async (req, res) => {
     try {
         const product_id = req.params.productId;
@@ -135,5 +165,6 @@ module.exports = {
     addProduct,
     updateProduct,
     updateProductOption,
+    updateProductVariant,
     deleteProduct
 };
