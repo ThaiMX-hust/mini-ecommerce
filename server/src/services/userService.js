@@ -37,8 +37,15 @@ async function registerUser(userData) {
         }
     })
 
-    return {
-        user: newUser
+     return {
+        user: {
+            user_id: newUser.user_id,
+            cart_id: newCart.cart_id || null, 
+            first_name: newUser.first_name,
+            last_name: newUser.last_name,
+            email: newUser.email,
+            avatar_url: newUser.avatar_url
+        }
     };
 }
 

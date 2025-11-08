@@ -3,6 +3,10 @@ const productRepository = require("./productRepository")
 
 const prisma = new PrismaClient();
 
+function getPrismaClientInstance() {
+  return prisma;
+}
+
 async function getAllCartItems(cart_id) {
   const cart_items = await prisma.cartItems.findMany({
     where: { cart_id },
@@ -63,7 +67,7 @@ async function checkProductVariantExistenceInCart(cart_id, product_variant_id) {
 }
 
 
-async function updateItemToCartById(cart_id, cart_item_id, quantity = 1) {
+async function addExistingItemToCartById(cart_id, cart_item_id, quantity = 1) {
     const currentItem = await getCartItemFromCartId(cart_id, cart_item_id);
     if (!currentItem) throw new Error('Cart item not found');
 
@@ -88,10 +92,32 @@ async function updateItemToCartById(cart_id, cart_item_id, quantity = 1) {
     return updatedItem;
 }
 
+async function updateItemQuantityFromCartById(cart_id, cart_item_id, quantity){
+    const currentItem = await getCartItemFromCartId(cart_id, cart_item_id);
 
-async function addItemToCartById(cart_id, product_variant_id, quantity = 1) {
+    if (quantity <= 0) {
+        deleteItemFromCartById(cart_id, cart_item_id) 
+        return null
+    }
+
+    const raw_subtotal = currentItem.raw_unit_price * quantity;
+    const final_subtotal = currentItem.final_unit_price * quantity;
+
+    const updatedItem = await prisma.cartItems.update({
+        where: { cart_item_id },
+        data: {
+        quantity: quantity,
+        raw_subtotal,
+        final_subtotal,
+        },
+    });
+
+    return updatedItem;
+}
+
+
+async function addNewItemToCartById(cart_id, product_variant_id, quantity = 1) {
   const productVariant = await productRepository.getProductVariantById(prisma, product_variant_id);
-  if (!productVariant) throw new Error("Product variant not found");
 
   const rawUnitPrice = Number(productVariant.raw_price);
   const finalUnitPrice = Number(productVariant.final_price ?? rawUnitPrice);
@@ -144,9 +170,9 @@ async function addItemToCartById(cart_id, product_variant_id, quantity = 1) {
     })) ?? [];
 
   const response = {
-    cart_item_id: createdItem.cart_item_id,
-    quantity: createdItem.quantity,
-    product: {
+      cart_item_id: createdItem.cart_item_id,
+      quantity: createdItem.quantity,
+      product: {
       product_id: variant.Product.product_id,
       name: variant.Product.name,
       description: variant.Product.description,
@@ -190,13 +216,40 @@ async function getCartFromUserId(user_id){
     return cart
 }
 
+async function getCartItem(cart_id, cart_item_id){
+  const cartItem = await prisma.cartItems.findFirst({
+    where: {
+      cart_id: cart_id,
+      cart_item_id: cart_item_id
+    }
+  })
+
+  return cartItem
+}
+
+async function getCartItems(cart_id){
+  const cartItems = await prisma.cartItems.findMany({
+    where: {cart_id: cart_id}
+  })
+
+  if(!cartItems) {
+    throw new Error("This cart_id does not exist or has been deleted")
+  }
+
+  return cartItems
+}
+
 
 module.exports = {
+    getPrismaClientInstance,
     getAllCartItems,
     getCartItemFromCartId,
     checkProductVariantExistenceInCart,
-    updateItemToCartById,
-    addItemToCartById,
+    addExistingItemToCartById,
+    addNewItemToCartById,
+    updateItemQuantityFromCartById,
     deleteItemFromCartById,
-    getCartFromUserId
+    getCartFromUserId,
+    getCartItem,
+    getCartItems
 }

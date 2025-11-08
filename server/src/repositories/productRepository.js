@@ -57,7 +57,7 @@ async function getProductById(productId, getDisabled = false, getDeleted = false
     return product;
 }
 
-async function getProductVariantById(client = prisma, product_variant_id) {
+async function getProductVariantById(client, product_variant_id) {
   const productVariant = await client.productVariant.findUnique({
     where: { product_variant_id },
     include: {
