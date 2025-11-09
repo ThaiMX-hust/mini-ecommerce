@@ -5,4 +5,7 @@ model ProductOption {
     product_id         String
     Product            Product              @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
     ProductOptionValue ProductOptionValue[]
+
+    created_at         DateTime  @default(now())
+    updated_at         DateTime  @updatedAt @default(now())
 }

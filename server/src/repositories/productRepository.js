@@ -1,12 +1,12 @@
-const { PrismaClient } = require("@prisma/client")
+const { PrismaClient } = require("@prisma/client");
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 function getPrismaClientInstance(){
-    return prisma
+    return prisma;
 }
 
-async function getProducts(query, isAdmin) {
+async function getProducts(query, getDisabled = false, getDeleted = false, client = prisma) {
     const { name, categories, min_price, max_price, page, limit } = query;
     const where = {
         AND: [
@@ -14,12 +14,13 @@ async function getProducts(query, isAdmin) {
             categories && categories.length > 0 ? { ProductCategories: { some: { category_id: { in: categories } } } } : {},
             min_price ? { ProductVariant: { some: { raw_price: { gte: min_price } } } } : {},
             max_price ? { ProductVariant: { some: { raw_price: { lte: max_price } } } } : {},
-            !isAdmin ? { is_disabled: false } : {} 
+            !getDisabled ? { is_disabled: false } : {},
+            !getDeleted ? { deleted_at: null } : {}
         ]
     };
 
-    const count = await prisma.product.count({ where });
-    const products = await prisma.product.findMany({
+    const count = await client.product.count({ where });
+    const products = await client.product.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
@@ -35,26 +36,26 @@ async function getProducts(query, isAdmin) {
     return { total_items: count, products };
 }
 
-async function getProductById(productId, isAdmin) {
-    const product = await prisma.product.findFirst({
+async function getProductById(productId, getDisabled = false, getDeleted = false, client = prisma) {
+    const product = await client.product.findFirst({
         where: {
             AND: [
                 { product_id: productId },
-                !isAdmin ? { is_disabled: false } : {}
+                !getDisabled ? { is_disabled: false } : {},
+                !getDeleted ? { deleted_at: null } : {}
             ]
         },
         include: {
             ProductCategories: true,
             ProductOption: { include: { ProductOptionValue: true } },
             ProductVariant: {
-                where: !isAdmin ? { is_disabled: false } : {},
+                where: !getDisabled ? { is_disabled: false } : {},
                 include: { ProductVariantOption: { include: { ProductOptionValue: true } } }
             }
         }
     });
     return product;
 }
-
 
 async function getProductVariantById(client = prisma, product_variant_id) {
   const productVariant = await client.productVariant.findUnique({
@@ -91,8 +92,105 @@ async function getProductVariantById(client = prisma, product_variant_id) {
   return productVariant
 }
 
+async function getProductOptionById(client, product_option_id) {
+    return await client.productOption.findUnique({
+        where: { product_option_id },
+        include: {
+            ProductOptionValue: {
+                select: {
+                    option_value_id: true,
+                    value: true
+                }
+            }
+        }
+    });
+}
 
+async function getProductOptions(client, product_id) {
+    const product = await client.product.findUnique({
+        where: { product_id },
+        include: { ProductOption: { include: { ProductOptionValue: true } } }
+    });
 
+    return product?.ProductOption;
+}
+
+// Need transaction
+async function updateProductVariant(client, product_variant_id, variantData) {
+    const { sku, raw_price, stock_quantity, image_urls, options } = variantData;
+    const productVariant = await client.productVariant.update({
+        where: { product_variant_id },
+        data: {
+            ...(sku && { sku }),
+            ...(raw_price && { raw_price }),
+            ...(stock_quantity && { stock_quantity }),
+            ...(image_urls && {image_urls})
+        }
+    });
+
+    if (Array.isArray(options) && options.length > 0) {
+        const productOptions = await getProductOptions(client, productVariant.product_id);
+        
+        // Delete options
+        await client.productVariantOption.deleteMany({
+            where: { product_variant_id }
+        });
+        console.log(productOptions);
+        // Add options
+        const optionValueIds = options.map(option =>
+            productOptions.find(po => po.product_option_id === option.product_option_id)
+                .ProductOptionValue.find(pov => pov.value === option.value)
+                .option_value_id
+        );
+        
+        await client.productVariantOption.createMany({
+            data: optionValueIds.map(option_value_id => ({ product_variant_id, option_value_id }))
+        });
+    }
+
+    return await getProductVariantById(client, product_variant_id);
+}
+
+// Need transaction
+async function updateProductOption(client, product_option_id, option_name, values) {
+    await client.productOption.update({
+        where: { product_option_id },
+        data: option_name ? { option_name } : {}
+    });
+
+    if (Array.isArray(values) && values.length > 0) {
+        const existingValues = await client.productOptionValue.findMany({
+            where: { product_option_id },
+        });
+        const existingValueStrings = existingValues.map(v => v.value);
+
+        // Add new value
+        const valuesToAdd = values.filter(v => !existingValueStrings.includes(v));
+        await client.productOptionValue.createMany({
+            data: valuesToAdd.map(v => ({ product_option_id, value: v })),
+            skipDuplicates: true
+        });
+
+        // Delete unused values
+        const valuesToDelete = existingValues.filter(v => !values.includes(v.value)).map(v => v.option_value_id);
+        if (valuesToDelete.length > 0) {
+            const usedIds = await client.productVariantOption.findMany({
+                where: { option_value_id: { in: valuesToDelete } },
+                select: { option_value_id: true },
+            }).then(res => res.map(r => r.option_value_id));
+        
+            const safeToDelete = valuesToDelete.filter(id => !usedIds.includes(id));
+
+            if (safeToDelete.length > 0) {
+                await client.productOptionValue.deleteMany({
+                    where: { option_value_id: { in: safeToDelete } }
+                });
+            }
+        }
+    }
+
+    return await getProductOptionById(client, product_option_id);
+}
 
 async function createProduct(client, name, description, image_urls, is_disabled) {
     return await client.product.create({
@@ -192,7 +290,7 @@ async function createProductVariantsWithOptions(client, productId, variants) {
 }
 
 // Need transaction
-async function updateProduct(productId, productData) {
+async function updateProduct(client, product_id, productData) {
     const { name, description, categories, is_disabled, image_urls } = productData;
     const data = {};
     if (name) data.name = name;
@@ -201,12 +299,12 @@ async function updateProduct(productId, productData) {
     if (image_urls) data.image_urls = image_urls;
 
     if (categories) {
-        await prisma.productCategories.deleteMany({ where: { product_id: productId } });
-        await createProductCategories(client, productId, categories);
+        await client.productCategories.deleteMany({ where: { product_id: product_id } });
+        await createProductCategories(client, product_id, categories);
     }
 
-    return await prisma.product.update({
-        where: { product_id: productId },
+    return await client.product.update({
+        where: { product_id: product_id },
         data,
         select: {
             product_id: true,
@@ -221,9 +319,56 @@ async function updateProduct(productId, productData) {
     });
 }
 
-async function deleteProduct(productId) {
+async function deleteProduct(product_id) {
     return await prisma.product.delete({
-        where: { product_id: productId }
+        where: { product_id: product_id }
+    });
+}
+
+async function deleteProductVariant(client, product_variant_id) {
+    return await client.productVariant.delete({
+        where: { product_variant_id }
+    });
+}
+
+async function addReview(product_id, review, client = prisma) {
+    const { rating, comment, by_user_id } = review;
+    return await client.review.create({
+        data: { product_id, rating, comment, by_user_id }
+    });
+}
+
+async function getReviewsWithUserInfo(product_id, client = prisma) {
+    return await client.review.findMany({
+        where: { product_id },
+        orderBy: { created_at: 'desc' },
+        include: { user: {
+            select: {
+                user_id: true,
+                first_name: true,
+                last_name: true,
+                avatar_url: true
+            }
+        }}
+    });
+}
+
+async function softDelete(product_id, client = prisma) {
+    return await client.product.update({
+        where: { product_id },
+        data: {
+            deleted_at: new Date()
+        }
+    });
+}
+
+async function restore(product_id, client = prisma) {
+    return await client.product.update({
+        where: { product_id },
+        data: {
+            deleted_at: null,
+            restored_at: new Date()
+        }
     });
 }
 
@@ -232,10 +377,18 @@ module.exports = {
     getProducts,
     getProductById,
     getProductVariantById,
+    getProductOptionById,
     createProduct,
     createProductCategories,
     createProductOptionsWithValues,
     createProductVariantsWithOptions,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    updateProductOption,
+    updateProductVariant,
+    deleteProductVariant,
+    addReview,
+    getReviewsWithUserInfo,
+    softDelete,
+    restore
 };

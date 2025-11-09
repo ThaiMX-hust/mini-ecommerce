@@ -1,8 +1,9 @@
 const productRepository = require('../repositories/productRepository');
+const userService = require('../services/userService');
 
 async function getProducts(query, isAdmin) {
     const { name, categories, min_price, max_price, page, limit } = query;
-    const { total_items, products } = await productRepository.getProducts({ name, categories, min_price, max_price, page, limit }, isAdmin);
+    const { total_items, products } = await productRepository.getProducts({ name, categories, min_price, max_price, page, limit }, isAdmin, isAdmin);
     const total_pages = Math.ceil(total_items / limit);
     const items = products.map(product => ({
         product_id: product.product_id,
@@ -20,11 +21,11 @@ async function getProducts(query, isAdmin) {
         total_pages,
         total_items,
         items
-    }
+    };
 }
 
-async function getProductById(productId, isAdmin) {
-    const product = await productRepository.getProductById(productId, isAdmin);
+async function getProductById(product_id, isAdmin) {
+    const product = await productRepository.getProductById(product_id, isAdmin, isAdmin);
     if (!product)
         return null;
 
@@ -151,13 +152,13 @@ async function addProduct(productData) {
     });
 }
 
-async function updateProduct(productId, productData) {
+async function updateProduct(product_id, productData) {
     const { name, description, categories, is_disabled, variant_images } = productData;
 
     const image_urls = [];
-    const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) => {
-        return await productRepository.updateProduct(tx, productId, { name, description, categories, is_disabled, image_urls });
-    });
+    const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) => 
+        await productRepository.updateProduct(tx, product_id, { name, description, categories, is_disabled, image_urls })
+    );
 
     return {
         product_id: updatedProduct.product_id,
@@ -171,8 +172,155 @@ async function updateProduct(productId, productData) {
     }
 }
 
-async function deleteProduct(productId) {
-    return await productRepository.deleteProduct(productId);
+async function updateProductOption(product_id, product_option_id, optionData) {
+    const { option_name, value } = optionData;
+
+    const prismaClient = productRepository.getPrismaClientInstance();
+
+    const product = await productRepository.getProductById(product_id);
+    if (!product)
+        return null;
+    
+    const productOption = await productRepository.getProductOptionById(prismaClient, product_option_id);
+    if (!productOption || productOption.product_id !== product_id)
+        return null;
+
+    const updatedProductOption = await prismaClient.$transaction(async (tx) => {
+        return await productRepository.updateProductOption(tx, product_option_id, option_name, value);
+    });
+
+    return {
+        product_id: updatedProductOption.product_id,
+        option_name: updatedProductOption.option_name,
+        value: updatedProductOption.ProductOptionValue.map(pov => pov.value),
+        created_at: updatedProductOption.created_at,
+        updated_at: updatedProductOption.updated_at
+    };
+}
+
+async function updateProductVariant(product_id, product_variant_id, variantData) {
+    const { sku, raw_price, stock_quantity, image_indexes, options, variant_images } = variantData;
+
+    const prismaClient = productRepository.getPrismaClientInstance();
+
+    const product = await productRepository.getProductById(product_id);
+    if (!product)
+        return null;
+    
+    const productVariant = await productRepository.getProductVariantById(prismaClient, product_variant_id);
+    if (!productVariant || productVariant.product_id !== product_id)
+        return null;
+
+    const image_urls = [];  // TODO: upload images
+    const newData = { sku, raw_price, stock_quantity, image_urls, options };
+
+    const updatedProductVariant = await prismaClient.$transaction(async (tx) => {
+        return await productRepository.updateProductVariant(tx, product_variant_id, newData);
+    });
+
+    return {
+        product_variant_id: updatedProductVariant.product_variant_id,
+        product_id: updatedProductVariant.product_id,
+        sku: updatedProductVariant.sku,
+        raw_price: updatedProductVariant.raw_price,
+        stock_quantity: updatedProductVariant.stock_quantity,
+        image_urls: updatedProductVariant.image_urls,
+        options: updatedProductVariant.ProductVariantOption.map(pvo => ({
+            product_option_id: pvo.ProductOptionValue.ProductOption.product_option_id,
+            option_name: pvo.ProductOptionValue.ProductOption.option_name,
+            value: pvo.ProductOptionValue.value
+        })),
+        created_at: updatedProductVariant.created_at,
+        updated_at: updatedProductVariant.updated_at
+    };
+}
+
+async function deleteProduct(product_id) {
+    return await productRepository.deleteProduct(product_id);
+}
+
+async function deleteProductVariant(product_id, product_variant_id) {
+    const prisma = productRepository.getPrismaClientInstance();
+    const productVariant = await productRepository.getProductVariantById(prisma, product_variant_id);
+
+    if (productVariant.product_id !== product_id)
+        return null;
+
+    return await productRepository.deleteProductVariant(prisma, product_variant_id);
+}
+
+async function addReview(product_id, review) {
+    const product = productRepository.getProductById(product_id);
+    if (!product)
+        return null;
+
+    const user = await userService.getUserById(review.by_user_id);
+    if (!user)
+        return null;
+
+    const result = await productRepository.addReview(product_id, review);
+
+    return {
+        review_id: result.review_id,
+        product_id: result.product_id,
+        user: {
+            user_id: user.user_id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            avatar_url: user.avatar_url
+        },
+        rating: result.rating,
+        comment: result.comment,
+        created_at: result.created_at
+    };
+}
+
+async function getReviews(product_id) {
+    const product = await productRepository.getProductById(product_id);
+    if (!product)
+        return null;
+
+    const reviews = await productRepository.getReviewsWithUserInfo(product_id);
+
+    return {
+        reviews: reviews.map(r => ({
+            review_id: r.review_id,
+            product_id: r.product_id,
+            user: {
+                user_id: r.user.user_id,
+                first_name: r.user.first_name,
+                last_name: r.user.last_name,
+                avatar_url: r.user.avatar_url
+            },
+            rating: r.rating,
+            comment: r.comment,
+            created_at: r.created_at
+        }))
+    };
+}
+
+async function softDelete(product_id) {
+    const product = await productRepository.softDelete(product_id);
+    if (!product)
+        return null;
+
+    return {
+        product_id: product.product_id,
+        is_deleted: true,
+        deleted_at: product.deleted_at
+    };
+}
+
+async function restore(product_id) {
+    const product = await productRepository.restore(product_id);
+    if (!product)
+        return null;
+
+    return {
+        product_id: product.product_id,
+        is_deleted: false,
+        restored_at: product.restored_at
+    };
 }
 
 module.exports = {
@@ -180,5 +328,12 @@ module.exports = {
     getProductById,
     addProduct,
     updateProduct,
-    deleteProduct
+    updateProductOption,
+    updateProductVariant,
+    deleteProduct,
+    deleteProductVariant,
+    addReview,
+    getReviews,
+    softDelete,
+    restore
 };

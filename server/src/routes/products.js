@@ -8,9 +8,16 @@ const upload = require('../middleware/upload');
 
 
 router.get('/', authenticateOptional, productController.getProducts);
-router.get('/:productId', authenticateOptional, productController.getProductById);
+router.get('/:product_id', authenticateOptional, productController.getProductById);
 router.post('/', authenticate, requireAdmin, upload.array('variants_images'), productController.addProduct);
-router.patch('/:productId', authenticate, requireAdmin, upload.array('variants_images'), productController.updateProduct);
-router.delete('/:productId', authenticate, requireAdmin, productController.deleteProduct);
+router.patch('/:product_id', authenticate, requireAdmin, upload.array('variants_images'), productController.updateProduct);
+router.patch('/:product_id/options/:product_option_id', authenticate, requireAdmin, productController.updateProductOption);
+router.patch('/:product_id/variants/:product_variant_id', authenticate, requireAdmin, upload.array('variants_images'), productController.updateProductVariant);
+router.delete('/:product_id', authenticate, requireAdmin, productController.deleteProduct);
+router.delete('/:product_id/variants/:product_variant_id', authenticate, requireAdmin, productController.deleteProductVariant);
+router.post('/:product_id/reviews', authenticate, productController.addReview);
+router.get('/:product_id/reviews', productController.getReviews);
+router.get('/:product_id/soft-delete', authenticate, requireAdmin, productController.softDelete);
+router.get('/:product_id/restore', authenticate, requireAdmin, productController.restore);
 
 module.exports = router;

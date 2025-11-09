@@ -24,9 +24,9 @@ const getProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
     try {
-        const productId = req.params.productId;
+        const product_id = req.params.product_id;
         const isAdmin = req.user && req.user.role === 'ADMIN';
-        const product = await productService.getProductById(productId, isAdmin);
+        const product = await productService.getProductById(product_id, isAdmin);
         if (!product) {
             return res.status(404).json({ error: 'Product not found' });
         }
@@ -73,7 +73,7 @@ const addProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     try {
-        const productId = req.params.productId;
+        const product_id = req.params.product_id;
         const productData = { ...req.body, variant_images: req.files };
 
         try {
@@ -87,7 +87,7 @@ const updateProduct = async (req, res) => {
             return res.status(400).json({ "error": "Missing or invalid fields" });
         }
 
-        const updatedProduct = await productService.updateProduct(productId, productData);
+        const updatedProduct = await productService.updateProduct(product_id, productData);
         if (!updatedProduct) {
             return res.status(404).json({ error: 'Product not found' });
         }
@@ -98,10 +98,57 @@ const updateProduct = async (req, res) => {
     }
 }
 
+const updateProductOption = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const product_option_id = req.params.product_option_id;
+        const optionData = req.body;
+
+        const updatedOption = await productService.updateProductOption(product_id, product_option_id, optionData);
+        if (!updatedOption) {
+            return res.status(404).json({ error: 'Product or option not found' });
+        }
+        return res.status(200).json(updatedOption);
+    } catch (error) {
+        console.error('Error updating product option:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const updateProductVariant = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const product_variant_id = req.params.product_variant_id;
+        
+        let { sku, raw_price, stock_quantity, image_indexes, options } = req.body;
+
+        try {
+            raw_price = raw_price ? Number(raw_price) : null;
+            stock_quantity = stock_quantity ? parseInt(stock_quantity) : null;
+            image_indexes = image_indexes ? JSON.parse(image_indexes) : null;
+            options = options ? JSON.parse(options) : null;
+        } catch (error) {
+            return res.status(400).json({ "error": "Missing or invalid fields" });
+        }
+
+        const variantData = { sku, raw_price, stock_quantity, image_indexes, options };
+        variantData.variant_images = req.files;
+        
+        const updatedVariant = await productService.updateProductVariant(product_id, product_variant_id, variantData);
+        if (!updatedVariant) {
+            return res.status(404).json({ error: 'Product or variant not found' });
+        }
+        return res.status(200).json(updatedVariant);
+    } catch (error) {
+        console.error('Error updating product variant:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 const deleteProduct = async (req, res) => {
     try {
-        const productId = req.params.productId;
-        const deletedProduct = await productService.deleteProduct(productId);
+        const product_id = req.params.productId;
+        const deletedProduct = await productService.deleteProduct(product_id);
         if (!deletedProduct) {
             return res.status(404).json({ error: 'Product not found' });
         }
@@ -112,10 +159,96 @@ const deleteProduct = async (req, res) => {
     }
 }
 
+const deleteProductVariant = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const product_variant_id = req.params.product_variant_id;
+        const deletedVariant = await productService.deleteProductVariant(product_id, product_variant_id);
+        if (!deletedVariant) {
+            return res.status(404).json({ error: 'Product or variant not found' });
+        }
+        return res.status(204).send();
+    } catch (error) {
+        console.error('Error deleting variant:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const addReview = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const by_user_id = req.user.user_id;
+        const { rating, comment } = req.body;
+
+        if (!rating || !comment) {
+            return res.status(400).json({ error: 'Missing or invalid fields' });
+        }
+
+        const review = { rating, comment, by_user_id };
+        const result = await productService.addReview(product_id, review);
+        if (!result) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        return res.status(201).json(result);
+    } catch (error) {
+        console.error('Error adding review:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const getReviews = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const reviews = await productService.getReviews(product_id);
+        if (!reviews) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        return res.status(200).json(reviews);
+    } catch (error) {
+        console.error('Error getting review:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const softDelete = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const result = await productService.softDelete(product_id);
+        if (!result) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error('Error soft deleting product:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const restore = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const result = await productService.restore(product_id);
+        if (!result) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error('Error restoring product:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 module.exports = {
     getProducts,
     getProductById,
     addProduct,
     updateProduct,
-    deleteProduct
+    updateProductOption,
+    updateProductVariant,
+    deleteProduct,
+    deleteProductVariant,
+    addReview,
+    getReviews,
+    softDelete,
+    restore
 };
