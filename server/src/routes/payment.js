@@ -1,0 +1,15 @@
+const express = require('express');
+const router = express.Router();
+const paymentController = require('../controllers/paymentController');
+const {authenticate} = require('../middleware/authenticate');
+
+// Tạo URL thanh toán
+router.post('/vnpay',authenticate, paymentController.createPayment);
+
+// VNPay gọi để xác nhận thanh toán (IPN)
+router.get('/vnpay/ipn', paymentController.vnpayIpn);
+
+// VNPay trả về kết quả thanh toán (Return)
+router.get('/vnpay/return', paymentController.vnpayReturn);
+
+module.exports = router;
