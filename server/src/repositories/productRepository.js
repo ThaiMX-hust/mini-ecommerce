@@ -135,7 +135,7 @@ async function updateProductVariant(client, product_variant_id, variantData) {
         await client.productVariantOption.deleteMany({
             where: { product_variant_id }
         });
-        console.log(productOptions);
+
         // Add options
         const optionValueIds = options.map(option =>
             productOptions.find(po => po.product_option_id === option.product_option_id)
