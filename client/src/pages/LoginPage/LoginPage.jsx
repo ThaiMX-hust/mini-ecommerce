@@ -38,7 +38,7 @@ const LoginPage = () => {
 
     try {
       // 5. Gọi hàm API `login` với dữ liệu từ state.
-      const response = await login(credentials);
+      const response = await apiLogin(credentials);
 
       const { token, user } = response.data;
 
