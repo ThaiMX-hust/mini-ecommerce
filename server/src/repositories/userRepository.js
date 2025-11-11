@@ -37,6 +37,27 @@ async function getUserByEmail(email, client = prisma) {
     });
 }
 
+async function getUserWithPassword(where, client = prisma) {
+    return await client.user.findUnique({
+        where,
+        select: {
+            user_id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            avatar_url: true,
+            password_hash: true,
+            role: true,
+            created_at: true,
+            updated_at: true,
+        }
+    });
+}
+
+const getUserWithPasswordById = (user_id, client = prisma) => getUserWithPassword({ user_id }, client);
+
+const getUserWithPasswordByEmail = (email, client = prisma) => getUserWithPassword({ email }, client);
+
 async function getUserHashedPassword(user_id, client = prisma) {
     return (await client.user.findUnique({
         where: { user_id },
@@ -44,8 +65,31 @@ async function getUserHashedPassword(user_id, client = prisma) {
     })).password_hash;
 }
 
+async function updatePassword(user_id, password_hash, client = prisma) {
+    return await client.user.update({
+        where: { user_id },
+        data: { password_hash }
+    });
+}
+
+async function updateUser(user_id, userData, client = prisma) {
+    const { first_name, last_name, avatar_url } = userData;
+    return await client.user.update({
+        where: { user_id },
+        data: {
+            ...(first_name != null && { first_name }),
+            ...(last_name != null && { last_name }),
+            ...(avatar_url != null && { avatar_url })
+        }
+    });
+}
+
 module.exports = {
     getUserById,
     getUserByEmail,
-    getUserHashedPassword
+    getUserWithPasswordById,
+    getUserWithPasswordByEmail,
+    getUserHashedPassword,
+    updatePassword,
+    updateUser
 };

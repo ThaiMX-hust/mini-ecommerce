@@ -132,6 +132,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     }
     ```
   - 401 Unauthorized: { "error": "Unauthorized" }
+  - 403 Forbidden: { "error": "Forbidden" }
   - 404 Not Found: { "error": "User not found" }
 
 ### 1.6. Cập nhật thông tin tài khoản
@@ -157,6 +158,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     ```
   - 400 Bad Request: { "error": "Missing or invalid fields" }
   - 401 Unauthorized: { "error": "Unauthorized" }
+  - 403 Forbidden: { "error": "Forbidden" }
   - 404 Not Found: { "error": "User not found" }
 
 ## 2. Danh mục sản phẩm

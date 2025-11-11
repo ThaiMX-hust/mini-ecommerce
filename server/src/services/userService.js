@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const { hashPassword } = require('../utils/passwordUtils');
 const userRepository = require('../repositories/userRepository');
 
 const {PrismaClient} = require('@prisma/client');
@@ -6,7 +6,7 @@ const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient()
 
 async function registerUser(userData) {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const password_hash = await hashPassword(userData.password);
     
     // TODO: upload avatarFile and get URL
     const avatar_url = null;
@@ -16,7 +16,7 @@ async function registerUser(userData) {
             first_name: userData.first_name,
             last_name: userData.last_name,
             email: userData.email,
-            password_hash: hashedPassword,
+            password_hash,
             role: 'CUSTOMER',
             avatar_url: avatar_url
         },
@@ -50,7 +50,7 @@ async function registerUser(userData) {
 }
 
 async function registerAdmin(userData){
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const password_hash = await hashPassword(userData.password);
     
     // TODO: upload avatarFile and get URL
     const avatar_url = null;
@@ -60,7 +60,7 @@ async function registerAdmin(userData){
             first_name: userData.first_name,
             last_name: userData.last_name,
             email: userData.email,
-            password_hash: hashedPassword,
+            password_hash,
             role: 'ADMIN',
             avatar_url: avatar_url
         },
@@ -77,16 +77,52 @@ async function registerAdmin(userData){
 }
 
 async function getUserById(user_id) {
-    return await userRepository.getUserById(user_id);
+    const user = await userRepository.getUserById(user_id);
+    if (!user)
+        return null;
+
+    return {
+        user_id: user.user_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        avatar_url: user.avatar_url
+    };
 }
 
 async function getUserByEmail(email) {
     return await userRepository.getUserByEmail(email);
 }
 
+async function updateUser(user_id, userData) {
+    const { first_name, last_name, avatarFile } = userData;
+
+    const avatar_url = null;
+
+    const user = await userRepository.updateUser(user_id, { first_name, last_name, avatar_url });
+    if (!user)
+        return null;
+
+    return {
+        user_id: user.user_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        avatar_url: user.avatar_url
+    };
+}
+
+const getUserWithPasswordById = userRepository.getUserWithPasswordById;
+const getUserWithPasswordByEmail = userRepository.getUserWithPasswordByEmail;
+const updatePassword = userRepository.updatePassword;
+
 module.exports = {
     registerUser,
     registerAdmin,
     getUserById,
-    getUserByEmail
+    getUserByEmail,
+    getUserWithPasswordById,
+    getUserWithPasswordByEmail,
+    updatePassword,
+    updateUser
 };
