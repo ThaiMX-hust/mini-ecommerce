@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+import api from "../api";
 
 export const getAllProducts = async (params = {}) => {
   try {
@@ -13,9 +11,9 @@ export const getAllProducts = async (params = {}) => {
 };
 
 export const getProductById = (productId) => {
-  return axios.get(`${API_URL}/products/${productId}`);
+  return api.get(`/products/${productId}`);
 };
 
 export const getProductReviews = (productId) => {
-  return axios.get(`${API_URL}/products/${productId}/reviews`);
+  return api.get(`/products/${productId}/reviews`);
 };

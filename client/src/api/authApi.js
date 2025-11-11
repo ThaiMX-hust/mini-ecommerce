@@ -1,10 +1,6 @@
 // src/api/authApi.js
 
-import axios from "axios";
-
-// Lấy URL gốc của API từ biến môi trường, giống như file productApi.js
-const API_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1";
+import api from "../api";
 
 /**
  * Gửi yêu cầu đăng nhập đến server.
@@ -15,7 +11,7 @@ const API_URL =
  */
 export const login = (credentials) => {
   // Dựa trên API contract (1.2), URL là /auth/login
-  return axios.post(`${API_URL}/auth/login`, credentials);
+  return api.post(`/auth/login`, credentials);
 };
 
 /**
@@ -28,7 +24,7 @@ export const register = (userData) => {
   // Dựa trên API contract (1.1), URL là /users
   // Chúng ta cần set header 'Content-Type': 'multipart/form-data'
   // Axios sẽ tự động làm điều này khi bạn truyền vào một đối tượng FormData.
-  return axios.post(`${API_URL}/users`, userData);
+  return api.post(`/users`, userData);
 };
 
 // Bạn có thể thêm các hàm khác ở đây sau này, ví dụ:
