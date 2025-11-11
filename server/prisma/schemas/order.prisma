@@ -5,13 +5,13 @@ model Order {
     user_id String //FK
     user    User   @relation(fields: [user_id], references: [user_id])
 
-    receiver_name      String
-    phone              String
-    address            String
-    raw_total_amount   Decimal  @db.Decimal(12, 2)
-    final_total_amount Decimal  @db.Decimal(12, 2)
-    created_at         DateTime @default(now())
-    updated_at         DateTime @updatedAt
+    receiver_name     String
+    phone             String
+    address           String
+    raw_total_price   Decimal  @db.Decimal(12, 2)
+    final_total_price Decimal  @db.Decimal(12, 2)
+    created_at        DateTime @default(now())
+    updated_at        DateTime @updatedAt
 
     items       OrderItems[]
     history     OrderStatusHistory[]

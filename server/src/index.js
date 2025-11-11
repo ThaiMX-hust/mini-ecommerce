@@ -21,6 +21,7 @@ app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/cart', require('./routes/cart'));
 app.use('/api/v1/products', require('./routes/products'));
 
+app.use('/api/v1/orders', require('./routes/orders'));
 app.use('/api/v1/payments', require('./routes/payment'));
 
 app.listen(PORT, () => {

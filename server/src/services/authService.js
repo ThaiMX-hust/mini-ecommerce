@@ -28,6 +28,7 @@ async function loginUser(email, password) {
 
     return { token, user: {
         user_id: user.user_id,
+        card_id: user.Cart?.cart_id || null,
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
