@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { hashPassword, verifyPassword } = require('../utils/passwordUtils');
 const userService = require('./userService');
+const emailService = require('./emailService');
 
 async function loginUser(email, password) {
     const user = await userService.getUserWithPasswordByEmail(email);
@@ -49,7 +50,36 @@ async function changePassword(user_id, old_password, new_password) {
     return true;
 }
 
+async function requestPasswordReset(email) {
+    const user = await userService.getUserByEmail(email);
+    if (!user)
+        return false;
+
+    const user_id = user.user_id;
+    const token = jwt.sign({ user_id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+
+    await emailService.sendResetPasswordEmail(email, token);
+
+    return true;
+}
+
+async function resetPassword(token, new_password) {
+    let user_id;
+    try {
+        user_id = jwt.verify(token, process.env.JWT_SECRET).user_id;
+    } catch (error) {
+        return false;
+    }
+
+    const password_hash = await hashPassword(new_password);
+    await userService.updatePassword(user_id, password_hash);
+
+    return true;
+}
+
 module.exports = {
     loginUser,
-    changePassword
+    changePassword,
+    requestPasswordReset,
+    resetPassword
 };
