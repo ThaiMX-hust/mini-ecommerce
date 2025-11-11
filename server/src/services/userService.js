@@ -68,11 +68,39 @@ async function registerAdmin(userData){
 }
 
 async function getUserById(user_id) {
-    return await userRepository.getUserById(user_id);
+    const user = await userRepository.getUserById(user_id);
+    if (!user)
+        return null;
+
+    return {
+        user_id: user.user_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        avatar_url: user.avatar_url
+    };
 }
 
 async function getUserByEmail(email) {
     return await userRepository.getUserByEmail(email);
+}
+
+async function updateUser(user_id, userData) {
+    const { first_name, last_name, avatarFile } = userData;
+
+    const avatar_url = null;
+
+    const user = await userRepository.updateUser(user_id, { first_name, last_name, avatar_url });
+    if (!user)
+        return null;
+
+    return {
+        user_id: user.user_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        avatar_url: user.avatar_url
+    };
 }
 
 const getUserWithPasswordById = userRepository.getUserWithPasswordById;
@@ -86,5 +114,6 @@ module.exports = {
     getUserByEmail,
     getUserWithPasswordById,
     getUserWithPasswordByEmail,
-    updatePassword
+    updatePassword,
+    updateUser
 };

@@ -72,11 +72,24 @@ async function updatePassword(user_id, password_hash, client = prisma) {
     });
 }
 
+async function updateUser(user_id, userData, client = prisma) {
+    const { first_name, last_name, avatar_url } = userData;
+    return await client.user.update({
+        where: { user_id },
+        data: {
+            ...(first_name != null && { first_name }),
+            ...(last_name != null && { last_name }),
+            ...(avatar_url != null && { avatar_url })
+        }
+    });
+}
+
 module.exports = {
     getUserById,
     getUserByEmail,
     getUserWithPasswordById,
     getUserWithPasswordByEmail,
     getUserHashedPassword,
-    updatePassword
+    updatePassword,
+    updateUser
 };
