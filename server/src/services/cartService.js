@@ -38,77 +38,118 @@ async function getCart(cart_id) {
     if (!cartItems || cartItems.length === 0) {
       return {
         items: [],
-        total_price: 0
+        total_price: 0,
+        total_price_after_discount: 0
       };
     }
 
     const prisma = productRepository.getPrismaClientInstance();
     let totalPrice = 0;
+    let totalPriceAfterDiscount = 0;
 
     const itemsWithDetail = await Promise.all(
       cartItems.map(async (item) => {
-        const productPrisma = productRepository.getPrismaClientInstance()
-        const productVariant = await productRepository.getProductVariantById(productPrisma, item.product_variant_id);
+        const productPrisma = productRepository.getPrismaClientInstance();
+        const productVariant = await productRepository.getProductVariantById(
+          productPrisma,
+          item.product_variant_id
+        );
 
+        if (!productVariant || !productVariant.Product) {
+          throw new Error(`Variant or product not found for item ${item.cart_item_id}`);
+        }
 
         const productWithCategories = await prisma.product.findUnique({
           where: { product_id: productVariant.Product.product_id },
           include: {
             ProductCategories: {
               include: {
-                Category: {
-                  select: { category_code: true }
-                }
-              }
-            }
-          }
+                Category: { select: { category_code: true } },
+              },
+            },
+          },
         });
 
-    
-        const options = productVariant.ProductVariantOption?.map((opt) => ({
-          option_name: opt.ProductOptionValue.ProductOption.option_name,
-          value: opt.ProductOptionValue.value,
-        })) ?? [];
+        const options =
+          productVariant.ProductVariantOption?.map((opt) => ({
+            option_name: opt.ProductOptionValue.ProductOption.option_name,
+            value: opt.ProductOptionValue.value,
+          })) ?? [];
 
         const categoryCodes = productWithCategories.ProductCategories.map(
           (pc) => pc.Category.category_code
         );
 
-  
-        const itemTotal = productVariant.raw_price * item.quantity;
-        totalPrice += itemTotal;
+
+        const quantity = Number(item.quantity);
+        const rawUnitPrice = Number(productVariant.raw_price);
+        const finalUnitPrice = Number(productVariant.final_price ?? productVariant.raw_price);
+        const itemRawSubtotal = rawUnitPrice * quantity;
+        let itemFinalSubtotal = finalUnitPrice * quantity;
+
+        const now = new Date();
+        const activePromotion = await prisma.productPromotions.findFirst({
+          where: {
+            product_id: productVariant.Product.product_id,
+            promotion_status: "RUNNING",
+            start_at: { lte: now },
+            end_at: { gte: now },
+          },
+          orderBy: { start_at: "desc" },
+        });
+
+        let promotionValue = 0;
+        if (activePromotion) {
+          if (activePromotion.promotion_type === "PERCENT") {
+            promotionValue =
+              (Number(finalUnitPrice) * Number(activePromotion.value)) / 100;
+          } else if (activePromotion.promotion_type === "AMOUNT") {
+            promotionValue = Number(activePromotion.value);
+          }
+
+          const discountedUnitPrice = Math.max(finalUnitPrice - promotionValue, 0);
+          itemFinalSubtotal = discountedUnitPrice * quantity;
+        }
+
+
+        totalPrice += itemRawSubtotal;
+        totalPriceAfterDiscount += itemFinalSubtotal;
 
         return {
           cart_item_id: item.cart_item_id,
-          quantity: item.quantity,
+          quantity,
+          promotion: promotionValue,
           product: {
             product_id: productVariant.Product.product_id,
             name: productVariant.Product.name,
-            categories: categoryCodes
+            categories: categoryCodes,
           },
           variant: {
             product_variant_id: productVariant.product_variant_id,
             sku: productVariant.sku,
-            raw_price: productVariant.raw_price,
-            final_price: productVariant.final_price ?? productVariant.raw_price,
+            raw_price: rawUnitPrice,
+            final_price: finalUnitPrice,
             image_urls: productVariant.image_urls,
-            options: options
+            options,
+            version: productVariant.version,
           },
-          subtotal: itemTotal
+          subtotal_before_discount: itemRawSubtotal,
+          subtotal_after_discount: itemFinalSubtotal,
         };
       })
     );
 
     return {
       items: itemsWithDetail,
-      total_price: totalPrice
+      total_price: totalPrice,
+      total_price_after_discount: totalPriceAfterDiscount,
     };
-
   } catch (err) {
     console.error("Error in getCart:", err);
     throw err;
   }
 }
+
 
 /**
  * Cập nhật số lượng sản phẩm trong giỏ hàng

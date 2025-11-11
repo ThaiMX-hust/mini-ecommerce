@@ -18,6 +18,10 @@ const addToCart = async (req, res) => {
         const productVariantId = req.body.product_variant_id
         const quantity = req.body.quantity
 
+        if(!productVariantId || !quantity){
+            return res.status(400).json({error: "Missing or invalid fields"})
+        }
+
         const productVariant = await productService.getProductVariantById(productVariantId)
     
         if (!productVariant){
@@ -50,6 +54,7 @@ const getCart = async (req, res) => {
         return res.status(200).json(cartItems)
         
     } catch(e){
+        console.log(e)
         return res.status(500).json({error: "Internal server error"})
     }
 }
