@@ -15,3 +15,7 @@ export const getAllProducts = async (params = {}) => {
 export const getProductById = (productId) => {
   return axios.get(`${API_URL}/products/${productId}`);
 };
+
+export const getProductReviews = (productId) => {
+  return axios.get(`${API_URL}/products/${productId}/reviews`);
+};

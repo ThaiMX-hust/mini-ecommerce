@@ -130,6 +130,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     }
     ```
   - 401 Unauthorized: { "error": "Unauthorized" }
+  - 403 Forbidden: { "error": "Forbidden" }
   - 404 Not Found: { "error": "User not found" }
 
 ### 1.6. Cập nhật thông tin tài khoản
@@ -155,6 +156,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     ```
   - 400 Bad Request: { "error": "Missing or invalid fields" }
   - 401 Unauthorized: { "error": "Unauthorized" }
+  - 403 Forbidden: { "error": "Forbidden" }
   - 404 Not Found: { "error": "User not found" }
 
 ## 2. Danh mục sản phẩm
@@ -588,7 +590,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 
   - 400 Bad Request { "error": "Missing or invalid fields" }
   - 401 Unauthorized { "error": "Unauthorized" }
-  - 404 Not Found { "error": "Variant not found" }
+  - 404 Not Found { "error": "Product or option not found" }
 
 ### 3.8 Cập nhật một variant của sản phẩm
 
@@ -674,7 +676,6 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Method: GET
 - URL: /api/v1/products/{product_id}/soft-delete
 - Headers: Authorization: Bearer {admin_token}
-- Content-Type: application/json
 
 - Response:
 
@@ -695,7 +696,6 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Method: GET
 - URL: /api/v1/products/{product_id}/restore
 - Headers: Authorization: Bearer {admin_token}
-- Content-Type: application/json
 
 - Response:
 
@@ -719,8 +719,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Response:
   - 204 No Content
   - 401 Unauthorized: { "error": "Unauthorized" }
-  - 404 Not Found: { "error": "Product not found" }
-  - 404 Not Found: {"error": "Product variant not found"}
+  - 404 Not Found: { "error": "Product or variant not found" }
 
 ## 4. Giỏ hàng
 
@@ -787,10 +786,15 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
           "product": {
             "product_id": "string",
             "name": "string",
-            "description": "string",
-            "category": ["string"],
-            "price": "number",
-            "image_url": "string"
+            "categories": ["string"]
+          },
+          "variant": {
+            "product_variant_id": "string",
+            "sku": "string",
+            "raw_price": "string",
+            "final_price": "string",
+            "image_urls": ["string"],
+            "options": [{ "option_name": "string", "value": ["string"] }]
           },
           "quantity": "number"
         }
