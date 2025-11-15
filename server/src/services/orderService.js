@@ -1,4 +1,5 @@
 const { EmptyCartError, BadRequestError, OutOfStockError } = require('../errors/BadRequestError');
+const { NotFoundError } = require('../errors/NotFoundError')
 const orderRepository = require('../repositories/ordersRepository');
 const cartService = require('./cartService');
 
@@ -219,8 +220,127 @@ async function getOrders(user_id){
   return formattedOrder
 }
 
-async function updateOrderStatus(order_id){
+async function getOrderFromId(order_id){
+  const prisma = orderRepository.getPrismaClientInstance()
+  const order = await prisma.order.findUnique({
+    where: {order_id: order_id},
+    include: {
+      items: {
+        include: {
+          product_variant: {
+            include: {
+              Product: {
+                select: {
+                  product_id: true,
+                  name: true,
+                  description: true,
+                },
+              },
+              ProductVariantOption: {
+                include: {
+                  ProductOptionValue: {
+                    include: {
+                      ProductOption: {
+                        select: { option_name: true },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      history: {
+        include: {
+          status: {}
+        }
+      }
+    }
+  })
 
+  return {
+    order_id: order.order_id,
+    items: order.items.map((item) => {
+          return {
+            order_item_id: item.order_item_id,
+            quantity: item.quantity,
+            product: {
+              product_id: item.product_variant.Product.product_id,
+              name: item.product_variant.Product.name,
+              description: item.product_variant.Product.description ?? null,
+            },
+            variant: {
+              product_variant_id: item.product_variant_id,
+              sku: item.product_variant.sku,
+              raw_price: item.unit_price.toString(),
+              final_price: item.final_price.toString(),
+              image_urls: item.product_variant.image_urls ?? [],
+              options: item.product_variant.ProductVariantOption.map(option => {
+                return {
+                  option_name: option.ProductOptionValue.ProductOption.option_name,
+                  value: option.ProductOptionValue.value
+                }
+              }) ?? [],
+            },
+            subtotal_before_discount: Number(item.unit_price * item.quantity),
+            subtotal_after_discount: Number(item.final_price * item.quantity)
+          };
+    }),
+    total_price: order.raw_total_price,
+    total_price_after_discount: order.final_total_price,
+    receiver_name: order.receiver_name,
+    phone: order.phone,
+    address: order.address,
+    status_history: order.history.map(history => {
+      return  {
+        status_code: history.status.order_status_code,
+        status_name: history.status.order_status_name,
+        changed_by: history.changed_by,
+        changed_at: history.changed_at,
+        note: history.note ?? ""
+      }
+    }),
+    created_at: order.created_at
+  }
+}
+
+async function updateOrderStatus(order_id, status_code, changed_by, note = null){
+  if(!status_code){
+    throw new BadRequestError("Invalid status", 400)
+  }
+
+  const status = await orderRepository.getStatusByCode(status_code)
+  if(!status){
+    throw new NotFoundError(`Status code ${status_code} not found. Please add this code before you can use it`, 404)
+  }
+
+  const order = await getOrderFromId(order_id)
+  if(!order){
+    throw new NotFoundError(`Order not found`, 404)
+  }
+
+  const prisma = orderRepository.getPrismaClientInstance()
+  const currentStatus = order.status_history[0]
+  const newStatus = await orderRepository.createNewStatusToHistory(prisma, order_id, status_code, changed_by, note)
+  const newDate = new Date()
+
+  await prisma.order.update({
+    where: {order_id: order.order_id},
+    data: {
+      updated_at: newDate
+    }
+  })
+
+  return {
+    order_id: order.order_id,
+    status_code: newStatus.order_status_code,
+    note: newStatus.note ?? "",
+    previous_status_code: currentStatus?.status_code ?? "",
+    previous_note: currentStatus.note ?? "",
+    updated_at: newDate,
+    status_history: order.status_history
+  }
 }
 
 
@@ -274,5 +394,6 @@ function formatOrderResponse(result, cartItems, createdStatus, createdStatusHist
 
 module.exports = {
   createOrder,
-  getOrders
+  getOrders,
+  updateOrderStatus
 };

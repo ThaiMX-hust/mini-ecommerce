@@ -1018,7 +1018,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   ```json
   {
     "status_code": "string",
-    "status_name": "string"
+    "note": "string?"
   }
   ```
 - Response:
@@ -1026,8 +1026,10 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     ```json
     {
       "order_id": "string",
-      "status": "string",
-      "previous_status": "string",
+      "status_code": "string",
+      "note": "string",
+      "previous_status_code": "string",
+      "previous_note": "string",
       "updated_at": "string",
       "status_history": [
         {
