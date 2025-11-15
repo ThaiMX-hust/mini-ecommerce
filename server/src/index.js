@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const {redisClient} = require('./infrastructure/redis')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,10 @@ app.use('/api/v1/products', require('./routes/products'));
 app.use('/api/v1/orders', require('./routes/orders'));
 app.use('/api/v1/payments', require('./routes/payment'));
 
-app.listen(PORT, () => {
+(async () => {
+    await redisClient()
+
+    app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+})()

@@ -111,6 +111,7 @@ entity "ORDER_ITEMS" as OI {
     subtotal : DECIMAL(12,2)
 }
 
+
 entity "ORDER_STATUS" as OS {
     *order_status_id: UUID <<PK>>
     --
