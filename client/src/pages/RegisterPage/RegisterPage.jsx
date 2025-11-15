@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 // 1. Import CSS Modules và các tài nguyên
 import styles from "./RegisterPage.module.css";
 import { register } from "../../api/authApi";
-import registerHeroImage from "../../assets/images/login-hero-image.jpg"; // Dùng ảnh từ Figma
+import registerHeroImage from "../../assets/images/login-hero-image.jpg";
 
 const RegisterPage = () => {
   // 2. State quản lý form, file, và trạng thái UI

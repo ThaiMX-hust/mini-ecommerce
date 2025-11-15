@@ -6,7 +6,9 @@ import ProductCard from "../../components/ProductCard/ProductCard";
 // import Hero from '../../components/Hero/Hero';
 // import Features from '../../components/Features/Features';
 // import Footer from '../../components/Footer/Footer';
+import Newsletter from "../../components/Newsletter/Newsletter";
 import styles from "./HomePage.module.css";
+import Hero from "../../components/Hero/Hero";
 
 const CATEGORIES = [
   "Women's Fashion",
@@ -72,7 +74,7 @@ const HomePage = () => {
     <div className={styles.homePage}>
       {/* <Header /> */}
       <main>
-        {/* <Hero /> */}
+        <Hero />
         {/* <Features /> */}
 
         <section className={styles.newArrivals}>
@@ -118,6 +120,7 @@ const HomePage = () => {
             )}
           </div>
         </section>
+        <Newsletter />
       </main>
       {/* <Footer /> */}
     </div>
