@@ -216,7 +216,7 @@ async function deleteItemFromCartById(cart_id, cart_item_id) {
 }
 
 async function getCartFromUserId(user_id){
-    const cart = prisma.cart.findUniqueOrThrow({
+    const cart = prisma.cart.findUnique({
         where: {user_id}
     })
 

@@ -51,7 +51,7 @@ async function createNewStatusToHistory(client, order_id, status_code, changed_b
         changed_at: new Date()
         }
     });
-    }
+}
 
 module.exports = {
   createNewStatus,
