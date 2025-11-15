@@ -3,8 +3,7 @@ import { NavLink, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Header.module.css";
 
-// Bạn có thể tìm một icon giỏ hàng dạng SVG và import nó
-// Hoặc dùng một ký tự đơn giản như dưới đây
+// Biểu tượng giỏ hàng không thay đổi
 const CartIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +41,6 @@ const Header = () => {
           >
             Home
           </NavLink>
-          {/* Sửa "Shop" thành "Products" cho nhất quán. Đây sẽ là trang danh sách sản phẩm. */}
           <NavLink
             to="/products"
             className={({ isActive }) =>
@@ -51,25 +49,37 @@ const Header = () => {
           >
             Products
           </NavLink>
-          {/* Trang chi tiết sản phẩm không cần link trên header, người dùng sẽ click từ danh sách sản phẩm để vào */}
+
+          {/* THAY ĐỔI: Thêm link "Checkout" và chỉ hiển thị khi đã đăng nhập */}
+          {isAuthenticated && (
+            <NavLink
+              to="/checkout"
+              className={({ isActive }) =>
+                isActive ? styles.activeLink : styles.navLink
+              }
+            >
+              Checkout
+            </NavLink>
+          )}
         </nav>
 
         <div className={styles.userActions}>
           {isAuthenticated ? (
             // Giao diện khi đã đăng nhập
             <>
-              {/* Thêm link giỏ hàng với biểu tượng */}
-              <NavLink to="/cart" className={styles.cartLink}>
+              {/* Link giỏ hàng giờ chỉ còn là biểu tượng */}
+              <NavLink
+                to="/cart"
+                className={styles.cartLink}
+                aria-label="View your cart"
+              >
                 <CartIcon />
-                {/* Có thể thêm số lượng sản phẩm ở đây sau này */}
-                {/* <span className={styles.cartCount}>3</span> */}
               </NavLink>
 
               <div className={styles.userMenu}>
                 <span className={styles.welcome}>
                   Hi, {user.first_name || "User"}!
                 </span>
-                {/* Có thể mở rộng thành một dropdown menu sau này */}
               </div>
 
               <button onClick={logout} className={styles.logoutButton}>

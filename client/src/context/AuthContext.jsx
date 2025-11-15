@@ -1,54 +1,64 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { jwtDecode } from "jwt-decode"; // Cần cài đặt thư viện này: npm install jwt-decode
+import { jwtDecode } from "jwt-decode";
 
-// 1. Tạo Context
 const AuthContext = createContext(null);
 
-// 2. Tạo Provider Component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // State chứa thông tin user nếu đã đăng nhập
+  // Khởi tạo state từ localStorage để duy trì đăng nhập khi refresh trang
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const [user, setUser] = useState(null);
 
-  // Effect này sẽ chạy mỗi khi token thay đổi (kể cả lúc tải lại trang)
+  // Effect này sẽ chỉ chạy một lần khi component được mount lần đầu
+  // để khôi phục trạng thái đăng nhập từ token trong localStorage
   useEffect(() => {
     if (token) {
       try {
         const decodedUser = jwtDecode(token);
-        // Kiểm tra xem token đã hết hạn chưa (exp tính bằng giây)
         if (decodedUser.exp * 1000 > Date.now()) {
-          setUser(decodedUser); // Lưu thông tin user từ token vào state
-          localStorage.setItem("token", token); // Đảm bảo token được lưu
+          setUser(decodedUser);
         } else {
-          // Token hết hạn
-          logout();
+          // Token hết hạn, xóa khỏi localStorage
+          localStorage.removeItem("token");
+          setToken(null);
         }
       } catch (error) {
-        console.error("Invalid token:", error);
-        logout(); // Token không hợp lệ, đăng xuất
+        console.error("Invalid token on initial load:", error);
+        localStorage.removeItem("token");
+        setToken(null);
       }
-    } else {
-      setUser(null);
-      localStorage.removeItem("token");
     }
-  }, [token]);
+  }, []); // Mảng rỗng đảm bảo nó chỉ chạy một lần
 
-  // Hàm để gọi khi đăng nhập thành công
+  // HÀM LOGIN ĐƯỢC SỬA LẠI - ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT
   const login = (newToken) => {
-    setToken(newToken);
+    try {
+      const decodedUser = jwtDecode(newToken);
+      // Cập nhật cả token và user state CÙNG LÚC
+      setToken(newToken);
+      setUser(decodedUser);
+      // Lưu token vào localStorage để duy trì đăng nhập
+      localStorage.setItem("token", newToken);
+    } catch (error) {
+      console.error("Failed to decode token on login:", error);
+      // Nếu token không hợp lệ, đảm bảo người dùng bị đăng xuất
+      logout();
+    }
   };
 
-  // Hàm để đăng xuất
+  // HÀM LOGOUT ĐƯỢC SỬA LẠI
   const logout = () => {
+    // Xóa tất cả các state và localStorage
     setToken(null);
+    setUser(null);
+    localStorage.removeItem("token");
   };
 
-  // 3. Cung cấp state và các hàm cho các component con
+  // Giá trị cung cấp cho context
   const value = { user, token, login, logout, isAuthenticated: !!user };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// 4. Tạo một custom hook để sử dụng Context dễ dàng hơn
 export const useAuth = () => {
   return useContext(AuthContext);
 };
