@@ -25,6 +25,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     ```json
     {
       "user_id": "string",
+      "cart_id": "string",
       "first_name": "string",
       "last_name": "string",
       "email": "string",
@@ -53,6 +54,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "token": "string",
       "user": {
         "user_id": "string",
+        "card_id": "string",
         "first_name": "string",
         "last_name": "string",
         "email": "string",
@@ -190,7 +192,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
           "categories": ["string"],
           "min_price": "number",
           "max_price": "number",
-          "image_url": "string",
+          "image_url": "string"
         }
       ]
     }
@@ -293,20 +295,18 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
             {
               "product_option_id": "b0859f28-0cda-4a4d-a3d1-d75cf54fc285",
               "option_name": "Color",
-              "value":
-                {
-                  "option_value_id": "1dbe7b26-c189-45ac-8d29-6602bd0d11f0",
-                  "value": "Black"
-                }
+              "value": {
+                "option_value_id": "1dbe7b26-c189-45ac-8d29-6602bd0d11f0",
+                "value": "Black"
+              }
             },
             {
               "product_option_id": "660a1b2a-1f02-4fdc-8817-7ce143a47a42",
               "option_name": "Size",
-              "value": 
-                {
-                  "option_value_id": "e2094432-9c54-486e-9fd3-d02fc3a542b9",
-                  "value": "M"
-                }
+              "value": {
+                "option_value_id": "e2094432-9c54-486e-9fd3-d02fc3a542b9",
+                "value": "M"
+              }
             }
           ]
         },
@@ -321,20 +321,18 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
             {
               "product_option_id": "b0859f28-0cda-4a4d-a3d1-d75cf54fc285",
               "option_name": "Color",
-              "value":
-                {
-                  "option_value_id": "a80c6ae2-6ba6-4af8-8f53-2b05757df33b",
-                  "value": "White"
-                }
+              "value": {
+                "option_value_id": "a80c6ae2-6ba6-4af8-8f53-2b05757df33b",
+                "value": "White"
+              }
             },
             {
               "product_option_id": "660a1b2a-1f02-4fdc-8817-7ce143a47a42",
               "option_name": "Size",
-              "value":
-                {
-                  "option_value_id": "41552ad4-fc52-4697-823a-7c97c29bde1a",
-                  "value": "L"
-                }
+              "value": {
+                "option_value_id": "41552ad4-fc52-4697-823a-7c97c29bde1a",
+                "value": "L"
+              }
             }
           ]
         }
@@ -433,7 +431,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 |                    | `is_disabled`    | boolean                   | Bắt buộc       | Xác định xem variant hiện tại có đang tắt hay không         |
 |                    | `options`        | object[]                  | Bắt buộc       | Danh sách các option cụ thể của variant                     |
 | `variants.options` | `option_name`    | string                    | Bắt buộc       | Tên option                                                  |
-|                    | `value`          | string                    | Bắt buộc       | Giá trị của option ứng với variant                      |
+|                    | `value`          | string                    | Bắt buộc       | Giá trị của option ứng với variant                          |
 
 - Metadata
   ```json
@@ -442,9 +440,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     "description": "string",
     "categories": ["string"],
     "is_disabled": "boolean",
-    "options": [
-      {"option_name": "string", "values": ["string"]}
-    ],
+    "options": [{ "option_name": "string", "values": ["string"] }],
     "variants": [
       {
         "sku": "string",
@@ -452,9 +448,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
         "stock_quantity": "number",
         "image_indexes:": ["number"],
         "is_disabled": "boolean",
-        "options": [
-          {"option_name": "string", "value": "string"}
-        ]
+        "options": [{ "option_name": "string", "value": "string" }]
       }
     ]
   }
@@ -512,13 +506,13 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Content-Type: application/json
 - Mô tả body
 
-| Trường chính      | Kiểu     | Yêu cầu        | Mô tả                                   |
-| -------------     | -------- | -------------- | --------------------------------------- |
-| `name`            | string   | Không bắt buộc | Tên sản phẩm hiển thị                   |
-| `description`     | string   | Không bắt buộc | Mô tả chi tiết về sản phẩm              |
-| `categories`      | string[] | Không bắt buộc | Danh sách category mà sản phẩm thuộc về |
-| `is_disabled`     | boolean  | Không bắt buộc | Ẩn/hiện sản phẩm                        |
-| `variant_images`  | file[]   | Không bắt buộc | Ảnh mới                                 |
+| Trường chính     | Kiểu     | Yêu cầu        | Mô tả                                   |
+| ---------------- | -------- | -------------- | --------------------------------------- |
+| `name`           | string   | Không bắt buộc | Tên sản phẩm hiển thị                   |
+| `description`    | string   | Không bắt buộc | Mô tả chi tiết về sản phẩm              |
+| `categories`     | string[] | Không bắt buộc | Danh sách category mà sản phẩm thuộc về |
+| `is_disabled`    | boolean  | Không bắt buộc | Ẩn/hiện sản phẩm                        |
+| `variant_images` | file[]   | Không bắt buộc | Ảnh mới                                 |
 
 - Body
 
@@ -754,7 +748,12 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
         "final_price": "number",
         "stock_quantity": "number",
         "image_urls": ["string"],
-        "options": [{ "option_name": "string", "value": "string" }]
+        "options": [
+          {
+            "option_name": "string",
+            "value": "string"
+          }
+        ]
       }
     }
     ```
@@ -764,12 +763,18 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "cart_item_id": "string",
       "product_id": "string",
       "product_variant_id": "string",
-      "quantity": "number"
+      "quantity": "number",
+      "raw_unit_price": "string",
+      "final_unit_price": "string",
+      "raw_subtotal": "number",
+      "final_subtotal": "number",
+      "added_at": "string"
     }
     ```
   - 400 Bad Request: { "error": "Invalid quantity" }
   - 401 Unauthorized: { "error": "Unauthorized" }
   - 404 Not Found: { "error": "Product not found" }
+  - 404 Not Found: { "error": "Product variant not found" }
 
 ### 4.2. Xem giỏ hàng
 
@@ -783,9 +788,11 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "items": [
         {
           "cart_item_id": "string",
+          "quantity": "number",
           "product": {
             "product_id": "string",
             "name": "string",
+            "description": "string",
             "categories": ["string"]
           },
           "variant": {
@@ -796,10 +803,12 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
             "image_urls": ["string"],
             "options": [{ "option_name": "string", "value": ["string"] }]
           },
-          "quantity": "number"
+          "subtotal_before_discount": "number",
+          "subtotal_after_discount": "number"
         }
       ],
-      "total_price": "number"
+      "total_price": "number",
+      "total_price_after_discount": "number"
     }
     ```
   - 401 Unauthorized: { "error": "Unauthorized" }
@@ -822,10 +831,15 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     {
       "cart_item_id": "string",
       "product_id": "string",
-      "quantity": "number"
+      "product_variant_id": "string",
+      "quantity": "number",
+      "raw_unit_price": "string",
+      "final_unit_price": "string",
+      "raw_subtotal": "number",
+      "final_subtotal": "number",
+      "added_at": "string"
     }
     ```
-  - 400 Bad Request: { "error": "Invalid quantity" }
   - 401 Unauthorized: { "error": "Unauthorized" }
   - 404 Not Found: { "error": "Cart item not found" }
 
@@ -862,26 +876,38 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "order_id": "string",
       "items": [
         {
+          "cart_item_id": "string",
+          "quantity": "number",
           "product": {
             "product_id": "string",
             "name": "string",
             "description": "string",
-            "category": ["string"],
-            "price": "number",
-            "image_url": "string"
+            "categories": ["string"]
           },
-          "quantity": "number"
+          "variant": {
+            "product_variant_id": "string",
+            "sku": "string",
+            "raw_price": "string",
+            "final_price": "string",
+            "image_urls": ["string"],
+            "options": [{ "option_name": "string", "value": ["string"] }]
+          },
+          "subtotal_before_discount": "number",
+          "subtotal_after_discount": "number"
         }
       ],
-      "raw_total_amount": "number",
-      "final_total_amount": "number",
+      "total_price": "number",
+      "total_price_after_discount": "number",
       "receiver_name": "string",
       "phone": "string",
       "address": "string",
       "status_history": [
         {
-          "status": "string",
-          "updated_at": "string"
+          "status_code": "string",
+          "status_name": "string",
+          "changed_by": "string",
+          "changed_at": "string",
+          "note": "string"
         }
       ],
       "created_at": "string"
@@ -942,26 +968,37 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
           "order_id": "string",
           "items": [
             {
+              "cart_item_id": "string",
+              "quantity": "number",
               "product": {
                 "product_id": "string",
                 "name": "string",
-                "description": "string",
-                "category": ["string"],
-                "price": "number",
-                "image_url": "string"
+                "description": "string"
               },
-              "quantity": "number"
+              "variant": {
+                "product_variant_id": "string",
+                "sku": "string",
+                "raw_price": "string",
+                "final_price": "string",
+                "image_urls": ["string"],
+                "options": [{ "option_name": "string", "value": ["string"] }]
+              },
+              "subtotal_before_discount": "number",
+              "subtotal_after_discount": "number"
             }
           ],
-          "raw_total_amount": "number",
-          "final_total_amount": "number",
+          "total_price": "number",
+          "total_price_after_discount": "number",
           "receiver_name": "string",
           "phone": "string",
           "address": "string",
           "status_history": [
             {
-              "status": "string",
-              "updated_at": "string"
+              "status_code": "string",
+              "status_name": "string",
+              "changed_by": "string",
+              "changed_at": "string",
+              "note": "string"
             }
           ],
           "created_at": "string"
@@ -980,7 +1017,8 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Request body:
   ```json
   {
-    "status": "string"
+    "status_code": "string",
+    "note": "string?"
   }
   ```
 - Response:
@@ -988,31 +1026,20 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     ```json
     {
       "order_id": "string",
-      "items": [
-        {
-          "product": {
-            "product_id": "string",
-            "name": "string",
-            "description": "string",
-            "category": ["string"],
-            "price": "number",
-            "image_url": "string"
-          },
-          "quantity": "number"
-        }
-      ],
-      "raw_total_amount": "number",
-      "final_total_amount": "number",
-      "receiver_name": "string",
-      "phone": "string",
-      "address": "string",
+      "status_code": "string",
+      "note": "string",
+      "previous_status_code": "string",
+      "previous_note": "string",
+      "updated_at": "string",
       "status_history": [
         {
-          "status": "string",
-          "updated_at": "string"
+          "status_code": "string",
+          "status_name": "string",
+          "changed_by": "string",
+          "changed_at": "string",
+          "note": "string"
         }
-      ],
-      "created_at": "string"
+      ]
     }
     ```
   - 400 Bad Request: { "error": "Invalid status" }

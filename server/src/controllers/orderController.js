@@ -1,0 +1,79 @@
+const { EmptyCartError, BadRequestError, OutOfStockError } = require('../errors/BadRequestError')
+const { NotFoundError } = require('../errors/NotFoundError')
+
+const orderService = require('../services/orderService')
+
+const createOrder = async (req, res) => {
+    const userId = req.user.user_id
+    if(!userId) return res.status(404).json({error: "No user found"})
+
+    const cartId = req.user.cart_id
+    if(!cartId) return res.status(404).json({error: "No cart found"})
+
+    const receiverName = req.body.receiver_name
+    const phone = req.body.phone
+    const address = req.body.address
+
+    if(!receiverName || !phone || !address){
+        return res.status(400).json({error: "Missing or invalid fields"})
+    }
+
+    try{
+        const newOrder = await orderService.createOrder(userId, cartId, receiverName, phone, address)
+
+        return res.status(201).json(newOrder)
+    } catch (e){
+        console.log(e)
+        if (e instanceof EmptyCartError){
+            return res.status(e.statusCode).json({error: "Empty cart"})
+        } else if (e instanceof OutOfStockError) {
+            return res.status(e.statusCode).json({error: e.message})
+        } else if (e instanceof BadRequestError){
+            return res.status(e.statusCode).json({error: "Bad request"})
+        } else {
+            return res.status(500).json({error: "Internal server error"})
+        }
+    }
+}
+
+const getOrdersHistory = async (req, res) => {
+    const userId = req.user.user_id
+    if(!userId) return res.status(404).json({error: "No user found"})
+
+    try{
+        const orders = await orderService.getOrders(userId)
+
+        return res.status(200).json(orders)
+    } catch (e){
+        console.log(e)
+        return res.status(500).json({error: "Internal server error"})
+    }
+}
+
+const updateOrderStatus = async (req, res) => {
+    try{
+        const orderId = req.params.order_id
+        const adminId = req.user.user_id
+        const statusCode = req.body.status_code
+        const note = req.body.note
+
+        const updated = await orderService.updateOrderStatus(orderId, statusCode, adminId, note)
+
+        return res.status(200).json(updated)
+    } catch(err){
+        console.log(err)
+        if(err instanceof BadRequestError){
+            return res.status(err.statusCode).json({error: err.message})
+        } else if(err instanceof NotFoundError){
+            return res.status(err.statusCode).json({error: err.message})
+        } else {
+            return res.status(500).json({error: "Internal server error"})
+        }
+    }
+}
+
+module.exports = {
+    createOrder,
+    getOrdersHistory,
+    updateOrderStatus
+}

@@ -50,122 +50,123 @@ async function main() {
 
     await createCategories()
     await createProducts()
+    await createStatus()
 }
 
 async function createProducts(){
     const products = [
         {
-        name: 'Áo thun cotton unisex',
-        description: 'Áo thun cotton 100%, thấm hút mồ hôi tốt.',
-        categories: ['CAT_TSHIRT', 'CAT_SUMMER'],
-        options: [
-            { option_name: 'Color', values: ['Black', 'White', 'Gray'] },
-            { option_name: 'Size', values: ['S', 'M', 'L', 'XL'] },
-        ],
-        variants: [
-            { sku: 'TS-BLK-M', raw_price: 199000, stock_quantity: 30, is_disabled: false, options: [{ option_name: 'Color', value: 'Black' }, { option_name: 'Size', value: 'M' }] },
-            { sku: 'TS-WHT-L', raw_price: 199000, stock_quantity: 25, is_disabled: false, options: [{ option_name: 'Color', value: 'White' }, { option_name: 'Size', value: 'L' }] },
-        ],
+            name: 'Áo thun cotton unisex',
+            description: 'Áo thun cotton 100%, thấm hút mồ hôi tốt.',
+            categories: ['CAT_TSHIRT', 'CAT_SUMMER'],
+            options: [
+                { option_name: 'Color', values: ['Black', 'White', 'Gray'] },
+                { option_name: 'Size', values: ['S', 'M', 'L', 'XL'] },
+            ],
+            variants: [
+                { sku: 'TS-BLK-M', raw_price: 199000, stock_quantity: 30, is_disabled: false, options: [{ option_name: 'Color', value: 'Black' }, { option_name: 'Size', value: 'M' }] },
+                { sku: 'TS-WHT-L', raw_price: 199000, stock_quantity: 25, is_disabled: false, options: [{ option_name: 'Color', value: 'White' }, { option_name: 'Size', value: 'L' }] },
+            ],
         },
         {
-        name: 'Áo sơ mi trắng công sở',
-        description: 'Áo sơ mi dáng slim-fit, vải chống nhăn.',
-        categories: ['CAT_SHIRT', 'CAT_FORMAL'],
-        options: [{ option_name: 'Size', values: ['S', 'M', 'L', 'XL'] }],
-        variants: [{ sku: 'SH-WHT-M', raw_price: 299000, stock_quantity: 20, is_disabled: false, options: [{ option_name: 'Size', value: 'M' }] }],
+            name: 'Áo sơ mi trắng công sở',
+            description: 'Áo sơ mi dáng slim-fit, vải chống nhăn.',
+            categories: ['CAT_SHIRT', 'CAT_FORMAL'],
+            options: [{ option_name: 'Size', values: ['S', 'M', 'L', 'XL'] }],
+            variants: [{ sku: 'SH-WHT-M', raw_price: 299000, stock_quantity: 20, is_disabled: false, options: [{ option_name: 'Size', value: 'M' }] }],
         },
         {
-        name: 'Quần jean slim-fit',
-        description: 'Jean nam nữ co giãn, form ôm vừa.',
-        categories: ['CAT_JEANS'],
-        options: [
-            { option_name: 'Color', values: ['Blue', 'Black'] },
-            { option_name: 'Size', values: ['29', '30', '31', '32'] },
-        ],
-        variants: [
-            { sku: 'JN-BLU-30', raw_price: 399000, stock_quantity: 25, is_disabled: false, options: [{ option_name: 'Color', value: 'Blue' }, { option_name: 'Size', value: '30' }] },
-            { sku: 'JN-BLK-31', raw_price: 399000, stock_quantity: 20, is_disabled: false, options: [{ option_name: 'Color', value: 'Black' }, { option_name: 'Size', value: '31' }] },
-        ],
+            name: 'Quần jean slim-fit',
+            description: 'Jean nam nữ co giãn, form ôm vừa.',
+            categories: ['CAT_JEANS'],
+            options: [
+                { option_name: 'Color', values: ['Blue', 'Black'] },
+                { option_name: 'Size', values: ['29', '30', '31', '32'] },
+            ],
+            variants: [
+                { sku: 'JN-BLU-30', raw_price: 399000, stock_quantity: 25, is_disabled: false, options: [{ option_name: 'Color', value: 'Blue' }, { option_name: 'Size', value: '30' }] },
+                { sku: 'JN-BLK-31', raw_price: 399000, stock_quantity: 20, is_disabled: false, options: [{ option_name: 'Color', value: 'Black' }, { option_name: 'Size', value: '31' }] },
+            ],
         },
         {
-        name: 'Áo hoodie unisex form rộng',
-        description: 'Hoodie nỉ cotton, form rộng, in hình front logo.',
-        categories: ['CAT_HOODIE', 'CAT_JACKET'],
-        options: [
-            { option_name: 'Color', values: ['Gray', 'Black', 'Beige'] },
-            { option_name: 'Size', values: ['M', 'L', 'XL'] },
-        ],
-        variants: [
-            { sku: 'HD-GRY-L', raw_price: 359000, stock_quantity: 22, is_disabled: false, options: [{ option_name: 'Color', value: 'Gray' }, { option_name: 'Size', value: 'L' }] },
-            { sku: 'HD-BLK-M', raw_price: 359000, stock_quantity: 18, is_disabled: false, options: [{ option_name: 'Color', value: 'Black' }, { option_name: 'Size', value: 'M' }] },
-        ],
+            name: 'Áo hoodie unisex form rộng',
+            description: 'Hoodie nỉ cotton, form rộng, in hình front logo.',
+            categories: ['CAT_HOODIE', 'CAT_JACKET'],
+            options: [
+                { option_name: 'Color', values: ['Gray', 'Black', 'Beige'] },
+                { option_name: 'Size', values: ['M', 'L', 'XL'] },
+            ],
+            variants: [
+                { sku: 'HD-GRY-L', raw_price: 359000, stock_quantity: 22, is_disabled: false, options: [{ option_name: 'Color', value: 'Gray' }, { option_name: 'Size', value: 'L' }] },
+                { sku: 'HD-BLK-M', raw_price: 359000, stock_quantity: 18, is_disabled: false, options: [{ option_name: 'Color', value: 'Black' }, { option_name: 'Size', value: 'M' }] },
+            ],
         },
         {
-        name: 'Đầm công sở dáng xòe',
-        description: 'Đầm nữ thanh lịch, chất vải co giãn nhẹ.',
-        categories: ['CAT_DRESS', 'CAT_FORMAL'],
-        options: [{ option_name: 'Size', values: ['S', 'M', 'L'] }],
-        variants: [{ sku: 'DR-OFF-M', raw_price: 459000, stock_quantity: 15, is_disabled: false, options: [{ option_name: 'Size', value: 'M' }] }],
+            name: 'Đầm công sở dáng xòe',
+            description: 'Đầm nữ thanh lịch, chất vải co giãn nhẹ.',
+            categories: ['CAT_DRESS', 'CAT_FORMAL'],
+            options: [{ option_name: 'Size', values: ['S', 'M', 'L'] }],
+            variants: [{ sku: 'DR-OFF-M', raw_price: 459000, stock_quantity: 15, is_disabled: false, options: [{ option_name: 'Size', value: 'M' }] }],
         },
         {
-        name: 'Quần short kaki nam',
-        description: 'Short kaki basic, thoáng mát, dễ phối đồ.',
-        categories: ['CAT_SHORT', 'CAT_SUMMER'],
-        options: [
-            { option_name: 'Color', values: ['Beige', 'Navy'] },
-            { option_name: 'Size', values: ['M', 'L', 'XL'] },
-        ],
-        variants: [
-            { sku: 'SHRT-BEI-L', raw_price: 259000, stock_quantity: 25, is_disabled: false, options: [{ option_name: 'Color', value: 'Beige' }, { option_name: 'Size', value: 'L' }] },
-        ],
+            name: 'Quần short kaki nam',
+            description: 'Short kaki basic, thoáng mát, dễ phối đồ.',
+            categories: ['CAT_SHORT', 'CAT_SUMMER'],
+            options: [
+                { option_name: 'Color', values: ['Beige', 'Navy'] },
+                { option_name: 'Size', values: ['M', 'L', 'XL'] },
+            ],
+            variants: [
+                { sku: 'SHRT-BEI-L', raw_price: 259000, stock_quantity: 25, is_disabled: false, options: [{ option_name: 'Color', value: 'Beige' }, { option_name: 'Size', value: 'L' }] },
+            ],
         },
         {
-        name: 'Áo len cổ lọ mùa đông',
-        description: 'Áo len dày cổ cao, giữ ấm tốt, phù hợp mùa lạnh.',
-        categories: ['CAT_SWEATER', 'CAT_COAT'],
-        options: [
-            { option_name: 'Color', values: ['Brown', 'Gray'] },
-            { option_name: 'Size', values: ['M', 'L', 'XL'] },
-        ],
-        variants: [
-            { sku: 'SW-BRN-L', raw_price: 429000, stock_quantity: 20, is_disabled: false, options: [{ option_name: 'Color', value: 'Brown' }, { option_name: 'Size', value: 'L' }] },
-        ],
+            name: 'Áo len cổ lọ mùa đông',
+            description: 'Áo len dày cổ cao, giữ ấm tốt, phù hợp mùa lạnh.',
+            categories: ['CAT_SWEATER', 'CAT_COAT'],
+            options: [
+                { option_name: 'Color', values: ['Brown', 'Gray'] },
+                { option_name: 'Size', values: ['M', 'L', 'XL'] },
+            ],
+            variants: [
+                { sku: 'SW-BRN-L', raw_price: 429000, stock_quantity: 20, is_disabled: false, options: [{ option_name: 'Color', value: 'Brown' }, { option_name: 'Size', value: 'L' }] },
+            ],
         },
         {
-        name: 'Chân váy xếp ly dài',
-        description: 'Chân váy dài, vải nhẹ, dễ phối sơ mi.',
-        categories: ['CAT_SKIRT'],
-        options: [
-            { option_name: 'Color', values: ['Beige', 'Black'] },
-            { option_name: 'Size', values: ['S', 'M', 'L'] },
-        ],
-        variants: [
-            { sku: 'SK-BEI-M', raw_price: 299000, stock_quantity: 30, is_disabled: false, options: [{ option_name: 'Color', value: 'Beige' }, { option_name: 'Size', value: 'M' }] },
-        ],
+            name: 'Chân váy xếp ly dài',
+            description: 'Chân váy dài, vải nhẹ, dễ phối sơ mi.',
+            categories: ['CAT_SKIRT'],
+            options: [
+                { option_name: 'Color', values: ['Beige', 'Black'] },
+                { option_name: 'Size', values: ['S', 'M', 'L'] },
+            ],
+            variants: [
+                { sku: 'SK-BEI-M', raw_price: 299000, stock_quantity: 30, is_disabled: false, options: [{ option_name: 'Color', value: 'Beige' }, { option_name: 'Size', value: 'M' }] },
+            ],
         },
         {
-        name: 'Áo sơ mi caro cổ bẻ',
-        description: 'Áo sơ mi caro trẻ trung, phù hợp dạo phố.',
-        categories: ['CAT_SHIRT'],
-        options: [
-            { option_name: 'Color', values: ['Red', 'Blue'] },
-            { option_name: 'Size', values: ['M', 'L', 'XL'] },
-        ],
-        variants: [
-            { sku: 'SH-CAR-L', raw_price: 329000, stock_quantity: 26, is_disabled: false, options: [{ option_name: 'Color', value: 'Red' }, { option_name: 'Size', value: 'L' }] },
-        ],
+            name: 'Áo sơ mi caro cổ bẻ',
+            description: 'Áo sơ mi caro trẻ trung, phù hợp dạo phố.',
+            categories: ['CAT_SHIRT'],
+            options: [
+                { option_name: 'Color', values: ['Red', 'Blue'] },
+                { option_name: 'Size', values: ['M', 'L', 'XL'] },
+            ],
+            variants: [
+                { sku: 'SH-CAR-L', raw_price: 329000, stock_quantity: 26, is_disabled: false, options: [{ option_name: 'Color', value: 'Red' }, { option_name: 'Size', value: 'L' }] },
+            ],
         },
         {
-        name: 'Áo khoác măng tô dài',
-        description: 'Áo khoác dáng dài, dạ mịn, giữ ấm tốt.',
-        categories: ['CAT_COAT', 'CAT_FORMAL'],
-        options: [
-            { option_name: 'Color', values: ['Black', 'Gray'] },
-            { option_name: 'Size', values: ['M', 'L', 'XL'] },
-        ],
-        variants: [
-            { sku: 'CT-BLK-L', raw_price: 699000, stock_quantity: 12, is_disabled: false, options: [{ option_name: 'Color', value: 'Black' }, { option_name: 'Size', value: 'L' }] },
-        ],
+            name: 'Áo khoác măng tô dài',
+            description: 'Áo khoác dáng dài, dạ mịn, giữ ấm tốt.',
+            categories: ['CAT_COAT', 'CAT_FORMAL'],
+            options: [
+                { option_name: 'Color', values: ['Black', 'Gray'] },
+                { option_name: 'Size', values: ['M', 'L', 'XL'] },
+            ],
+            variants: [
+                { sku: 'CT-BLK-L', raw_price: 699000, stock_quantity: 12, is_disabled: false, options: [{ option_name: 'Color', value: 'Black' }, { option_name: 'Size', value: 'L' }] },
+            ],
         },
     ];
 
@@ -283,6 +284,48 @@ async function createCategories(){
         data: categories,
         skipDuplicates: true,
     });
+}
+
+async function createStatus(){
+    const status = [
+    {
+        order_status_code: "CREATED",
+        order_status_name: "Chờ xác nhận",
+    },
+    {
+        order_status_code: "CONFIRMED",
+        order_status_name: "Đã xác nhận",
+    },
+    {
+        order_status_code: "PREPARING",
+        order_status_name: "Chuẩn bị hàng",
+    },
+    {
+        order_status_code: "SHIPPING",
+        order_status_name: "Đang vận chuyển",
+    },
+    {
+        order_status_code: "DELIVERED",
+        order_status_name: "Đã giao hàng",
+    },
+    {
+        order_status_code: "COMPLETED",
+        order_status_name: "Hoàn thành",
+    },
+    {
+        order_status_code: "CANCELLED",
+        order_status_name: "Đã hủy",
+    },
+    {
+        order_status_code: "REFUNDED",
+        order_status_name: "Đã hoàn tiền",
+    }
+    ];
+
+    await prisma.orderStatus.createMany({
+        data: status,
+        skipDuplicates: true
+    })
 }
 
 main()
