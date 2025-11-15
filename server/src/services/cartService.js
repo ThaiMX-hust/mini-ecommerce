@@ -28,6 +28,13 @@ async function addItemToCart(cart_id, product_variant_id, quantity = 1) {
   }
 }
 
+async function getCartIdFromUserId(user_id){
+  if(user_id == null){
+    throw new NotFoundError("User not found", 400)
+  }
+  return await cartRepository.getCartFromUserId(user_id)
+}
+
 /**
  * Lấy cart của user
  */
@@ -56,7 +63,7 @@ async function getCart(cart_id) {
         );
 
         if (!productVariant || !productVariant.Product) {
-          throw new Error(`Variant or product not found for item ${item.cart_item_id}`);
+          throw new NotFoundError(`Variant or product not found for item ${item.cart_item_id}`, 404);
         }
 
         const productWithCategories = await prisma.product.findUnique({
@@ -178,6 +185,7 @@ async function deleteItemFromCart(cart_id, cart_item_id){
 
 module.exports = {
     addItemToCart,
+    getCartIdFromUserId,
     getCart,
     updateItemQuantityFromCart,
     deleteItemFromCart

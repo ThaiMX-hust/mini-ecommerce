@@ -1,6 +1,7 @@
 const cartService = require('../services/cartService')
 const cartRepository = require('../repositories/cartRepository')
-const productService = require('../services/productService')
+const productService = require('../services/productService');
+const { OutOfStockError } = require('../errors/BadRequestError');
 
 const cartTest = async (req, res) => {
     const responsePayload = await cartService.cartTest();
@@ -36,7 +37,10 @@ const addToCart = async (req, res) => {
         }
     } catch (err){
         console.log(err)
-        return res.status(500).json({error: "Internal server error"})
+        if(err instanceof OutOfStockError){
+            return res.status(400).json({error: err.message})
+        } else 
+            return res.status(500).json({error: "Internal server error"})
     }
 }
 

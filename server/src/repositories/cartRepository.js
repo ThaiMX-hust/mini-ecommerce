@@ -1,5 +1,6 @@
 const {PrismaClient} = require('@prisma/client');
-const productRepository = require("./productRepository")
+const productRepository = require("./productRepository");
+const { OutOfStockError } = require('../errors/BadRequestError');
 
 const prisma = new PrismaClient();
 
@@ -71,6 +72,9 @@ async function addExistingItemToCartById(cart_id, cart_item_id, quantity = 1) {
     const currentItem = await getCartItemFromCartId(cart_id, cart_item_id);
     if (!currentItem) throw new Error('Cart item not found');
 
+    if(quantity > currentItem.product_variant.stock_quantity)
+      throw new OutOfStockError("Out of stock", 400)
+
     const newQuantity = currentItem.quantity + quantity;
     if (newQuantity <= 0) {
         deleteItemFromCartById(cart_id, cart_item_id)
@@ -118,6 +122,9 @@ async function updateItemQuantityFromCartById(cart_id, cart_item_id, quantity){
 
 async function addNewItemToCartById(cart_id, product_variant_id, quantity = 1) {
   const productVariant = await productRepository.getProductVariantById(prisma, product_variant_id);
+
+  if(quantity > productVariant.stock_quantity)
+    throw new OutOfStockError("Out of stock", 400)
 
   const rawUnitPrice = Number(productVariant.raw_price);
   const finalUnitPrice = Number(productVariant.final_price ?? rawUnitPrice);
@@ -198,7 +205,7 @@ async function deleteItemFromCartById(cart_id, cart_item_id) {
     });
 
     if (!item) {
-        throw new Error('Cart item not found or does not belong to this cart');
+        throw new NotFoundError('Cart item not found or does not belong to this cart', 404);
     }
 
     const deletedItem = await prisma.cartItems.delete({
@@ -233,7 +240,7 @@ async function getCartItems(cart_id){
   })
 
   if(!cartItems) {
-    throw new Error("This cart_id does not exist or has been deleted")
+    throw new NotFoundError("This cart_id does not exist or has been deleted", 404)
   }
 
   return cartItems

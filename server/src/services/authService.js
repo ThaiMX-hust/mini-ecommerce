@@ -1,10 +1,13 @@
 const jwt = require('jsonwebtoken');
 const { hashPassword, verifyPassword } = require('../utils/passwordUtils');
+const cartRepository = require('../repositories/cartRepository')
 const userService = require('./userService');
 const emailService = require('./emailService');
+const {redisClient} = require('../infrastructure/redis');
 
 async function loginUser(email, password) {
     const user = await userService.getUserWithPasswordByEmail(email);
+    const cart = await cartRepository.getCartFromUserId(user.user_id)
     if (!user) {
         return null;
     }
@@ -15,20 +18,28 @@ async function loginUser(email, password) {
         return null;
     }
 
-    const token = jwt.sign(
-        {
-            user_id: user.user_id,
-            cart_id: user.Cart?.cart_id || null,
-            email: user.email,
-            role: user.role,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-    );
+    const redis = await redisClient()
+    let token = null
+    token = await redis.get(`user:${user.user_id}:token`)
+
+    if(!token){
+        token = jwt.sign(
+            {
+                user_id: user.user_id,
+                cart_id: cart.cart_id,
+                email: user.email,
+                role: user.role,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        await redis.set(`user:${user.user_id}:token`, token, 'EX', 3600)  
+    }
 
     return { token, user: {
         user_id: user.user_id,
-        card_id: user.Cart?.cart_id || null,
+        card_id: cart.cart_id,
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,

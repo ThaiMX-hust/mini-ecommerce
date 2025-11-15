@@ -7,5 +7,7 @@ const { authenticate, authenticateOptional } = require('../middleware/authentica
 
 router.post('/', authenticate, orderController.createOrder)
 
+router.get('/', authenticate, orderController.getOrdersHistory)
+
 
 module.exports = router

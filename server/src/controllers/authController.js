@@ -16,7 +16,11 @@ const login = async (req, res) => {
         return res.status(200).json(result);
     } catch (error) {
         console.error('Error logging in user:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        if(error instanceof NotFoundError){
+            return res.status(404).json({ error: error.message });
+        } else {
+            return res.status(500).json({ error: 'Internal server error' });
+        }
     }
 }
 

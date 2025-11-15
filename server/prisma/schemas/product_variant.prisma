@@ -9,7 +9,7 @@ model ProductVariant {
     created_at         DateTime @default(now())
     updated_at         DateTime @updatedAt
 
-    version Int
+    version Int @default(0)
 
     Product              Product                @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
     ProductVariantOption ProductVariantOption[]

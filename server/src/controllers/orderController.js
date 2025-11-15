@@ -26,7 +26,7 @@ const createOrder = async (req, res) => {
         if (e instanceof EmptyCartError){
             return res.status(e.statusCode).json({error: "Empty cart"})
         } else if (e instanceof OutOfStockError) {
-            return res.status(e.statusCode).json({error: "Out of stock"})
+            return res.status(e.statusCode).json({error: e.message})
         } else if (e instanceof BadRequestError){
             return res.status(e.statusCode).json({error: "Bad request"})
         } else {
@@ -35,6 +35,21 @@ const createOrder = async (req, res) => {
     }
 }
 
+const getOrdersHistory = async (req, res) => {
+    const userId = req.user.user_id
+    if(!userId) return res.status(404).json({error: "No user found"})
+
+    try{
+        const orders = await orderService.getOrders(userId)
+
+        return res.status(201).json(orders)
+    } catch (e){
+        console.log(e)
+        return res.status(500).json({error: "Internal server error"})
+    }
+}
+
 module.exports = {
-    createOrder
+    createOrder,
+    getOrdersHistory
 }
