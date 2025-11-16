@@ -70,6 +70,11 @@ async function getProductById(product_id, isAdmin) {
     };
 }
 
+async function getProductVariantById(product_variant_id){
+    const prisma = productRepository.getPrismaClientInstance()
+    return await productRepository.getProductVariantById(prisma, product_variant_id)
+}
+
 async function addProduct(productData) {
     const { name, description, categories, is_disabled = false, options, variants, variant_images } = productData;
 
@@ -181,7 +186,7 @@ async function updateProductOption(product_id, product_option_id, optionData) {
     if (!product)
         return null;
     
-    const productOption = await productRepository.getProductOptionById(prismaClient, product_option_id);
+    const productOption = await productRepository.getProductOptionById(product_option_id);
     if (!productOption || productOption.product_id !== product_id)
         return null;
 
@@ -207,7 +212,7 @@ async function updateProductVariant(product_id, product_variant_id, variantData)
     if (!product)
         return null;
     
-    const productVariant = await productRepository.getProductVariantById(prismaClient, product_variant_id);
+    const productVariant = await productRepository.getProductVariantById(product_variant_id);
     if (!productVariant || productVariant.product_id !== product_id)
         return null;
 
@@ -240,13 +245,13 @@ async function deleteProduct(product_id) {
 }
 
 async function deleteProductVariant(product_id, product_variant_id) {
-    const prisma = productRepository.getPrismaClientInstance();
-    const productVariant = await productRepository.getProductVariantById(prisma, product_variant_id);
+    // const prisma = productRepository.getPrismaClientInstance();
+    const productVariant = await productRepository.getProductVariantById(product_variant_id);
 
     if (productVariant.product_id !== product_id)
         return null;
 
-    return await productRepository.deleteProductVariant(prisma, product_variant_id);
+    return await productRepository.deleteProductVariant(product_variant_id);
 }
 
 async function addReview(product_id, review) {
@@ -326,6 +331,7 @@ async function restore(product_id) {
 module.exports = {
     getProducts,
     getProductById,
+    getProductVariantById,
     addProduct,
     updateProduct,
     updateProductOption,

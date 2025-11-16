@@ -57,7 +57,7 @@ async function getProductById(productId, getDisabled = false, getDeleted = false
     return product;
 }
 
-async function getProductVariantById(client = prisma, product_variant_id) {
+async function getProductVariantById(client, product_variant_id) {
   const productVariant = await client.productVariant.findUnique({
     where: { product_variant_id },
     include: {
@@ -135,7 +135,7 @@ async function updateProductVariant(client, product_variant_id, variantData) {
         await client.productVariantOption.deleteMany({
             where: { product_variant_id }
         });
-        console.log(productOptions);
+
         // Add options
         const optionValueIds = options.map(option =>
             productOptions.find(po => po.product_option_id === option.product_option_id)

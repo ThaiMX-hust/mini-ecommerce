@@ -10,6 +10,6 @@ router.post('/', upload.single('avatar'), register);
 
 router.post('/admin', authenticate, requireAdmin, upload.single('avatar'), registerAdmin);
 
-router.patch('/:user_id', authenticate, updateUser)
+router.patch('/:user_id', authenticate, upload.single('avatar'), updateUser);
 
 module.exports = router;

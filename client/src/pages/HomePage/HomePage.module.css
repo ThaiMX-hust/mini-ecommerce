@@ -1,0 +1,80 @@
+.homePage {
+  background-color: #fff;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+.newArrivals {
+  padding: 80px 0;
+  text-align: center;
+}
+.sectionTitle {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.sectionDescription {
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+  color: #666;
+  line-height: 1.6;
+}
+.categoryTabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.tab {
+  padding: 10px 25px;
+  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+.tab:hover {
+  background-color: #e0e0e0;
+}
+.tab.active {
+  background-color: #111;
+  color: #fff;
+  border-color: #111;
+}
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+.loading,
+.error {
+  margin: 40px 0;
+  font-size: 1.2rem;
+  color: #888;
+}
+.error {
+  color: red;
+}
+.viewMoreContainer {
+  margin-top: 40px;
+}
+.viewMoreButton {
+  padding: 15px 40px;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.viewMoreButton:hover {
+  background-color: #333;
+}

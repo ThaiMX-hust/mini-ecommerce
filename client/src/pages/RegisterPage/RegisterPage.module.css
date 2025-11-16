@@ -1,0 +1,169 @@
+/* src/pages/RegisterPage/RegisterPage.module.css */
+
+/* --- Tái sử dụng các style layout chung từ LoginPage --- */
+.registerPageContainer {
+  /* Đổi tên class cho phù hợp */
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f5f7;
+}
+.leftPanel {
+  width: 45%;
+  max-width: 500px;
+  height: 80vh;
+  min-height: 600px;
+}
+.leftPanel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rightPanel {
+  width: 55%;
+  max-width: 600px;
+  height: 80vh;
+  min-height: 600px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 40px; /* Giảm padding dọc một chút */
+  box-sizing: border-box;
+}
+.registerFormWrapper {
+  /* Đổi tên class */
+  width: 100%;
+  max-width: 450px; /* Tăng độ rộng form một chút cho vừa các ô */
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+.logo {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 5px;
+  margin: 0 0 10px 0;
+}
+.title {
+  font-weight: 400;
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #333;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #aaa;
+  margin: 20px 0;
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+.divider span {
+  padding: 0 15px;
+}
+.inputGroup {
+  text-align: left;
+  margin-bottom: 15px;
+}
+.inputGroup label {
+  display: block;
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 5px;
+}
+.inputGroup input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+.btnCreateAccount {
+  /* Đổi tên class */
+  padding: 15px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: bold;
+}
+.btnCreateAccount:hover {
+  background-color: #333;
+}
+.terms {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 20px;
+}
+.errorMessage,
+.successMessage {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+.errorMessage {
+  color: #d70018;
+  background-color: #ffebee;
+  border: 1px solid #d70018;
+}
+.successMessage {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+/* --- Các style riêng cho trang Đăng ký --- */
+.formRow {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+.formRow .inputGroup {
+  flex: 1;
+}
+.extraLink {
+  font-size: 14px;
+  color: #333;
+  margin-top: 15px;
+}
+.extraLink a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+/* Style cho input file trông đẹp hơn */
+.fileInputLabel {
+  display: block;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  color: #555;
+}
+.fileInputLabel:hover {
+  background-color: #f1f1f1;
+}
+.fileInput {
+  display: none; /* Ẩn input mặc định đi */
+}
+.fileName {
+  font-size: 12px;
+  color: #777;
+  margin-top: 5px;
+}

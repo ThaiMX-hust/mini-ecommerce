@@ -54,11 +54,40 @@ const registerAdmin = async (req, res) => {
 }
 
 const getUser = async(req, res) => {
-    return res.status(200)
+    try {
+        const user_id = req.params.user_id;
+        if (user_id !== req.user.user_id && req.user.role !== 'ADMIN')
+            return res.status(403).json({ error: 'Forbidden' });
+
+        const user = await userService.getUserById(user_id);
+        if (!user)
+            return res.status(404).json({ error: 'User not found' }); 
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error('Error getting user info:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 }
 
 const updateUser = async(req, res) => {
-    return res.status(200)
+    try {
+        const user_id = req.params.user_id;
+        if (user_id !== req.user.user_id)
+            return res.status(403).json({ error: 'Forbidden' });
+
+        const { first_name, last_name } = req.body;
+        const avatarFile = req.file;
+
+        const user = await userService.updateUser(user_id, { first_name, last_name, avatarFile });
+        if (!user)
+            return res.status(404).json({ error: 'User not found' }); 
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error('Error getting user info:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 }
 
 
