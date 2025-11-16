@@ -1,4 +1,5 @@
 const { EmptyCartError, BadRequestError, OutOfStockError } = require('../errors/BadRequestError')
+const { NotFoundError } = require('../errors/NotFoundError')
 
 const orderService = require('../services/orderService')
 
@@ -26,7 +27,7 @@ const createOrder = async (req, res) => {
         if (e instanceof EmptyCartError){
             return res.status(e.statusCode).json({error: "Empty cart"})
         } else if (e instanceof OutOfStockError) {
-            return res.status(e.statusCode).json({error: "Out of stock"})
+            return res.status(e.statusCode).json({error: e.message})
         } else if (e instanceof BadRequestError){
             return res.status(e.statusCode).json({error: "Bad request"})
         } else {
@@ -35,6 +36,44 @@ const createOrder = async (req, res) => {
     }
 }
 
+const getOrdersHistory = async (req, res) => {
+    const userId = req.user.user_id
+    if(!userId) return res.status(404).json({error: "No user found"})
+
+    try{
+        const orders = await orderService.getOrders(userId)
+
+        return res.status(200).json(orders)
+    } catch (e){
+        console.log(e)
+        return res.status(500).json({error: "Internal server error"})
+    }
+}
+
+const updateOrderStatus = async (req, res) => {
+    try{
+        const orderId = req.params.order_id
+        const adminId = req.user.user_id
+        const statusCode = req.body.status_code
+        const note = req.body.note
+
+        const updated = await orderService.updateOrderStatus(orderId, statusCode, adminId, note)
+
+        return res.status(200).json(updated)
+    } catch(err){
+        console.log(err)
+        if(err instanceof BadRequestError){
+            return res.status(err.statusCode).json({error: err.message})
+        } else if(err instanceof NotFoundError){
+            return res.status(err.statusCode).json({error: err.message})
+        } else {
+            return res.status(500).json({error: "Internal server error"})
+        }
+    }
+}
+
 module.exports = {
-    createOrder
+    createOrder,
+    getOrdersHistory,
+    updateOrderStatus
 }

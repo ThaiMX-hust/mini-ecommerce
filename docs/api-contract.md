@@ -727,10 +727,6 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   ```json
   {
     "product_variant_id": "string",
-    "option": {
-      "option_name": "string",
-      "value": "string"
-    },
     "quantity": "number" // optional, default = 1
   }
   ```
@@ -896,18 +892,22 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
             "image_urls": ["string"],
             "options": [{ "option_name": "string", "value": ["string"] }]
           },
-          "subtotal": "number"
+          "subtotal_before_discount": "number",
+          "subtotal_after_discount": "number"
         }
       ],
-      "raw_total_price": "number",
-      "final_total_price": "number",
+      "total_price": "number",
+      "total_price_after_discount": "number",
       "receiver_name": "string",
       "phone": "string",
       "address": "string",
       "status_history": [
         {
-          "status": "string",
-          "updated_at": "string"
+          "status_code": "string",
+          "status_name": "string",
+          "changed_by": "string",
+          "changed_at": "string",
+          "note": "string"
         }
       ],
       "created_at": "string"
@@ -973,8 +973,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
               "product": {
                 "product_id": "string",
                 "name": "string",
-                "description": "string",
-                "categories": ["string"]
+                "description": "string"
               },
               "variant": {
                 "product_variant_id": "string",
@@ -984,18 +983,22 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
                 "image_urls": ["string"],
                 "options": [{ "option_name": "string", "value": ["string"] }]
               },
-              "subtotal": "number"
+              "subtotal_before_discount": "number",
+              "subtotal_after_discount": "number"
             }
           ],
-          "raw_total_price": "number",
-          "final_total_price": "number",
+          "total_price": "number",
+          "total_price_after_discount": "number",
           "receiver_name": "string",
           "phone": "string",
           "address": "string",
           "status_history": [
             {
-              "status": "string",
-              "updated_at": "string"
+              "status_code": "string",
+              "status_name": "string",
+              "changed_by": "string",
+              "changed_at": "string",
+              "note": "string"
             }
           ],
           "created_at": "string"
@@ -1014,7 +1017,8 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Request body:
   ```json
   {
-    "status": "string"
+    "status_code": "string",
+    "note": "string?"
   }
   ```
 - Response:
@@ -1022,39 +1026,20 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     ```json
     {
       "order_id": "string",
-      "items": [
-        {
-          "cart_item_id": "string",
-          "quantity": "number",
-          "product": {
-            "product_id": "string",
-            "name": "string",
-            "description": "string",
-            "categories": ["string"]
-          },
-          "variant": {
-            "product_variant_id": "string",
-            "sku": "string",
-            "raw_price": "string",
-            "final_price": "string",
-            "image_urls": ["string"],
-            "options": [{ "option_name": "string", "value": ["string"] }]
-          },
-          "subtotal": "number"
-        }
-      ],
-      "raw_total_price": "number",
-      "final_total_price": "number",
-      "receiver_name": "string",
-      "phone": "string",
-      "address": "string",
+      "status_code": "string",
+      "note": "string",
+      "previous_status_code": "string",
+      "previous_note": "string",
+      "updated_at": "string",
       "status_history": [
         {
-          "status": "string",
-          "updated_at": "string"
+          "status_code": "string",
+          "status_name": "string",
+          "changed_by": "string",
+          "changed_at": "string",
+          "note": "string"
         }
-      ],
-      "created_at": "string"
+      ]
     }
     ```
   - 400 Bad Request: { "error": "Invalid status" }

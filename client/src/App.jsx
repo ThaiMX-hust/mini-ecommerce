@@ -7,7 +7,7 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage";
 // import ProductListPage from './pages/ProductListPage/ProductListPage';
 // import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
 // import CartPage from './pages/CartPage/CartPage';
-// import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
+import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
 
 function App() {
   return (
@@ -31,7 +31,8 @@ function App() {
           {/* Các route yêu cầu đăng nhập */}
           {/* Sau này chúng ta sẽ thêm một lớp bảo vệ (Protected Route) ở đây */}
           <Route path="/cart" element={<div>Cart Page</div>} />
-          <Route path="/checkout" element={<div>Checkout Page</div>} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-history" element={<div>Order History Page</div>} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,0 +1,98 @@
+.heroSection {
+  padding: 40px 0;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1400px; /* Tăng max-width để có không gian cho 3 cột */
+  margin: 0 auto;
+  padding: 0 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.heroImageContainer {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block; /* Loại bỏ khoảng trống thừa dưới ảnh */
+}
+
+/* Cột trái và phải */
+#left,
+#right {
+  flex: 1; /* Chia đều không gian còn lại */
+  max-width: 350px;
+  height: 600px;
+}
+
+/* Cột giữa */
+.heroCenter {
+  flex: 1.2; /* Lớn hơn một chút */
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.smallImage {
+  height: 150px;
+}
+
+/* Phần nội dung SALE */
+.saleContent {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.mainHeading {
+  font-family: "Montserrat", sans-serif; /* Sử dụng một font mạnh mẽ, hiện đại */
+  font-size: 6rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #222;
+  margin: 0;
+}
+
+.outline {
+  color: transparent;
+  -webkit-text-stroke: 2px #222;
+}
+
+.subHeading {
+  font-size: 1rem;
+  letter-spacing: 4px;
+  color: #555;
+  margin: 20px 0;
+}
+
+.shopButton {
+  display: inline-block;
+  padding: 15px 45px;
+  background-color: #111;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.shopButton:hover {
+  background-color: #333;
+}
