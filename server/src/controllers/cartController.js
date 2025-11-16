@@ -46,11 +46,16 @@ const addToCart = async (req, res) => {
 
 
 const getCart = async (req, res) => {
-    const userId = req.user.user_id
-    if(!userId) return res.status(404).json({error: "No user found"})
+    const { user_id: userId, cart_id: cartId } = req.user ?? {};
 
-    const cartId = req.user.cart_id
-    if(!cartId) return res.status(404).json({error: "No cart found"})
+    if (!userId) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!cartId) {
+        return res.status(404).json({ error: "Cart not found" });
+    }
+
 
     try {
         const cartItems = await cartService.getCart(cartId);
