@@ -1,0 +1,44 @@
+.sidebar {
+  width: 250px;
+  padding-right: 20px;
+}
+.filterGroup {
+  margin-bottom: 30px;
+}
+.title {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+.checkboxItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.checkboxItem label {
+  margin-left: 10px;
+  cursor: pointer;
+}
+.priceSlider {
+  width: 100%;
+}
+.priceLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+}
+.resetButton {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.resetButton:hover {
+  background-color: #f5f5f5;
+}
+
+.sliderWrapper {
+  padding: 0 10px; /* Thêm một chút đệm ngang cho thanh trượt */
+}
