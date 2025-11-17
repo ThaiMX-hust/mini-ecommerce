@@ -25,29 +25,21 @@ async function loginUser(email, password) {
     if (!isPasswordValid) {
          throw new UnauthorizeError("Invalid email or password", 401)
     }
-
-    const redis = await redisClient()
-    let token = null
-    token = await redis.get(`user:${user.user_id}:token`)
-
-    if(!token){
-        token = jwt.sign(
-            {
-                user_id: user.user_id,
-                cart_id: cart?.cart_id ?? null,
-                email: user.email,
-                role: user.role,
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-        await redis.set(`user:${user.user_id}:token`, token, 'EX', 3600)  
-    }
-
+    
+    const token = jwt.sign(
+        {
+            user_id: user.user_id,
+            cart_id: cart?.cart_id ?? null,
+            email: user.email,
+            role: user.role,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+    );
+    
     return { token, user: {
         user_id: user.user_id,
-        card_id: cart?.cart_id ?? null,
+        cart_id: cart?.cart_id ?? null,
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
