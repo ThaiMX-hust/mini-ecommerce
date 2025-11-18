@@ -5,7 +5,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 // Sau này bạn sẽ tạo các component trang thực sự
 // import ProductListPage from './pages/ProductListPage/ProductListPage';
-// import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
+import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
 // import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
 
@@ -25,7 +25,7 @@ function App() {
           {/* Route cho chi tiết sản phẩm - có dynamic parameter */}
           <Route
             path="/products/:productId"
-            element={<div>Product Detail Page</div>}
+            element={<ProductDetailPage />}
           />
 
           {/* Các route yêu cầu đăng nhập */}

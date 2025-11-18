@@ -1,15 +1,15 @@
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { getProductById, getProductReviews } from '../api/productApi'
+import { getProductById, getProductReviews } from '../../api/productApi'
 import styles from './ProductDetailPage.module.css';
 
-import ImageGallery from '../components/ImageGallery/ImageGallery';
-import ProductInfo from '../components/ProductInfo/ProductInfo';
-import ProductReviews from '../components/ProductReviews/ProductReviews';
+import ImageGallery from '../../components/ImageGallery/ImageGallery';
+import ProductInfo from '../../components/ProductInfo/ProductInfo';
+import ProductReviews from '../../components/ProductReviews/ProductReviews';
 
 // test
-import { mockProductData } from '../_mocks/mockProductData';
-import { mockReviewsData } from '../_mocks/mockReviewsData';
+// import { mockProductData } from '../_mocks/mockProductData';
+// import { mockReviewsData } from '../_mocks/mockReviewsData';
 
 
 const ProductDetailPage = () =>{
@@ -25,72 +25,72 @@ const ProductDetailPage = () =>{
 
 
     // Uncomment phần này để dùng mock data
-    useEffect(() => {
-    const fetchMockData = () => {
-      setLoading(true);
-      setError(null);
-      setTimeout(() => {
-        // Lấy dữ liệu sản phẩm
-        const productData = mockProductData;
-        setProductData(productData);
+//     useEffect(() => {
+//     const fetchMockData = () => {
+//       setLoading(true);
+//       setError(null);
+//       setTimeout(() => {
+//         // Lấy dữ liệu sản phẩm
+//         const productData = mockProductData;
+//         setProductData(productData);
 
-        // Lấy dữ liệu review
-        const reviewsData = mockReviewsData;
-        setReviews(reviewsData.reviews); // <-- THÊM DÒNG NÀY
+//         // Lấy dữ liệu review
+//         const reviewsData = mockReviewsData;
+//         setReviews(reviewsData.reviews); // <-- THÊM DÒNG NÀY
 
-        // Khởi tạo variant mặc định (giữ nguyên)
-        if (productData && productData.variants && productData.variants.length > 0) {
-          const initialVariant = productData.variants[0];
-          setActiveVariant(initialVariant);
-          const initialSelections = {};
-          initialVariant.options.forEach(opt => {
-            initialSelections[opt.product_option_id] = opt.values[0].option_value_id;
-          });
-          setSelectedOptions(initialSelections);
-        }
+//         // Khởi tạo variant mặc định (giữ nguyên)
+//         if (productData && productData.variants && productData.variants.length > 0) {
+//           const initialVariant = productData.variants[0];
+//           setActiveVariant(initialVariant);
+//           const initialSelections = {};
+//           initialVariant.options.forEach(opt => {
+//             initialSelections[opt.product_option_id] = opt.values[0].option_value_id;
+//           });
+//           setSelectedOptions(initialSelections);
+//         }
         
-        setLoading(false);
-      }, 500);
-    };
+//         setLoading(false);
+//       }, 500);
+//     };
 
-    fetchMockData();
-  }, [productId]);
+//     fetchMockData();
+//   }, [productId]);
 
 
     // Comment phần này lại khi dùng mock
-    // useEffect(() => {
-    //     const fetchProductData = async () =>{
-    //         try{
-    //             setLoading(true);
-    //             setError(null);
-    //             const [productResponse, reviewsResponse] = await Promise.all([
-    //             getProductById(productId),
-    //             getProductReviews(productId)
-    //             ]);
-    //             const data = productResponse.data;
-    //             setProductData(data);
-    //             setReviews(reviewsResponse.data.reviews);
-    //             if(data.variants && data.variants.length > 0){
-    //                 const initialVariant = data.variants[0];
-    //                 setActiveVariant(initialVariant);
-    //                 const initialSelections = {};
-    //                 initialVariant.options.forEach(opt => {
-    //                    initialSelections[opt.product_option_id] = opt.values[0].option_value_id;
-    //                 })
-    //                 setSelectedOptions(initialSelections);
-    //             }
-    //         }
-    //         catch(error){
-    //             console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
-    //             setError('Không thể tải dữ liệu sản phẩm. Vui lòng thử lại sau.');
-    //     }
-    //     finally{
-    //         setLoading(false);
-    //     }
-    // };
-    // fetchProductData();
+    useEffect(() => {
+        const fetchProductData = async () =>{
+            try{
+                setLoading(true);
+                setError(null);
+                const [productResponse, reviewsResponse] = await Promise.all([
+                getProductById(productId),
+                getProductReviews(productId)
+                ]);
+                const data = productResponse.data;
+                setProductData(data);
+                setReviews(reviewsResponse.data.reviews);
+                if(data.variants && data.variants.length > 0){
+                    const initialVariant = data.variants[0];
+                    setActiveVariant(initialVariant);
+                    const initialSelections = {};
+                    initialVariant.options.forEach(opt => {
+                       initialSelections[opt.product_option_id] = opt.values[0].option_value_id;
+                    })
+                    setSelectedOptions(initialSelections);
+                }
+            }
+            catch(error){
+                console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
+                setError('Không thể tải dữ liệu sản phẩm. Vui lòng thử lại sau.');
+        }
+        finally{
+            setLoading(false);
+        }
+    };
+    fetchProductData();
 
-    // },[productId]);
+    },[productId]);
 
     // Logic tim variant khi lua chon thay doi
     useEffect(() => {
