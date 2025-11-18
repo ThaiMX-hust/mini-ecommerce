@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink, Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAppContext } from "../../contexts/AppContext";
 import styles from "./Header.module.css";
 
 // Biểu tượng giỏ hàng không thay đổi
@@ -23,7 +23,8 @@ const CartIcon = () => (
 );
 
 const Header = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, openCart, cartItemCount } =
+    useAppContext();
 
   return (
     <header className={styles.header}>
@@ -68,13 +69,16 @@ const Header = () => {
             // Giao diện khi đã đăng nhập
             <>
               {/* Link giỏ hàng giờ chỉ còn là biểu tượng */}
-              <NavLink
-                to="/cart"
+              <button
+                onClick={openCart}
                 className={styles.cartLink}
                 aria-label="View your cart"
               >
                 <CartIcon />
-              </NavLink>
+                {cartItemCount > 0 && (
+                  <span className={styles.cartCount}>{cartItemCount}</span>
+                )}
+              </button>
 
               <div className={styles.userMenu}>
                 <span className={styles.welcome}>
