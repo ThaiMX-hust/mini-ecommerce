@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  max-width: 1400px;
+  margin: 40px auto;
+  padding: 0 15px;
+}
+.mainContent {
+  flex: 1;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.title {
+  font-size: 2rem;
+}
+.info {
+  color: #555;
+}
+.sortDropdown {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.error {
+  color: red;
+}

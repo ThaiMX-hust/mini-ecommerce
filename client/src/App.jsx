@@ -4,8 +4,13 @@ import HomePage from "./pages/HomePage/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 // Sau này bạn sẽ tạo các component trang thực sự
+<<<<<<< HEAD
 // import ProductListPage from './pages/ProductListPage/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
+=======
+import ProductListPage from "./pages/ProductListPage/ProductListPage";
+// import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
+>>>>>>> 7abd35e2fb7cf7ae5758af320da796ae12239196
 // import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
 
@@ -20,7 +25,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
 
           {/* Route cho danh sách sản phẩm */}
-          <Route path="/products" element={<div>Product List Page</div>} />
+          <Route path="/products" element={<ProductListPage />} />
 
           {/* Route cho chi tiết sản phẩm - có dynamic parameter */}
           <Route

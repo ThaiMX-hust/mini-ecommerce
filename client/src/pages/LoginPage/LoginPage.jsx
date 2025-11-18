@@ -8,7 +8,7 @@ import styles from "./LoginPage.module.css";
 
 // 2. Import hàm API đã được tách biệt rõ ràng.
 import { login as apiLogin } from "../../api/authApi";
-import { useAuth } from "../../context/AuthContext"; // useAuth từ Context
+import { useAppContext } from "../../contexts/AppContext";
 
 // 3. Import hình ảnh (đảm bảo đường dẫn chính xác).
 import loginHeroImage from "../../assets/images/login-hero-image.jpg";
@@ -22,7 +22,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth(); // Lấy hàm login từ AuthContext
+  const { login } = useAppContext(); // Lấy hàm login từ AuthContext
 
   // Hàm xử lý chung cho các input, giúp code gọn hơn.
   const handleInputChange = (e) => {
