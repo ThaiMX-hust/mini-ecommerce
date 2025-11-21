@@ -4,15 +4,13 @@ import HomePage from "./pages/HomePage/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 // Sau này bạn sẽ tạo các component trang thực sự
-<<<<<<< HEAD
-// import ProductListPage from './pages/ProductListPage/ProductListPage';
+
+import ProductListPage from './pages/ProductListPage/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
-=======
-import ProductListPage from "./pages/ProductListPage/ProductListPage";
-// import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
->>>>>>> 7abd35e2fb7cf7ae5758af320da796ae12239196
-// import CartPage from './pages/CartPage/CartPage';
+
+//import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
+import PaymentResultPage from './pages/PaymentResultPage/PaymentResultPage';
 
 function App() {
   return (
@@ -35,9 +33,10 @@ function App() {
 
           {/* Các route yêu cầu đăng nhập */}
           {/* Sau này chúng ta sẽ thêm một lớp bảo vệ (Protected Route) ở đây */}
-          <Route path="/cart" element={<div>Cart Page</div>} />
+          {/* <Route path="/cart" element={<CartPage />} /> */}
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-history" element={<div>Order History Page</div>} />
+          <Route path="/payment-result" element={<PaymentResultPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
