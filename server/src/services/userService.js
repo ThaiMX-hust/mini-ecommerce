@@ -1,15 +1,27 @@
 const { hashPassword } = require('../utils/passwordUtils');
 const userRepository = require('../repositories/userRepository');
+const { PrismaClient } = require('@prisma/client');
+const cloudinaryService = require('./cloudinaryService');
 
-const {PrismaClient} = require('@prisma/client');
-
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function registerUser(userData) {
     const password_hash = await hashPassword(userData.password);
     
-    // TODO: upload avatarFile and get URL
-    const avatar_url = null;
+    //  Upload avatar lên Cloudinary
+    let avatar_url = null;
+    if (userData.avatarFile) {
+        try {
+            avatar_url = await cloudinaryService.uploadImage(
+                userData.avatarFile.buffer,
+                'avatars'  
+            );
+            console.log('Avatar uploaded to Cloudinary:', avatar_url);
+        } catch (error) {
+            console.error(' Error uploading avatar:', error);
+            // Không throw error, cho phép đăng ký mà không có avatar
+        }
+    }
 
     const newUser = await prisma.user.create({
         data: {
@@ -35,9 +47,9 @@ async function registerUser(userData) {
             total_items: 0,
             total_price: 0,
         }
-    })
+    });
 
-     return {
+    return {
         user: {
             user_id: newUser.user_id,
             cart_id: newCart.cart_id || null, 
@@ -49,11 +61,22 @@ async function registerUser(userData) {
     };
 }
 
-async function registerAdmin(userData){
+async function registerAdmin(userData) {
     const password_hash = await hashPassword(userData.password);
     
-    // TODO: upload avatarFile and get URL
-    const avatar_url = null;
+    //  Upload avatar lên Cloudinary cho admin
+    let avatar_url = null;
+    if (userData.avatarFile) {
+        try {
+            avatar_url = await cloudinaryService.uploadImage(
+                userData.avatarFile.buffer,
+                'avatars'
+            );
+            console.log('Admin avatar uploaded to Cloudinary:', avatar_url);
+        } catch (error) {
+            console.error(' Error uploading admin avatar:', error);
+        }
+    }
 
     const newUser = await prisma.user.create({
         data: {
@@ -97,9 +120,40 @@ async function getUserByEmail(email) {
 async function updateUser(user_id, userData) {
     const { first_name, last_name, avatarFile } = userData;
 
-    const avatar_url = null;
+    //  Upload avatar mới lên Cloudinary khi update
+    let avatar_url = null;
+    if (avatarFile) {
+        try {
+            // Upload avatar mới
+            avatar_url = await cloudinaryService.uploadImage(
+                avatarFile.buffer,
+                'avatars'
+            );
+            console.log(' Avatar updated on Cloudinary:', avatar_url);
 
-    const user = await userRepository.updateUser(user_id, { first_name, last_name, avatar_url });
+            // Xóa avatar cũ (nếu có)
+            const oldUser = await userRepository.getUserById(user_id);
+            if (oldUser && oldUser.avatar_url) {
+                try {
+                    await cloudinaryService.deleteImage(oldUser.avatar_url);
+                    console.log('✅ Old avatar deleted from Cloudinary');
+                } catch (deleteError) {
+                    console.error('⚠️ Could not delete old avatar:', deleteError);
+                    // Không throw error, vì upload mới đã thành công
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error uploading new avatar:', error);
+            // Không throw error, cho phép update thông tin mà không đổi avatar
+        }
+    }
+
+    const user = await userRepository.updateUser(user_id, { 
+        first_name, 
+        last_name, 
+        avatar_url 
+    });
+    
     if (!user)
         return null;
 
