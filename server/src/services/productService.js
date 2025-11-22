@@ -1,7 +1,13 @@
 const productRepository = require('../repositories/productRepository');
+const categoryRepository = require('../repositories/categoryRepository')
 const userService = require('../services/userService');
+const CacheManager = require('../utils/cacheManager');
+const { BadRequestError } = require('../errors/BadRequestError');
 
 async function getProducts(query, isAdmin) {
+    const cached = await CacheManager.getProducts(query);
+    if (cached) return cached;
+
     const { name, categories, min_price, max_price, page, limit } = query;
     const { total_items, products } = await productRepository.getProducts({ name, categories, min_price, max_price, page, limit }, isAdmin, isAdmin);
     const total_pages = Math.ceil(total_items / limit);
@@ -9,27 +15,34 @@ async function getProducts(query, isAdmin) {
         product_id: product.product_id,
         name: product.name,
         description: product.description,
-        categories: product.ProductCategories.map(c => c.category_id),
+        categories: product.ProductCategories.map(c => c.Category.category_code),
         min_price: Math.min(...product.ProductVariant.map(v => v.raw_price)),
         max_price: Math.max(...product.ProductVariant.map(v => v.raw_price)),
         image_url: product.image_urls[0] || null,
     }));
 
-    return {
+    const result =  {
         page,
         limit,
         total_pages,
         total_items,
         items
     };
+
+    await CacheManager.setProducts(query, result)
+
+    return result
 }
 
 async function getProductById(product_id, isAdmin) {
+    const cached = await CacheManager.getProduct(product_id)
+    if(cached) return cached
+
     const product = await productRepository.getProductById(product_id, isAdmin, isAdmin);
     if (!product)
         return null;
 
-    const categories = product.ProductCategories.map(pc => pc.category_id);
+    const categories = product.ProductCategories.map(pc => pc.Category.category_code);
 
     // lookup map: option_value_id -> option_name
     const optionValueMap = {};
@@ -59,7 +72,7 @@ async function getProductById(product_id, isAdmin) {
         }))
     }));
 
-    return {
+    const res = {
         product_id: product.product_id,
         name: product.name,
         description: product.description,
@@ -68,93 +81,118 @@ async function getProductById(product_id, isAdmin) {
         options,
         variants
     };
+
+    await CacheManager.setProduct(product_id, product)
+
+    return res
 }
 
 async function getProductVariantById(product_variant_id){
+    const cached = await CacheManager.getProductVariant(product_variant_id)
+    if(cached) return cached
+
     const prisma = productRepository.getPrismaClientInstance()
-    return await productRepository.getProductVariantById(prisma, product_variant_id)
+    const productVariant = await productRepository.getProductVariantById(prisma, product_variant_id)
+
+    await CacheManager.setProductVariant(product_variant_id, productVariant)
+
+    return productVariant
 }
 
 async function addProduct(productData) {
-    const { name, description, categories, is_disabled = false, options, variants, variant_images } = productData;
+    try{
+        const { name, description, categories, is_disabled = false, options, variants, variant_images } = productData;
 
-    // TODO: upload images and get URLs
-    const image_urls = [];
+        // TODO: upload images and get URLs
+        const image_urls = [];
 
-    return await productRepository.getPrismaClientInstance().$transaction(async (tx) => {
-        // Create product
-        const createdProduct = await productRepository.createProduct(tx, name, description, image_urls, is_disabled === true || is_disabled === 'true');
+        return await productRepository.getPrismaClientInstance().$transaction(async (tx) => {
+            // Create product
+            const createdProduct = await productRepository.createProduct(tx, name, description, image_urls, is_disabled === true || is_disabled === 'true');
 
-        // Link categories
-        await productRepository.createProductCategories(tx, createdProduct.product_id, categories);
+            // Ensure product codes are valid
+            for (const category_code of categories) {
+                const exist = await categoryRepository.getCategoryIdByCode(category_code);
 
-        // Create options
-        const createdOptions = await productRepository.createProductOptionsWithValues(tx, createdProduct.product_id, options);
-        const optionList = createdOptions.map(({ createdOption, createdValues }) => ({
-            product_option_id: createdOption.product_option_id,
-            option_name: createdOption.option_name,
-            values: createdValues.map(value => ({ option_value_id: value.option_value_id, value: value.value }))
-        }));
+                if (!exist) {
+                    throw new BadRequestError(
+                        `Category code ${category_code} does not exist or has been removed`, 400);
+                }
+            }
 
-        // lookup map: option_name -> value -> option_value_id
-        const optionValueMap = {};
-        optionList.forEach(option => {
-            optionValueMap[option.option_name] = { product_option_id: option.product_option_id, values: {} };
-            option.values.forEach(value => {
-                optionValueMap[option.option_name].values[value.value] = value.option_value_id;
+            // Link categories
+            await productRepository.createProductCategories(tx, createdProduct.product_id, categories);
+
+            // Create options
+            const createdOptions = await productRepository.createProductOptionsWithValues(tx, createdProduct.product_id, options);
+            const optionList = createdOptions.map(({ createdOption, createdValues }) => ({
+                product_option_id: createdOption.product_option_id,
+                option_name: createdOption.option_name,
+                values: createdValues.map(value => ({ option_value_id: value.option_value_id, value: value.value }))
+            }));
+
+            // lookup map: option_name -> value -> option_value_id
+            const optionValueMap = {};
+            optionList.forEach(option => {
+                optionValueMap[option.option_name] = { product_option_id: option.product_option_id, values: {} };
+                option.values.forEach(value => {
+                    optionValueMap[option.option_name].values[value.value] = value.option_value_id;
+                });
             });
-        });
 
-        // Create variants
-        const _variants = variants.map(variant => {
-            const variantImagesUrls = [];
+            // Create variants
+            const _variants = variants.map(variant => {
+                const variantImagesUrls = [];
+                return {
+                    ...variant,
+                    stock_quantity: parseInt(variant.stock_quantity),
+                    is_disabled: variant.is_disabled === 'true',
+                    image_urls: variantImagesUrls,
+                    options: variant.options.map(({ option_name, value }) => {
+                        const option = optionValueMap[option_name];
+                        return option ? {
+                            product_option_id: option.product_option_id,
+                            option_name,
+                            value,
+                            option_value_id: option.values[value]
+                        } : null;
+                    }).filter(o => o !== null)
+                };
+            });
+
+            const createdVariants = await productRepository.createProductVariantsWithOptions(tx, createdProduct.product_id, _variants);
+            const variantList = createdVariants.map(variant => ({
+                product_variant_id: variant.product_variant_id,
+                sku: variant.sku,
+                raw_price: variant.raw_price,
+                stock_quantity: variant.stock_quantity,
+                is_disabled: variant.is_disabled,
+                images_urls: variant.image_urls,
+                options: variant.options.map(option => ({
+                    product_option_id: option.product_option_id,
+                    option_name: option.option_name,
+                    value: option.value
+                })),
+                created_at: variant.created_at
+            }));
+
             return {
-                ...variant,
-                stock_quantity: parseInt(variant.stock_quantity),
-                is_disabled: variant.is_disabled === 'true',
-                image_urls: variantImagesUrls,
-                options: variant.options.map(({ option_name, value }) => {
-                    const option = optionValueMap[option_name];
-                    return option ? {
-                        product_option_id: option.product_option_id,
-                        option_name,
-                        value,
-                        option_value_id: option.values[value]
-                    } : null;
-                }).filter(o => o !== null)
+                product_id: createdProduct.product_id,
+                name: createdProduct.name,
+                description: createdProduct.description,
+                categories,
+                options: optionList.map(option => ({
+                    product_option_id: option.product_option_id,
+                    option_name: option.option_name,
+                    values: option.values.map(({ value }) => value)
+                })),
+                variants: variantList,
+                created_at: createdProduct.created_at
             };
         });
-
-        const createdVariants = await productRepository.createProductVariantsWithOptions(tx, createdProduct.product_id, _variants);
-        const variantList = createdVariants.map(variant => ({
-            product_variant_id: variant.product_variant_id,
-            sku: variant.sku,
-            raw_price: variant.raw_price,
-            stock_quantity: variant.stock_quantity,
-            is_disabled: variant.is_disabled,
-            images_urls: variant.image_urls,
-            options: variant.options.map(option => ({
-                product_option_id: option.product_option_id,
-                option_name: option.option_name,
-                value: option.value
-            })),
-            created_at: variant.created_at
-        }));
-
-        return {
-            product_id: createdProduct.product_id,
-            name: createdProduct.name,
-            description: createdProduct.description,
-            categories,
-            options: optionList.map(option => ({
-                product_option_id: option.product_option_id,
-                option_name: option.option_name,
-                values: option.values.map(({ value }) => value)
-            })),
-            variants: variantList,
-            created_at: createdProduct.created_at
-        };
-    });
+    } catch (error){
+        throw error
+    }
 }
 
 async function updateProduct(product_id, productData) {
@@ -164,6 +202,14 @@ async function updateProduct(product_id, productData) {
     const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) => 
         await productRepository.updateProduct(tx, product_id, { name, description, categories, is_disabled, image_urls })
     );
+
+    await CacheManager.clearProduct(product_id);
+
+    await CacheManager.clearByPrefix("products:list:");
+
+    for (const cat of categories) {
+        await CacheManager.clearByPrefix(`products:list:category:${cat}`);
+    }
 
     return {
         product_id: updatedProduct.product_id,
@@ -194,6 +240,8 @@ async function updateProductOption(product_id, product_option_id, optionData) {
         return await productRepository.updateProductOption(tx, product_option_id, option_name, value);
     });
 
+    await CacheManager.clearProduct(product_id);
+
     return {
         product_id: updatedProductOption.product_id,
         option_name: updatedProductOption.option_name,
@@ -222,6 +270,10 @@ async function updateProductVariant(product_id, product_variant_id, variantData)
     const updatedProductVariant = await prismaClient.$transaction(async (tx) => {
         return await productRepository.updateProductVariant(tx, product_variant_id, newData);
     });
+
+    await CacheManager.clearProduct(product_id);
+
+    await CacheManager.del(`product_varaint: ${product_variant_id}`)
 
     return {
         product_variant_id: updatedProductVariant.product_variant_id,

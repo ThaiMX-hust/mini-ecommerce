@@ -1,39 +1,65 @@
+const productService = require('../services/productService')
 const productRepository = require('../repositories/productRepository')
 const cartRepository = require("../repositories/cartRepository");
-const { NotFoundError } = require('../errors/NotFoundError')
+const { NotFoundError } = require('../errors/NotFoundError');
+const { BadRequestError } = require('../errors/BadRequestError');
+const CacheManager = require('../utils/cacheManager');
 
 /**
  * Thêm sản phẩm vào giỏ hàng theo cart_id, product_variant_id
  */
 async function addItemToCart(cart_id, product_variant_id, quantity = 1) {
   try {
-    const productVariantExistInCart = await cartRepository.checkProductVariantExistenceInCart(cart_id, product_variant_id);
+    const exists = await cartRepository.checkProductVariantExistenceInCart(
+      cart_id,
+      product_variant_id
+    );
 
-    if (!productVariantExistInCart) {
-      const createdItem = await cartRepository.addNewItemToCartById(cart_id, product_variant_id, quantity);
-      return {
-        item: createdItem,
-        method: 'add'
-      };
+    let result;
+    
+    if (!exists) {
+      const createdItem = await cartRepository.addNewItemToCartById(
+        cart_id, 
+        product_variant_id, 
+        quantity
+      );
+      result = { item: createdItem, method: "add" };
+    } else {
+      const updatedItem = await cartRepository.addExistingItemToCartById(
+        cart_id,
+        exists.cart_item_id,
+        quantity
+      );
+      result = { item: updatedItem, method: "update" };
     }
 
-    const cart_item_id = productVariantExistInCart.cart_item_id;
-    const updatedItem = await cartRepository.addExistingItemToCartById(cart_id, cart_item_id, quantity);
-    return {
-      item: updatedItem,
-      method: 'update'
-    };
+    await CacheManager.clearCart(cart_id);
+
+    return result;
 
   } catch (err) {
-    throw err; 
+    throw err;
   }
 }
 
+
 async function getCartIdFromUserId(user_id){
   if(user_id == null){
-    throw new NotFoundError("User not found", 400)
+    throw new BadRequestError("User not found", 400)
   }
-  return await cartRepository.getCartFromUserId(user_id)
+
+  const cart = await cartRepository.getCartFromUserId(user_id)
+}
+
+async function getCartItems(cart_id){
+  const cached = await CacheManager.getCart(cart_id)
+  if(cached) return cached
+
+  const cartItems = await cartRepository.getCartItems(cart_id);
+
+  await CacheManager.setCart(cart_id, cartItems) 
+
+  return cartItems
 }
 
 /**
@@ -41,7 +67,7 @@ async function getCartIdFromUserId(user_id){
  */
 async function getCart(cart_id) {
   try {
-    const cartItems = await cartRepository.getCartItems(cart_id);
+    const cartItems = await getCartItems(cart_id);
 
     if (!cartItems || cartItems.length === 0) {
       return {
@@ -56,38 +82,17 @@ async function getCart(cart_id) {
     let totalPriceAfterDiscount = 0;
 
     const itemsWithDetail = await Promise.all(
-      cartItems.map(async (item) => {
-        const productPrisma = productRepository.getPrismaClientInstance();
-        const productVariant = await productRepository.getProductVariantById(
-          productPrisma,
-          item.product_variant_id
-        );
+      cartItems.map(async (item) => { 
+        const productVariant = await productService.getProductVariantById(item.product_variant_id)
 
         if (!productVariant || !productVariant.Product) {
           throw new NotFoundError(`Variant or product not found for item ${item.cart_item_id}`, 404);
         }
 
-        const productWithCategories = await prisma.product.findUnique({
-          where: { product_id: productVariant.Product.product_id },
-          include: {
-            ProductCategories: {
-              include: {
-                Category: { select: { category_code: true } },
-              },
-            },
-          },
-        });
+        const product = await productService.getProductById(productVariant.Product.product_id)
 
-        const options =
-          productVariant.ProductVariantOption?.map((opt) => ({
-            option_name: opt.ProductOptionValue.ProductOption.option_name,
-            value: opt.ProductOptionValue.value,
-          })) ?? [];
-
-        const categoryCodes = productWithCategories.ProductCategories.map(
-          (pc) => pc.Category.category_code
-        );
-
+        const options = product.options
+        const categoryCodes = product.categories
 
         const quantity = Number(item.quantity);
         const rawUnitPrice = Number(productVariant.raw_price);
@@ -166,6 +171,9 @@ async function getCart(cart_id) {
 async function updateItemQuantityFromCart(cart_id, cart_item_id, quantity = 1){
   try {
     const updatedItem = await cartRepository.updateItemQuantityFromCartById(cart_id, cart_item_id, quantity);
+
+    await CacheManager.clearCart(cart_id)
+
     return updatedItem;
   } catch (err) {
     throw err; 
