@@ -15,3 +15,12 @@ Thông tin truy cập Merchant Admin để quản lý giao dịch:
 Địa chỉ: https://sandbox.vnpayment.vn/merchantv2/
 Kiểm tra (test case) – IPN URL:
 Kịch bản test (SIT): https://sandbox.vnpayment.vn/vnpaygw-sit-testing/user/login
+
+# Payment function
+`ngrok http 3636`
+
+Ngân hàng: NCB
+Số thẻ: 9704198526191432198
+Tên chủ thẻ:NGUYEN VAN A
+Ngày phát hành:07/15
+Mật khẩu OTP:123456

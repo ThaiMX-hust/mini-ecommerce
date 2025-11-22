@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const moment = require('moment');
 const qs = require('qs');
+const orderRepository = require('../repositories/ordersRepository'); 
 
 // Hàm sortObject chuẩn: Sắp xếp theo key alphabet và trả về object đã sort
 function sortObject(obj) {
@@ -96,16 +97,65 @@ const handleVnpayIpn = async (vnp_Params) => {
     if (vnp_SecureHash === signed) {
         const orderId = vnp_Params['vnp_TxnRef'];
         const rspCode = vnp_Params['vnp_ResponseCode'];
-        
+        const amount = vnp_Params['vnp_Amount']/100;
+        const transactionNo= vnp_Params['vnp_TransactionNo'];
 
-        // TODO: Kiểm tra CSDL và logic nghiệp vụ
-        if (rspCode === '00') {
-            console.log(`Payment for order ${orderId} is successful`);
-            return { RspCode: '00', Message: 'Success' };
-        } else {
-            console.log(`Payment for order ${orderId} failed`);
-            // VNPay IPN mong đợi phản hồi chuẩn, ngay cả khi giao dịch fail thì IPN vẫn coi là đã nhận tin thành công
-            return { RspCode: '00', Message: 'Success' }; 
+        try{
+            const prisma = orderRepository.getPrismaClientInstance();
+
+            const order = await prisma.order.findUnique({
+                where: {order_id: orderId}
+            });
+            if(!order){
+                console.error(`Order ${orderId} not found`);
+                return {RspCode: '01', Message:'Order not found'};
+            }
+            
+            if(Number(order.final_total_price) != amount){
+                console.error(`Amount mismatch`);
+                return {RspCode:'04', Message: 'Invalid amount'};
+            }
+
+            if(rspCode == '00'){
+                // thanh toan thanh cong
+                const confirmedStatus = await orderRepository.getStatusByCode("CONFIRMED");
+                if(!confirmedStatus){
+                    console.error("CONFIRM status not found in database");
+                    return {RspCode:'99', Message:'System error'};
+                }
+                await prisma.orderStatusHistory.create({
+                    data: {
+                        order_id: orderId,
+                        order_status_id: confirmedStatus.order_status_id,
+                        changed_by:null,
+                        note: `Payment successful via VNPay. Transaction: ${transactionNo}`
+                    }
+                });
+                console.log(`Payment for order ${orderId} is successfull`);
+                return {RspCode: '00', Message:'Success'};
+            }
+            else{
+                // thanh toan that bai
+                const cancelledStatus = await orderRepository.getStatusByCode("CANCELLED");
+                if(!cancelledStatus){
+                    console.error('CANCELLED status not found in database');
+                    return {RspCode: '99', Message:'System error'};
+                }
+                await prisma.orderStatusHistory.create({
+                    data: {
+                        order_id: orderId,
+                        order_status_id: cancelledStatus.order_status_id,
+                        changed_by: null,
+                        note: `Payment failed via VNPay. Response code: ${rspCode}`
+                    }
+                });
+                console.log(`Payment for order ${orderId} failed with code ${rspCode}`);
+                return {RspCode: '00', Message:'Success'};
+            }
+        }
+        catch (error){
+            console.error(' Error handling VNPay IPN:', error);
+            return { RspCode: '99', Message: 'System error' };
         }
     } else {
         // Trường hợp sai chữ ký, trả về mã lỗi 97

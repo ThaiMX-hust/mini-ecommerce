@@ -11,6 +11,7 @@ import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
 //import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
 import PaymentResultPage from './pages/PaymentResultPage/PaymentResultPage';
+import OrderHistoryPage from './pages/OrderHistoryPage/OrderHistoryPage'
 
 function App() {
   return (
@@ -35,7 +36,7 @@ function App() {
           {/* Sau này chúng ta sẽ thêm một lớp bảo vệ (Protected Route) ở đây */}
           {/* <Route path="/cart" element={<CartPage />} /> */}
           <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/order-history" element={<div>Order History Page</div>} />
+          <Route path="/order-history" element={<OrderHistoryPage/>} />
           <Route path="/payment-result" element={<PaymentResultPage />} />
         </Route>
       </Routes>

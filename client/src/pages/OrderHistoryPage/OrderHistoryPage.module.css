@@ -99,3 +99,13 @@
   font-size: 1rem;
   color: #111;
 }
+.statusBadge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 4px 12px;
+  background-color: #28a745;
+  color: white;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
