@@ -1,10 +1,9 @@
-class NotFoundError extends Error{
-    constructor(message, statusCode) {
-    super(message);
-    this.name = this.constructor.name;
-    this.statusCode = statusCode || 500;
-    Error.captureStackTrace(this, this.constructor);
-  }
+const { AppError } = require('./AppError')
+
+class NotFoundError extends AppError{
+    constructor(message = 'Not Found') {
+      super(message, 404);
+    }
 }
 
 module.exports = {

@@ -48,6 +48,7 @@ async function getUserWithPassword(where, client = prisma) {
             avatar_url: true,
             password_hash: true,
             role: true,
+            locked: true,
             created_at: true,
             updated_at: true,
         }
@@ -84,6 +85,23 @@ async function updateUser(user_id, userData, client = prisma) {
     });
 }
 
+async function getAll() {
+    return await prisma.user.findMany();
+}
+
+async function updateLockedState(user_id, locked) {
+    try {
+        return await prisma.user.update({
+            where: { user_id },
+            data: { locked }
+        });
+    } catch (error) {
+        if (error.code === 'P2025')
+            return null;
+        throw error;
+    }
+}
+
 module.exports = {
     getUserById,
     getUserByEmail,
@@ -91,5 +109,7 @@ module.exports = {
     getUserWithPasswordByEmail,
     getUserHashedPassword,
     updatePassword,
-    updateUser
+    updateUser,
+    getAll,
+    updateLockedState
 };

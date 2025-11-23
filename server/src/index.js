@@ -26,7 +26,7 @@ app.use('/api/v1/orders', require('./routes/orders'));
 app.use('/api/v1/payments', require('./routes/payment'));
 
 (async () => {
-    await redisClient()
+    //await redisClient()
 
     app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
