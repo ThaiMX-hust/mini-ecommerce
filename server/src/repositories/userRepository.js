@@ -90,16 +90,10 @@ async function getAll() {
 }
 
 async function updateLockedState(user_id, locked) {
-    try {
-        return await prisma.user.update({
-            where: { user_id },
-            data: { locked }
-        });
-    } catch (error) {
-        if (error.code === 'P2025')
-            return null;
-        throw error;
-    }
+    return await prisma.user.update({
+        where: { user_id },
+        data: { locked }
+    });
 }
 
 module.exports = {

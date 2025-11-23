@@ -201,11 +201,41 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 
 ## 2. Danh mục sản phẩm
 
-### 2.1. Tạo category
+### 2.1. Lấy danh sách category
+- Method: GET
+- URL: /api/v1/categories
+- Response
+  - 200 OK
+  ```json
+  [
+    {
+      "category_id": "string",
+      "category_name": "string",
+      "category_code": "string",
+      "category_description": "string"
+    }
+  ]
+  ```
+
+### 2.2. Lấy chi tiết 1 category
+- Method: GET
+- URL: /api/v1/categories/{category_id}
+- Response
+  - 200 OK
+  ```json
+  {
+    "category_id": "string",
+    "category_name": "string",
+    "category_code": "string",
+    "category_description": "string"
+  }
+  ```
+
+### 2.3. Tạo category
 
 - Method: POST
-- URL: /api/categories
-- Request Headers: Authorization: Bearer {admin_token}
+- URL: /api/v1/categories
+- Authorization: Bearer {admin_token}
 - Content-Type: application/json
 
 ```json
@@ -235,10 +265,10 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 }
 ```
 
-### 2.2. Update category
+### 2.4. Update category
 
 - Method: PATCH
-- URL: /api/categories/{category_id}
+- URL: /api/v1/categories/{category_id}
 - Authorization: Bearer {admin_token}
 - Content-Type: application/json
 
@@ -261,10 +291,10 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 }
 ```
 
-### 2.3. Xóa category
+### 2.5. Xóa category
 
 - Method: DELETE
-- URL: /api/categories/{category_id}
+- URL: /api/v1/categories/{category_id}
 - Authorization: Bearer {admin_token}
 - Content-Type: application/json
 
