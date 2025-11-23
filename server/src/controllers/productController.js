@@ -1,3 +1,4 @@
+const { BadRequestError } = require('../errors/BadRequestError');
 const productService = require('../services/productService');
 
 const getProducts = async (req, res) => {
@@ -67,7 +68,11 @@ const addProduct = async (req, res) => {
         return res.status(201).json(newProduct);
     } catch (error) {
         console.error('Error adding product:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        if(error instanceof BadRequestError){
+            return res.status(error.statusCode).json({error: error.message})
+        } else {
+            return res.status(500).json({ error: 'Internal server error' });
+        }
     }
 }
 

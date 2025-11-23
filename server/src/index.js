@@ -19,6 +19,7 @@ app.get('/api/v1/health', (req, res) => {
 app.use('/api/v1/users', require('./routes/users'));
 app.use('/api/v1/auth', require('./routes/auth'));
 
+app.use('/api/v1/categories', require('./routes/category'))
 app.use('/api/v1/cart', require('./routes/cart'));
 app.use('/api/v1/products', require('./routes/products'));
 

@@ -1,6 +1,7 @@
 const {PrismaClient} = require('@prisma/client');
 const productRepository = require("./productRepository");
 const { OutOfStockError } = require('../errors/BadRequestError');
+const { NotFoundError} = require('../errors/NotFoundError')
 
 const prisma = new PrismaClient();
 

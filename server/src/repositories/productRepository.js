@@ -11,7 +11,17 @@ async function getProducts(query, getDisabled = false, getDeleted = false, clien
     const where = {
         AND: [
             name ? { name: { contains: name } } : {},
-            categories && categories.length > 0 ? { ProductCategories: { some: { category_id: { in: categories } } } } : {},
+            categories && categories.length > 0
+            ? {
+                ProductCategories: {
+                some: {
+                    Category: {
+                    category_code: { in: categories }
+                    }
+                }
+                }
+            }
+            : {},
             min_price ? { ProductVariant: { some: { raw_price: { gte: min_price } } } } : {},
             max_price ? { ProductVariant: { some: { raw_price: { lte: max_price } } } } : {},
             !getDisabled ? { is_disabled: false } : {},
@@ -29,7 +39,7 @@ async function getProducts(query, getDisabled = false, getDeleted = false, clien
             name: true,
             description: true,
             image_urls: true,
-            ProductCategories: { select: { category_id: true } },
+            ProductCategories: { select: { Category: {select: {category_code: true}} } },
             ProductVariant: { select: { raw_price: true } }
         }
     });
@@ -46,7 +56,11 @@ async function getProductById(productId, getDisabled = false, getDeleted = false
             ]
         },
         include: {
-            ProductCategories: true,
+            ProductCategories: {
+                include: {
+                    Category: true
+                }
+            },
             ProductOption: { include: { ProductOptionValue: true } },
             ProductVariant: {
                 where: !getDisabled ? { is_disabled: false } : {},
@@ -211,9 +225,15 @@ async function createProduct(client, name, description, image_urls, is_disabled)
     });
 }
 
-async function createProductCategories(client, productId, categoryIds) {
+async function createProductCategories(client, productId, categoryCodes) {
+    const categories = await client.category.findMany({
+        where: {
+            category_code: {in: categoryCodes}
+        }
+    })
+
     return await client.productCategories.createMany({
-        data: categoryIds.map(category_id => ({ product_id: productId, category_id })),
+        data: categories.map(category => ({ product_id: productId, category_id: category.category_id })),
         skipDuplicates: true
     });
 }

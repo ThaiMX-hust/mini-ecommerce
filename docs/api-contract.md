@@ -201,6 +201,81 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 
 ## 2. Danh mục sản phẩm
 
+### 2.1. Tạo category
+
+- Method: POST
+- URL: /api/categories
+- Request Headers: Authorization: Bearer {admin_token}
+- Content-Type: application/json
+
+```json
+{
+  "categories": [
+    {
+      "category_name": "string",
+      "category_code": "string",
+      "category_description": "string"
+    }
+  ]
+}
+```
+
+- Response
+
+```json
+{
+  "categories": [
+    {
+      "category_id": "string",
+      "category_name": "string",
+      "category_code": "string",
+      "category_description": "string"
+    }
+  ]
+}
+```
+
+### 2.2. Update category
+
+- Method: PATCH
+- URL: /api/categories/{category_id}
+- Authorization: Bearer {admin_token}
+- Content-Type: application/json
+
+```json
+{
+  "category_name": "string",
+  "category_code": "string",
+  "category_description": "string"
+}
+```
+
+- Response
+
+```json
+{
+  "category_id": "string",
+  "category_name": "string",
+  "category_code": "string",
+  "category_description": "string"
+}
+```
+
+### 2.3. Xóa category
+
+- Method: DELETE
+- URL: /api/categories/{category_id}
+- Authorization: Bearer {admin_token}
+- Content-Type: application/json
+
+- Response
+
+```json
+{
+  "category_id": "string"
+}
+```
+
 ## 3. Sản phẩm
 
 ### 3.1. Xem danh sách sản phẩm
