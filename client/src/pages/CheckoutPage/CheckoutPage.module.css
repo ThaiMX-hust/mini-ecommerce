@@ -1,0 +1,116 @@
+
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 6fr 4fr; /* Chia cột theo tỉ lệ 6:4 */
+  gap: 40px;
+}
+
+/* === PHẦN FORM (TRÁI) === */
+.formSection {
+  border-right: 1px solid #e0e0e0;
+  padding-right: 40px;
+}
+
+.formSection form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.formSection input {
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.nameFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.payButton {
+  padding: 15px;
+  background-color: #111;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.payButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* === PHẦN TÓM TẮT (PHẢI) === */
+.summarySection {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  height: fit-content; /* Chỉ cao vừa đủ nội dung */
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.itemInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.itemInfo img {
+  width: 50px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.itemInfo p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 15px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr; /* Chuyển thành 1 cột */
+  }
+  .formSection {
+    border-right: none;
+    padding-right: 0;
+  }
+  .summarySection {
+    grid-row-start: 1; /* Đảo tóm tắt đơn hàng lên đầu */
+    margin-bottom: 30px;
+  }
+}

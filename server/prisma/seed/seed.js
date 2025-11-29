@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
 const { addProduct } = require('../../src/services/productService');
+const categoryService = require('../../src/services/categoryService')
 
 const prisma = new PrismaClient();
 
@@ -280,10 +281,7 @@ async function createCategories(){
         },
     ];
 
-    await prisma.category.createMany({
-        data: categories,
-        skipDuplicates: true,
-    });
+    await categoryService.createCategories(categories)
 }
 
 async function createStatus(){
