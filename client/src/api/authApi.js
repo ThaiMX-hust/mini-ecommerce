@@ -30,3 +30,23 @@ export const register = (userData) => {
 // Bạn có thể thêm các hàm khác ở đây sau này, ví dụ:
 // export const forgotPassword = (email) => { ... };
 // export const resetPassword = (data) => { ... };
+
+/**
+ * Lấy thông tin chi tiết của người dùng đã đăng nhập.
+ * @param {string} userId - ID của người dùng (lấy từ token).
+ * @returns {Promise<object>} Promise trả về dữ liệu hồ sơ người dùng.
+ */
+export const getUserProfile = (userId) => {
+  return api.get(`/users/${userId}`);
+};
+
+/**
+ * Cập nhật thông tin hồ sơ người dùng.
+ * @param {string} userId - ID của người dùng.
+ * @param {FormData} formData - Dữ liệu cần cập nhật (dùng FormData vì có thể có file avatar).
+ * @returns {Promise<object>} Promise trả về dữ liệu hồ sơ đã được cập nhật.
+ */
+export const updateUserProfile = (userId, formData) => {
+  // Axios sẽ tự động set 'Content-Type': 'multipart/form-data' khi body là FormData
+  return api.patch(`/users/${userId}`, formData);
+};
