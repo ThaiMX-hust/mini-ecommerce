@@ -60,6 +60,37 @@ async function getById(order_id) {
     });
 }
 
+async function getRevenue(from, to) {
+    const orders = await prisma.order.findMany({
+        where: {
+            created_at: {
+                gte: new Date(from),
+                lte: new Date(to)
+            }
+        },
+        include: {
+            history: {
+                orderBy: { changed_at: 'desc' },
+                take: 1,
+                include: { status: true }
+            }
+        }
+    });
+
+    const completed = orders.filter(o =>
+        o.history[0]?.status.order_status_code === "COMPLETED"
+    );
+
+    const revenue = completed.reduce((sum, o) => sum + Number(o.final_total_price), 0);
+
+    return {
+        revenue,
+        total_orders: completed.length
+    };
+}
+
+
+
 module.exports = {
     getPrismaClientInstance,
     getAdjustmentsByCartId,
@@ -67,5 +98,6 @@ module.exports = {
     createNewStatus,
     getStatusById,
     createNewStatusToHistory,
-    getById
-} 
+    getById,
+    getRevenue
+}
