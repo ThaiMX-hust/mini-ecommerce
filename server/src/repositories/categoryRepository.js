@@ -6,6 +6,14 @@ function getPrismaClientInstance(){
     return prisma;
 }
 
+async function getAll() {
+    return await prisma.category.findMany();
+}
+
+async function getById(category_id) {
+    return await prisma.category.findFirst({ where: { category_id } });
+}
+
 async function createCategories(categories) {
     const data = categories.map(cat => ({
         category_name: cat.category_name,
@@ -41,6 +49,8 @@ async function getCategoryIdByCode(category_code){
 }
 
 module.exports = {
+    getAll,
+    getById,
     getPrismaClientInstance,
     createCategories,
     getCategoryIdByCode

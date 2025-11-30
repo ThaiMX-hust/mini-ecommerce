@@ -7,23 +7,23 @@ const { NotFoundError } = require('../errors/NotFoundError')
 const {redisClient} = require('../infrastructure/redis');
 const { UnauthorizeError } = require('../errors/UnauthorizeError');
 const { BadRequestError } = require('../errors/BadRequestError');
+const { ForbiddenError } = require('../errors/ForbiddenError');
 
 async function loginUser(email, password) {
-    if(!email || !password){
-        throw new BadRequestError("Missing fields", 400)
-    }
-
     const user = await userService.getUserWithPasswordByEmail(email);
     if(!user){
         throw new UnauthorizeError("Invalid email or password", 401)
     }
+
+    if (user.locked)
+        throw new ForbiddenError("Account is locked");
 
     const cart = await cartRepository.getCartFromUserId(user.user_id)
 
     const password_hash = user.password_hash;
     const isPasswordValid = await verifyPassword(password, password_hash);
     if (!isPasswordValid) {
-         throw new UnauthorizeError("Invalid email or password", 401)
+        throw new UnauthorizeError("Invalid email or password", 401)
     }
     
     const token = jwt.sign(
