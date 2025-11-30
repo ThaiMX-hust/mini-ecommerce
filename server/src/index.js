@@ -29,6 +29,8 @@ app.use('/api/v1/payments', require('./routes/payment'));
 
 app.use('/api/v1/refunds', require('./routes/refunds'));
 
+app.use('/api/v1/stats', require('./routes/stats'));
+
 (async () => {
     await redisClient()
     await mongooseClient()

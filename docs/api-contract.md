@@ -185,7 +185,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 ### 1.8. Khóa/Mở khóa người dùng
 
 - Method: PATCH
-- URL: /api/v1/users/{user_id}
+- URL: /api/v1/users/{user_id}/locked
 - Authorization: Bearer {admin_token}
 - Content-Type: application/json
 - Request body:
@@ -1584,3 +1584,26 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 ```
 
 ---
+## 7. Thống kê
+
+### 7.1. Doanh thu
+
+- Method: GET
+- URL: /api/v1/stats/revenue
+- Authorization: Bearer {admin_token}
+- Query params:
+  - from: date  (yyyy-mm-dd)
+  - to: date    (yyyy-mm-dd)
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "revenue": 500000,
+      "total_orders": 10,
+      "from": 2025-01-01,
+      "to": 2025-06-01
+    }
+    ```
+  - 400 Bad Request: { "error": "Invalid date" }
+  - 401 Unauthorized
+  - 403 Forbidden
