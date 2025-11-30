@@ -1,6 +1,6 @@
 # API Contract – Website Bán sản phẩm
 
-Phiên bản: 2.3
+Phiên bản: 2.3\
 Ngày cập nhật: 30/11/2025
 
 ## Tổng quan
@@ -1173,3 +1173,128 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 400 Bad Request: { "error": "Invalid status" }
   - 401 Unauthorized: { "error": "Unauthorized" }
   - 404 Not Found: { "error": "Order not found" }
+
+### Tạo yêu cầu hoàn tiền
+- Method: POST
+- URL: /api/v1/refunds
+- Authorization: Bearer
+- Content-Type: application/json
+- Request body:
+  - order_id
+  - reason: string
+- Response:
+  - 201 Created:
+    ```json
+    {
+      "refund_id": "fade15f8-5320-4b3a-9a09-54f90c0d2c96",
+      "order_id": "5f809a00-b53d-4130-9b4a-1783a6ffbf7f",
+      "reason": "test",
+      "amount": "798000",
+      "status": "PENDING",
+      "created_at": "2025-11-30T14:18:14.374Z"
+    }
+    ```
+  - 400 Bad Request
+  - 401 Unauthorized
+  - 404 Not Found
+  - 409 Conflict
+
+### Lấy danh sách yêu cầu hoàn tiền của 1 người dùng
+- Method: GET
+- URL: /api/v1/refunds
+- Authorization: Bearer
+- Response:
+  - 200 OK:
+    ```json
+    [
+      {
+        "refund_id": "fade15f8-5320-4b3a-9a09-54f90c0d2c96",
+        "order_id": "5f809a00-b53d-4130-9b4a-1783a6ffbf7f",
+        "reason": "test",
+        "amount": "798000",
+        "status": "PENDING",
+        "created_at": "2025-11-30T14:18:14.374Z",
+        "processed_at": null,
+        "note": null
+      }
+    ]
+    ```
+  - 401 Unauthorized
+
+### Lấy toàn bộ danh sách yêu cầu hoàn tiền (cho admin)
+- Method: GET
+- URL: /api/v1/refunds
+- Authorization: Bearer (admin)
+- Response:
+  - 200 OK:
+    ```json
+    [
+      {
+        "refund_id": "d7e77ef5-f529-4400-bd24-6711065c1157",
+        "order_id": "d6cb7f8f-f1b5-4c37-b1aa-ba8958d2d692",
+        "reason": "test",
+        "amount": "798000",
+        "status": "REJECTED",
+        "created_at": "2025-11-30T13:46:21.588Z",
+        "processed_at": "2025-11-30T13:46:44.761Z",
+        "admin_id": "assmin",
+        "note": "reject 123"
+      }
+    ]
+    ```
+  - 401 Unauthorized
+  - 403 Forbidden
+
+### Chấp nhận hoàn tiền
+
+- Method: POST
+- URL: /api/v1/refunds/{refund_id}/approve
+- Authorization: Bearer (admin)
+- Content-Type: application/json
+- Request body:
+  - note
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "refund_id": "fade15f8-5320-4b3a-9a09-54f90c0d2c96",
+      "order_id": "5f809a00-b53d-4130-9b4a-1783a6ffbf7f",
+      "reason": "test",
+      "amount": "798000",
+      "status": "APPROVED",
+      "created_at": "2025-11-30T14:18:14.374Z",
+      "processed_at": "2025-11-30T14:20:44.018Z",
+      "admin_id": "assmin",
+      "note": "approve 123"
+    }
+    ```
+  - 401 Unauthorized
+  - 403 Forbidden
+  - 404 Not Found
+
+### Từ chối hoàn tiền
+
+- Method: POST
+- URL: /api/v1/refunds/{refund_id}/reject
+- Authorization: Bearer (admin)
+- Content-Type: application/json
+- Request body:
+  - note
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "refund_id": "fade15f8-5320-4b3a-9a09-54f90c0d2c96",
+      "order_id": "5f809a00-b53d-4130-9b4a-1783a6ffbf7f",
+      "reason": "test",
+      "amount": "798000",
+      "status": "REJECTED",
+      "created_at": "2025-11-30T14:18:14.374Z",
+      "processed_at": "2025-11-30T14:20:44.018Z",
+      "admin_id": "assmin",
+      "note": "approve 123"
+    }
+    ```
+  - 401 Unauthorized
+  - 403 Forbidden
+  - 404 Not Found

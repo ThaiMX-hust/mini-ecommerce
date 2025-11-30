@@ -53,10 +53,12 @@ async function createNewStatusToHistory(client, order_id, status_code, changed_b
     });
 }
 
-module.exports = {
-  createNewStatus,
-};
-
+async function getById(order_id) {
+    return await prisma.order.findUnique({
+        where: { order_id },
+        include: { history: true }
+    });
+}
 
 module.exports = {
     getPrismaClientInstance,
@@ -64,5 +66,6 @@ module.exports = {
     getStatusByCode,
     createNewStatus,
     getStatusById,
-    createNewStatusToHistory
+    createNewStatusToHistory,
+    getById
 } 
