@@ -23,6 +23,7 @@ model User {
     Order              Order[]
     Review             Review[]
     UserVoucherHistory UserVoucherHistory[]
+    refundsProcessed   Refund[]
 
     @@map("user")
 }
