@@ -16,7 +16,7 @@ async function getCategoryList() {
         category_description: c.category_description
     }));
 
-    await CacheManager.set("category:all", result);
+    await CacheManager.set("category:all", result, CacheManager.TTL.CATEGORY);
 
     return result;
 }
@@ -37,7 +37,7 @@ async function getCategoryById(category_id) {
         category_description: category.category_description
     };
 
-    await CacheManager.set(`category:${category_id}`, result);
+    await CacheManager.set(`category:${category_id}`, result, CacheManager.TTL.CATEGORY);
 
     return result;
 }

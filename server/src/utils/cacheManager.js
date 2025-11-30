@@ -1,6 +1,5 @@
 const { redisClient } = require("../infrastructure/redis"); 
 const crypto = require("crypto");
-const Redis = require("ioredis");
 
 let redis
 
@@ -37,7 +36,7 @@ class CacheManager {
     }
 
     async clearByPrefix(prefix) {
-        const stream = new Redis().scanStream({ match: `${prefix}*`, count: 100 });
+        const stream = redis.scanStream({ match: `${prefix}*`, count: 100 });
         stream.on("data", (keys) => {
             if (keys.length) redis.del(keys);
         });
