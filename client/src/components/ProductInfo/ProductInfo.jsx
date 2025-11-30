@@ -4,8 +4,10 @@ import QuantitySelector from '../QuantitySelector/QuantitySelector';
 import styles from './ProductInfo.module.css';
 
 const ProductInfo = ({ productData, activeVariant , selectedOptions, quantity, onOptionSelect, onQuantityChange, onAddToCart}) => {
-    if (!productData) {
-        return <div>Loading...</div>;
+    console.log(productData)
+    if (!productData || !productData.options) {
+        
+        return <div className={styles.loading}>Loading product information...</div>;
     }
 
     // Them neu có phần sale

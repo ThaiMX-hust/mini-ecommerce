@@ -15,7 +15,7 @@ const ImageGallery = ({ images =[]}) =>{
       <div className={styles.galleryContainer}>
         <div className={styles.mainImageContainer}>
           <img 
-            src="https://via.placeholder.com/500x650.png?text=No+Image" 
+            src="../../../public/images/download.png" 
             alt="Product placeholder" 
             className={styles.mainImage} 
           />
