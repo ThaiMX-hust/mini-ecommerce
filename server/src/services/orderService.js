@@ -1,7 +1,9 @@
 const { EmptyCartError, BadRequestError, OutOfStockError } = require('../errors/BadRequestError');
 const { NotFoundError } = require('../errors/NotFoundError')
 const orderRepository = require('../repositories/ordersRepository');
+const cacheManager = require('../utils/cacheManager');
 const cartService = require('./cartService');
+const CacheManager = require('../utils/cacheManager')
 
 async function createOrder(user_id, cart_id, receiver_name, phone, address) {
     const cart = await cartService.getCart(cart_id);
@@ -113,6 +115,8 @@ async function createOrder(user_id, cart_id, receiver_name, phone, address) {
               await tx.cartItems.deleteMany({
                   where: {cart_id}
               })
+
+              await CacheManager.clearCart(cart_id)
           }
 
           return {

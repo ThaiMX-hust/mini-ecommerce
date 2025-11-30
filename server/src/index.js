@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const {redisClient} = require('./infrastructure/redis')
+const {mongooseClient} = require('./infrastructure/mongo')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,7 +28,8 @@ app.use('/api/v1/orders', require('./routes/orders'));
 app.use('/api/v1/payments', require('./routes/payment'));
 
 (async () => {
-    //await redisClient()
+    await redisClient()
+    await mongooseClient()
 
     app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
