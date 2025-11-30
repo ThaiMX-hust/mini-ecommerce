@@ -11,7 +11,15 @@ import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
 //import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
 import PaymentResultPage from './pages/PaymentResultPage/PaymentResultPage';
-import OrderHistoryPage from './pages/OrderHistoryPage/OrderHistoryPage'
+import OrderHistoryPage from './pages/OrderHistoryPage/OrderHistoryPage';
+
+// Admin Page
+import AdminDashboard from './pages/Admin/AdminDashboard/AdminDashboard';
+import AdminLayout from './components/Admin/AdminLayout/AdminLayout';
+// import ProductManagement from './pages/Admin/ProductManagement/ProductManagement';
+// import OrderManagement from './pages/Admin/OrderManagement/OrderManagement';
+// import CategoryManagement from './pages/Admin/CategoryManagement/CategoryManagement';
+
 
 function App() {
   return (
@@ -39,6 +47,12 @@ function App() {
           <Route path="/order-history" element={<OrderHistoryPage/>} />
           <Route path="/payment-result" element={<PaymentResultPage />} />
         </Route>
+
+        <Route path="/admin" element={<AdminLayout/>}>
+          <Route index element={<AdminDashboard/>}/>
+
+        </Route>
+
       </Routes>
     </BrowserRouter>
   );
