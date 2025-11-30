@@ -15,7 +15,14 @@ async function getProducts(query, isAdmin) {
         product_id: product.product_id,
         name: product.name,
         description: product.description,
-        categories: product.ProductCategories.map(c => c.Category.category_code),
+        categories: product.ProductCategories.map( c => {
+            return {
+                category_id: c.Category.category_id,
+                category_name: c.Category.category_name,
+                category_code: c.Category.category_code,
+                category_description: c.Category.category_description
+            }
+        }),
         min_price: Math.min(...product.ProductVariant.map(v => v.raw_price)),
         max_price: Math.max(...product.ProductVariant.map(v => v.raw_price)),
         image_url: product.image_urls[0] || null,
@@ -42,7 +49,14 @@ async function getProductById(product_id, isAdmin) {
     if (!product)
         return null;
 
-    const categories = product.ProductCategories.map(pc => pc.Category.category_code);
+    const categories = product.ProductCategories.map( c => {
+        return {
+            category_id: c.Category.category_id,
+            category_name: c.Category.category_name,
+            category_code: c.Category.category_code,
+            category_description: c.Category.category_description
+        }
+    })
 
     // lookup map: option_value_id -> option_name
     const optionValueMap = {};
@@ -82,7 +96,7 @@ async function getProductById(product_id, isAdmin) {
         variants
     };
 
-    await CacheManager.setProduct(product_id, product)
+    await CacheManager.setProduct(product_id, res)
 
     return res
 }

@@ -20,11 +20,4 @@ services:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
 
-  redisinsight:
-    image: redis/redisinsight:latest
-    container_name: redis_insight
-    restart: always
-    ports:
-      - "8001:8001"
-
       

@@ -325,7 +325,14 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "product_id": "string",
       "name": "string",
       "description": "string",
-      "categories": ["string"],
+      "categories": [
+        {
+          "category_id": "string",
+          "category_name": "string",
+          "category_code": "string",
+          "category_description": "string"
+        }
+      ],
       "is_disabled": "boolean",
 
       "options": [

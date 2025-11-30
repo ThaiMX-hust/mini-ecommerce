@@ -16,7 +16,7 @@ async function getProducts(query, getDisabled = false, getDeleted = false, clien
                 ProductCategories: {
                 some: {
                     Category: {
-                    category_code: { in: categories }
+                        category_code: { in: categories },
                     }
                 }
                 }
@@ -39,7 +39,7 @@ async function getProducts(query, getDisabled = false, getDeleted = false, clien
             name: true,
             description: true,
             image_urls: true,
-            ProductCategories: { select: { Category: {select: {category_code: true}} } },
+            ProductCategories: { select: { Category: {} } },
             ProductVariant: { select: { raw_price: true } }
         }
     });
