@@ -1,7 +1,7 @@
 # API Contract – Website Bán sản phẩm
 
-Phiên bản: 2.1
-Ngày cập nhật: 22/11/2025
+Phiên bản: 2.3
+Ngày cập nhật: 30/11/2025
 
 ## Tổng quan
 
@@ -161,6 +161,45 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 403 Forbidden: { "error": "Forbidden" }
   - 404 Not Found: { "error": "User not found" }
 
+### 1.7. Lấy danh sách người dùng
+
+- Method: GET
+- URL: /api/v1/users
+- Authorization: Bearer {admin_token}
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "user_id": "string",
+      "first_name": "string",
+      "last_name": "string",
+      "email": "string",
+      "avatar_url": "string",
+      "locked": "boolean",
+      "created_at": "string"
+    }
+    ```
+  - 401 Unauthorized
+  - 403 Forbidden
+
+### 1.8. Khóa/Mở khóa người dùng
+
+- Method: PATCH
+- URL: /api/v1/users/{user_id}
+- Authorization: Bearer {admin_token}
+- Content-Type: application/json
+- Request body:
+  ````json
+  {
+    "locked": "boolean"
+  }
+  ```json
+  ````
+- Response:
+  - 200 OK
+  - 401 Unauthorized
+  - 403 Forbidden
+
 ## 2. Danh mục sản phẩm
 
 ### 2.1. Tạo category
@@ -264,7 +303,14 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
           "product_id": "string",
           "name": "string",
           "description": "string",
-          "categories": ["string"],
+          "categories": [
+            {
+              "category_id": "string",
+              "category_name": "string",
+              "category_code": "string",
+              "category_description": "string"
+            }
+          ],
           "min_price": "number",
           "max_price": "number",
           "image_url": "string"
@@ -286,7 +332,14 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "product_id": "string",
       "name": "string",
       "description": "string",
-      "categories": ["string"],
+      "categories": [
+        {
+          "category_id": "string",
+          "category_name": "string",
+          "category_code": "string",
+          "category_description": "string"
+        }
+      ],
       "is_disabled": "boolean",
 
       "options": [
