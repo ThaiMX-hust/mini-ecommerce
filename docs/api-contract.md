@@ -1,7 +1,7 @@
 # API Contract – Website Bán sản phẩm
 
-Phiên bản: 2.1
-Ngày cập nhật: 22/11/2025
+Phiên bản: 2.3
+Ngày cập nhật: 30/11/2025
 
 ## Tổng quan
 
