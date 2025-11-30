@@ -1,5 +1,7 @@
 const userService = require('../services/userService');
 const regexUtils = require('../utils/regexUtils');
+const { AppError } = require('../errors/AppError')
+const { BadRequestError } = require('../errors/BadRequestError');
 
 const register = async (req, res) => {
     try {
@@ -90,10 +92,40 @@ const updateUser = async(req, res) => {
     }
 }
 
+const getUserList = async (req, res) => {
+    try {
+        const result = await userService.getUserList();
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error('Error getting user list: ', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+async function updateLockedState(req, res) {
+    try {
+        const user_id = req.params.user_id;
+        const locked = req.body.locked;
+        if (locked == null || typeof(locked) !== 'boolean')
+            throw new BadRequestError("Missing or invalid field");
+
+        await userService.updateLockedState(user_id, locked);
+        return res.status(200).send();
+    } catch (error) {
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({ error: error.message });
+        }
+
+        console.error('Error updating user locked state: ', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
 
 module.exports = {
     register,
     registerAdmin,
     getUser,
-    updateUser
+    updateUser,
+    getUserList,
+    updateLockedState
 };

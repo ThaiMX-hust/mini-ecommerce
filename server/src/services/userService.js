@@ -2,6 +2,8 @@ const { hashPassword } = require('../utils/passwordUtils');
 const userRepository = require('../repositories/userRepository');
 
 const {PrismaClient} = require('@prisma/client');
+const { NotFoundError } = require('../errors/NotFoundError');
+const { ForbiddenError } = require('../errors/ForbiddenError');
 
 const prisma = new PrismaClient()
 
@@ -116,6 +118,33 @@ const getUserWithPasswordById = userRepository.getUserWithPasswordById;
 const getUserWithPasswordByEmail = userRepository.getUserWithPasswordByEmail;
 const updatePassword = userRepository.updatePassword;
 
+async function getUserList() {
+    const userList = await userRepository.getAll();
+
+    const result = userList.map(u => ({
+        user_id: u.user_id,
+        cart_id: u.cart_id,
+        first_name: u.first_name,
+        last_name: u.last_name,
+        email: u.email,
+        avatar_url: u.avatar_url,
+        locked: u.locked,
+        created_at: u.created_at
+    }));
+
+    return result;
+}
+
+async function updateLockedState(user_id, locked) {
+    const user = await userRepository.getUserById(user_id);
+    if (!user)
+        throw new NotFoundError("User not found");
+    if (user.role === 'ADMIN')
+        throw new ForbiddenError("Cannot lock admin");
+    
+    await userRepository.updateLockedState(user_id, locked);
+}
+
 module.exports = {
     registerUser,
     registerAdmin,
@@ -124,5 +153,7 @@ module.exports = {
     getUserWithPasswordById,
     getUserWithPasswordByEmail,
     updatePassword,
-    updateUser
+    updateUser,
+    getUserList,
+    updateLockedState
 };

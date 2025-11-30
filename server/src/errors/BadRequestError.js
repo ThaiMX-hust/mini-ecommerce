@@ -1,9 +1,8 @@
-class BadRequestError extends Error {
-  constructor(message, statusCode) {
-    super(message);
-    this.name = this.constructor.name;
-    this.statusCode = statusCode || 500;
-    Error.captureStackTrace(this, this.constructor);
+const { AppError } = require('./AppError')
+
+class BadRequestError extends AppError {
+  constructor(message = "Bad Request", statusCode = 400) {
+    super(message, statusCode);
   }
 }
 
