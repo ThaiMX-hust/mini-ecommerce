@@ -1,8 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const {redisClient} = require('./infrastructure/redis')
-const {mongooseClient} = require('./infrastructure/mongo')
+const { redisClient } = require('./infrastructure/redis');
+const { mongooseClient } = require('./infrastructure/mongo');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,7 +20,7 @@ app.get('/api/v1/health', (req, res) => {
 app.use('/api/v1/users', require('./routes/users'));
 app.use('/api/v1/auth', require('./routes/auth'));
 
-app.use('/api/v1/categories', require('./routes/category'))
+app.use('/api/v1/categories', require('./routes/category'));
 app.use('/api/v1/cart', require('./routes/cart'));
 app.use('/api/v1/products', require('./routes/products'));
 
@@ -32,10 +32,10 @@ app.use('/api/v1/refunds', require('./routes/refunds'));
 app.use('/api/v1/stats', require('./routes/stats'));
 
 (async () => {
-    await redisClient()
-    await mongooseClient()
+    await redisClient();
+    await mongooseClient();
 
     app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-})()
+        console.log(`Server is running on port ${PORT}`);
+    });
+})();
