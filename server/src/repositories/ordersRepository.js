@@ -56,7 +56,7 @@ async function createNewStatusToHistory(client, order_id, status_code, changed_b
 async function getById(order_id) {
     return await prisma.order.findUnique({
         where: { order_id },
-        include: { history: true }
+        include: { history: { include: { status: true } } }
     });
 }
 
