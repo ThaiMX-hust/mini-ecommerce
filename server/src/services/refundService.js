@@ -17,9 +17,14 @@ async function addRefundRequest(order_id, reason) {
         throw new ConflictError("Duplicated refund request");
     }
 
-    // TODO: check order state
+    const status = order.history.reduce((latest, o) => o.changed_at > latest.changed_at ? o : latest);
+    switch (status.status.order_status_code) {
+        case "CREATED":
+        case "CANCELLED":
+        case "REFUNDED":
+            throw new BadRequestError("Invalid operation");
+    }
 
-    
     const amount = order.final_total_price;
 
     const refund = await refundRepository.add({ order_id, reason, amount });
@@ -80,9 +85,6 @@ async function approveRefund(refund_id, admin_id, note) {
     refund.admin_id = admin_id;
     refund.note = note;
     await refundRepository.update(refund_id, refund);
-
-    // TODO: VNPay Refund
-
 
     return {
         refund_id: refund.refund_id,
