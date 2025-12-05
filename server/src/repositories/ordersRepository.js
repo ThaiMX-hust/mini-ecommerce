@@ -51,7 +51,7 @@ async function createNewStatusToHistory(client, order_id, status_code, changed_b
     });
 }
 
-async function getById(order_id) {
+async function getWithStatus(order_id) {
     return await prisma.order.findUnique({
         where: { order_id },
         include: { history: { include: { status: true } } }
@@ -87,7 +87,57 @@ async function getRevenue(from, to) {
     };
 }
 
+async function getAll(query, sort) {
+    const { offset, limit, status_code } = query;
+    /**
+     * TODO: Implement filtering by status_code: choose 1:
+     * Denormalize: add order current status to Order table
+     * Filter after db query (affect pagination)
+     * Raw SQL
+     */
 
+    const where = { AND: [] };
+
+    const [count, orders] = await Promise.all([
+        prisma.order.count({ where }),
+        prisma.order.findMany({
+            where,
+            include: {
+                history: {
+                    orderBy: { changed_at: "desc" },
+                    take: 1,
+                    include: { status: true }
+                }
+            },
+            orderBy: sort,
+            skip: offset,
+            take: limit
+        })
+    ]);
+
+    return { count, orders };
+}
+
+async function getDetail(order_id) {
+    return await prisma.order.findUnique({
+        where: { order_id },
+        include: {
+            history: { include: { status: true } },
+            items: {
+                include: {
+                    product_variant: {
+                        include: {
+                            Product: true,
+                            ProductVariantOption: {
+                                include: { ProductOptionValue: { include: { ProductOption: true } } }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
 
 module.exports = {
     getPrismaClientInstance,
@@ -96,6 +146,8 @@ module.exports = {
     createNewStatus,
     getStatusById,
     createNewStatusToHistory,
-    getById,
-    getRevenue
+    getWithStatus,
+    getRevenue,
+    getAll,
+    getDetail
 };

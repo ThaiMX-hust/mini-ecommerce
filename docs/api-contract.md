@@ -1299,6 +1299,118 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 403 Forbidden
   - 404 Not Found
 
+### 5.11. Xem danh sách đơn hàng (cho admin)
+
+- Method: GET
+- URL: /api/v1/orders/all
+- Authorization: Bearer (admin)
+- Query:
+  - page
+  - limit
+  - status_code
+  - sort_by (created_at/total_final_price/raw_final_price)
+  - sort_order (asc/desc)
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "page": 1,
+      "limit": 5,
+      "total_items": 2,
+      "total_pages": 1,
+      "orders": [
+        {
+          "order_id": "0c68db1e-994f-4ba1-9e20-125933f62219",
+          "user_id": "f200eeb6-b97b-42f7-bebb-0ba40e524298",
+          "receiver_name": "Tam",
+          "raw_total_price": "798000",
+          "final_total_price": "798000",
+          "created_at": "2025-12-05T05:59:10.841Z",
+          "status": "Đang vận chuyển"
+        },
+        {
+          "order_id": "1793b812-b197-4fd3-b260-d1babde94aec",
+          "user_id": "f200eeb6-b97b-42f7-bebb-0ba40e524298",
+          "receiver_name": "Tam",
+          "raw_total_price": "699000",
+          "final_total_price": "699000",
+          "created_at": "2025-12-05T07:08:54.639Z",
+          "status": "Chờ xác nhận"
+        }
+      ]
+    }
+    ```
+  - 400 Bad Request
+  - 401 Unauthorized
+  - 403 Forbidden
+  - 404 Not Found
+
+### 5.12. Xem chi tiết đơn hàng (cho admin)
+
+- Method: GET
+- URL: /api/v1/orders/{order_id}/detail
+- Authorization: Bearer (admin)
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "order_id": "0c68db1e-994f-4ba1-9e20-125933f62219",
+      "user_id": "f200eeb6-b97b-42f7-bebb-0ba40e524298",
+      "receiver_name": "Tam",
+      "phone": "12345678",
+      "address": "?????",
+      "raw_total_price": "798000",
+      "final_total_price": "798000",
+      "created_at": "2025-12-05T05:59:10.841Z",
+      "status_history": [
+        {
+          "status": {
+            "code": "SHIPPING",
+            "name": "Đang vận chuyển"
+          },
+          "changed_at": "2025-12-05T06:00:26.319Z",
+          "changed_by": "assmin",
+          "note": "Đơn hàng đã đến kho Thẩm Quyến"
+        },
+        {
+          "status": {
+            "code": "CREATED",
+            "name": "Chờ xác nhận"
+          },
+          "changed_at": "2025-12-05T05:59:10.851Z",
+          "changed_by": "f200eeb6-b97b-42f7-bebb-0ba40e524298",
+          "note": "Đơn hàng được tạo"
+        }
+      ],
+      "items": [
+        {
+          "name": "Quần jean slim-fit",
+          "description": "Jean nam nữ co giãn, form ôm vừa.",
+          "sku": "JN-BLU-30",
+          "image_urls": [],
+          "options": [
+            {
+              "name": "Size",
+              "value": "30"
+            },
+            {
+              "name": "Color",
+              "value": "Blue"
+            }
+          ],
+          "quantity": 2,
+          "unit_price": "399000",
+          "promotion": "0",
+          "final_price": "399000",
+          "subtotal": "798000"
+        }
+      ]
+    }
+    ```
+  - 401 Unauthorized
+  - 403 Forbidden
+  - 404 Not Found
+
 ## 6. Khuyến mãi
 
 ### 6.1. Tạo promotion

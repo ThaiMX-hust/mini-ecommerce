@@ -7,7 +7,7 @@ const { BadRequestError } = require('../errors/BadRequestError');
 const { ConflictError } = require('../errors/ConflictError');
 
 async function addRefundRequest(order_id, reason) {
-    const order = await orderRepository.getById(order_id);
+    const order = await orderRepository.getWithStatus(order_id);
     if (!order) {
         throw new NotFoundError("Order not found");
     }
