@@ -1,16 +1,14 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require("../infrastructure/prisma");
 
-const prisma = new PrismaClient();
-
-function getPrismaClientInstance(){
-    return prisma
+function getPrismaClientInstance() {
+    return prisma;
 }
 
-async function createPromotion(){
+async function createPromotion() {
 
 }
 
 module.exports = {
     getPrismaClientInstance,
     createPromotion
-}
+};

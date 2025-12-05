@@ -10,7 +10,7 @@ async function add(data) {
 }
 
 async function getByOrderId(order_id) {
-    return await prisma.refund.findMany({ where: { order_id }});
+    return await prisma.refund.findMany({ where: { order_id } });
 }
 
 async function getAll() {
