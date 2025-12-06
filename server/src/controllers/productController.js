@@ -3,7 +3,7 @@ const productService = require('../services/productService');
 
 const getProducts = async (req, res) => {
     try {
-        const name = req.query.name;
+        const name = req.query.name || req.query.search;
         let categories = req.query.categories;
         if (categories && !Array.isArray(categories)) {
             categories = [categories];
