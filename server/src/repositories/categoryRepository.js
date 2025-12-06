@@ -1,8 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../infrastructure/prisma");
 
-const prisma = new PrismaClient();
-
-function getPrismaClientInstance(){
+function getPrismaClientInstance() {
     return prisma;
 }
 
@@ -26,11 +24,11 @@ async function createCategories(categories) {
         skipDuplicates: true
     });
 
-    const categoryCodes = categories.map(cat => cat.category_code)
+    const categoryCodes = categories.map(cat => cat.category_code);
 
     const insertedRecords = await prisma.category.findMany({
         where: {
-         category_code: { in: categoryCodes }
+            category_code: { in: categoryCodes }
         }
     });
 
@@ -40,12 +38,12 @@ async function createCategories(categories) {
 }
 
 
-async function getCategoryIdByCode(category_code){
+async function getCategoryIdByCode(category_code) {
     const code = prisma.category.findUnique({
-        where: {category_code: category_code}
-    })
+        where: { category_code: category_code }
+    });
 
-    return code
+    return code;
 }
 
 module.exports = {
@@ -54,4 +52,4 @@ module.exports = {
     getPrismaClientInstance,
     createCategories,
     getCategoryIdByCode
-}
+};

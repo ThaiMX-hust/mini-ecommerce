@@ -1,8 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../infrastructure/prisma");
 
-const prisma = new PrismaClient();
-
-function getPrismaClientInstance(){
+function getPrismaClientInstance() {
     return prisma;
 }
 
@@ -12,16 +10,16 @@ async function getProducts(query, getDisabled = false, getDeleted = false, clien
         AND: [
             name ? { name: { contains: name } } : {},
             categories && categories.length > 0
-            ? {
-                ProductCategories: {
-                some: {
-                    Category: {
-                        category_code: { in: categories },
+                ? {
+                    ProductCategories: {
+                        some: {
+                            Category: {
+                                category_code: { in: categories },
+                            }
+                        }
                     }
                 }
-                }
-            }
-            : {},
+                : {},
             min_price ? { ProductVariant: { some: { raw_price: { gte: min_price } } } } : {},
             max_price ? { ProductVariant: { some: { raw_price: { lte: max_price } } } } : {},
             !getDisabled ? { is_disabled: false } : {},
@@ -72,38 +70,38 @@ async function getProductById(productId, getDisabled = false, getDeleted = false
 }
 
 async function getProductVariantById(client, product_variant_id) {
-  const productVariant = await client.productVariant.findUnique({
-    where: { product_variant_id },
-    include: {
-      Product: {
-        select: {
-          product_id: true,
-          name: true,
-          description: true,
-          image_urls: true,
-          is_disabled: true,
-        },
-      },
-      ProductVariantOption: {
+    const productVariant = await client.productVariant.findUnique({
+        where: { product_variant_id },
         include: {
-          ProductOptionValue: {
-            select: {
-              option_value_id: true,
-              value: true,
-              ProductOption: {
+            Product: {
                 select: {
-                  product_option_id: true,
-                  option_name: true,
+                    product_id: true,
+                    name: true,
+                    description: true,
+                    image_urls: true,
+                    is_disabled: true,
                 },
-              },
             },
-          },
+            ProductVariantOption: {
+                include: {
+                    ProductOptionValue: {
+                        select: {
+                            option_value_id: true,
+                            value: true,
+                            ProductOption: {
+                                select: {
+                                    product_option_id: true,
+                                    option_name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
-      },
-    },
-  });
+    });
 
-  return productVariant
+    return productVariant;
 }
 
 async function getProductOptionById(client, product_option_id) {
@@ -138,13 +136,13 @@ async function updateProductVariant(client, product_variant_id, variantData) {
             ...(sku && { sku }),
             ...(raw_price && { raw_price }),
             ...(stock_quantity && { stock_quantity }),
-            ...(image_urls && {image_urls})
+            ...(image_urls && { image_urls })
         }
     });
 
     if (Array.isArray(options) && options.length > 0) {
         const productOptions = await getProductOptions(client, productVariant.product_id);
-        
+
         // Delete options
         await client.productVariantOption.deleteMany({
             where: { product_variant_id }
@@ -156,7 +154,7 @@ async function updateProductVariant(client, product_variant_id, variantData) {
                 .ProductOptionValue.find(pov => pov.value === option.value)
                 .option_value_id
         );
-        
+
         await client.productVariantOption.createMany({
             data: optionValueIds.map(option_value_id => ({ product_variant_id, option_value_id }))
         });
@@ -192,7 +190,7 @@ async function updateProductOption(client, product_option_id, option_name, value
                 where: { option_value_id: { in: valuesToDelete } },
                 select: { option_value_id: true },
             }).then(res => res.map(r => r.option_value_id));
-        
+
             const safeToDelete = valuesToDelete.filter(id => !usedIds.includes(id));
 
             if (safeToDelete.length > 0) {
@@ -228,9 +226,9 @@ async function createProduct(client, name, description, image_urls, is_disabled)
 async function createProductCategories(client, productId, categoryCodes) {
     const categories = await client.category.findMany({
         where: {
-            category_code: {in: categoryCodes}
+            category_code: { in: categoryCodes }
         }
-    })
+    });
 
     return await client.productCategories.createMany({
         data: categories.map(category => ({ product_id: productId, category_id: category.category_id })),
@@ -362,14 +360,16 @@ async function getReviewsWithUserInfo(product_id, client = prisma) {
     return await client.review.findMany({
         where: { product_id },
         orderBy: { created_at: 'desc' },
-        include: { user: {
-            select: {
-                user_id: true,
-                first_name: true,
-                last_name: true,
-                avatar_url: true
+        include: {
+            user: {
+                select: {
+                    user_id: true,
+                    first_name: true,
+                    last_name: true,
+                    avatar_url: true
+                }
             }
-        }}
+        }
     });
 }
 

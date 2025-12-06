@@ -1,6 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require("../infrastructure/prisma");
 
 async function getUserById(user_id, client = prisma) {
     return await client.user.findUnique({
@@ -31,7 +29,7 @@ async function getUserByEmail(email, client = prisma) {
             created_at: true,
             updated_at: true,
             Cart: {
-                select: {cart_id: true}
+                select: { cart_id: true }
             }
         }
     });

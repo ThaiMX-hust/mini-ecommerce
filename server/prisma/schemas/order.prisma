@@ -16,4 +16,5 @@ model Order {
     items       OrderItems[]
     history     OrderStatusHistory[]
     adjustments Adjustment[]
+    refunds     Refund[]
 }

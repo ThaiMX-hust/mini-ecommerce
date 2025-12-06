@@ -186,6 +186,9 @@ async function updateItemQuantityFromCart(cart_id, cart_item_id, quantity = 1){
 async function deleteItemFromCart(cart_id, cart_item_id){
   try{
     const deleteItem = await cartRepository.deleteItemFromCartById(cart_id, cart_item_id)
+
+    await CacheManager.clearCart(cart_id)
+
     return deleteItem
   } catch(err){
     throw err
