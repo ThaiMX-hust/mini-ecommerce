@@ -1,139 +1,130 @@
 .container {
-  max-width: 600px;
+  max-width: 1200px;
   margin: 40px auto;
-  padding: 40px;
-  background-color: #fff;
+  padding: 0 15px;
+}
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+}
+
+/* Card Styles */
+.card {
+  background-color: white;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
 }
-.title {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 2.5rem;
-  margin-bottom: 30px;
-  text-align: center;
-}
-.errorMessage,
-.successMessage {
-  text-align: center;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-.errorMessage {
-  color: #d70018;
-  background-color: #ffebee;
-}
-.successMessage {
-  color: #155724;
-  background-color: #d4edda;
-}
-
-/* Avatar Styles */
-.avatarContainer {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  margin: 0 auto 30px auto;
-}
-.avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #eee;
-}
-.avatarSvg {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  padding: 20px;
-  box-sizing: border-box;
-  stroke: #aaa;
-}
-.avatarEditButton {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background-color: #333;
-  color: white;
-  border: 2px solid white;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
+.cardHeader {
   display: flex;
   align-items: center;
+  gap: 15px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.iconWrapper {
+  background-color: #f0f4ff;
+  color: #4a6cf7;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
   justify-content: center;
-  cursor: pointer;
-  font-size: 12px;
+  align-items: center;
+  font-size: 1.5rem;
+}
+/* Custom icon colors */
+.card:nth-child(2) .iconWrapper {
+  background-color: #fff4e5;
+  color: #ff9800;
+}
+.card:nth-child(3) .iconWrapper {
+  background-color: #e6f7ff;
+  color: #1890ff;
 }
 
-/* View Mode Styles */
-.viewProfile {
-  text-align: center;
+.cardTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
 }
-.userInfo {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  margin-bottom: 30px;
+.cardDescription {
+  color: #666;
+  margin: 5px 0 0;
 }
-.userInfo p {
-  margin: 10px 0;
+.cardBody {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 20px;
 }
-.button {
-  padding: 12px 30px;
-  border: none;
+.cardButton {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  background-color: white;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1rem;
   font-weight: 500;
   transition: all 0.2s;
 }
-.editButton {
-  background-color: #111;
-  color: white;
-}
-.editButton:hover {
-  background-color: #333;
+.cardButton:hover {
+  background-color: #f5f5f5;
+  border-color: #888;
 }
 
-/* Edit Mode Styles */
-.inputGroup {
-  margin-bottom: 20px;
+/* Specific Card Body Styles */
+.profileInfo p,
+.orderStats p {
+  display: flex;
+  justify-content: space-between;
+  color: #333;
+  margin: 10px 0;
 }
-.inputGroup label {
-  display: block;
-  margin-bottom: 5px;
+.profileInfo span,
+.orderStats span {
+  color: #666;
+}
+.settingsActions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.settingButton {
+  width: 100%;
+  text-align: left;
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  background: none;
+  border-radius: 5px;
+  cursor: pointer;
   font-weight: 500;
 }
-.inputGroup input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
+.settingButton:hover {
+  background-color: #f9f9f9;
 }
-.inputGroup input:disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
+.logoutButton {
+  background-color: #fff1f0;
+  border-color: #ffccc7;
+  color: #cf1322;
+  font-weight: bold;
 }
-.buttonGroup {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 30px;
+.logoutButton i {
+  margin-right: 8px;
 }
-.saveButton {
-  background-color: #28a745;
-  color: white;
-}
-.saveButton:hover {
-  background-color: #218838;
-}
-.cancelButton {
-  background-color: #6c757d;
-  color: white;
-}
-.cancelButton:hover {
-  background-color: #5a6268;
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
 }

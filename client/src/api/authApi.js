@@ -50,3 +50,33 @@ export const updateUserProfile = (userId, formData) => {
   // Axios sẽ tự động set 'Content-Type': 'multipart/form-data' khi body là FormData
   return api.patch(`/users/${userId}`, formData);
 };
+
+/**
+ * Gửi yêu cầu thay đổi mật khẩu.
+ * @param {object} passwords - Object chứa mật khẩu cũ và mới.
+ * @param {string} passwords.old_password - Mật khẩu hiện tại.
+ * @param {string} passwords.new_password - Mật khẩu mới.
+ * @returns {Promise<object>}
+ */
+export const changePassword = (passwords) => {
+  return api.post("/auth/change-password", passwords);
+};
+
+/**
+ * Gửi yêu cầu lấy link reset mật khẩu qua email.
+ * @param {string} email - Email của người dùng.
+ * @returns {Promise<object>}
+ */
+export const requestPasswordReset = (email) => {
+  return api.post("/auth/forgot-password", { email });
+};
+
+/**
+ * Gửi yêu cầu đặt lại mật khẩu với token và mật khẩu mới.
+ * @param {string} token - Token nhận được từ email.
+ * @param {string} new_password - Mật khẩu mới.
+ * @returns {Promise<object>}
+ */
+export const resetPassword = (token, new_password) => {
+  return api.post("/auth/reset-password", { token, new_password });
+};
