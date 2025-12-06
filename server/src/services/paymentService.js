@@ -123,6 +123,7 @@ const handleVnpayIpn = async (vnp_Params) => {
                     console.error("CONFIRM status not found in database");
                     return {RspCode:'99', Message:'System error'};
                 }
+                console.log(confirmedStatus);
                 await prisma.orderStatusHistory.create({
                     data: {
                         order_id: orderId,

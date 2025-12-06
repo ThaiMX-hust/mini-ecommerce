@@ -18,6 +18,7 @@ async function main() {
             email: 'admin@example.com',
             password_hash: adminPassword,
             role: 'ADMIN',
+            locked: false,
             avatar_url: null
         },
      });
@@ -31,6 +32,7 @@ async function main() {
             email: 'customer@example.com',
             password_hash: customerPassword,
             role: 'CUSTOMER',
+            locked: false,
             avatar_url: null
         },
     });

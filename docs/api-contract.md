@@ -1,7 +1,7 @@
 # API Contract – Website Bán sản phẩm
 
-Phiên bản: 2.1
-Ngày cập nhật: 22/11/2025
+Phiên bản: 3.0\
+Ngày cập nhật: 30/11/2025
 
 ## Tổng quan
 
@@ -161,6 +161,45 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 403 Forbidden: { "error": "Forbidden" }
   - 404 Not Found: { "error": "User not found" }
 
+### 1.7. Lấy danh sách người dùng
+
+- Method: GET
+- URL: /api/v1/users
+- Authorization: Bearer {admin_token}
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "user_id": "string",
+      "first_name": "string",
+      "last_name": "string",
+      "email": "string",
+      "avatar_url": "string",
+      "locked": "boolean",
+      "created_at": "string"
+    }
+    ```
+  - 401 Unauthorized
+  - 403 Forbidden
+
+### 1.8. Khóa/Mở khóa người dùng
+
+- Method: PATCH
+- URL: /api/v1/users/{user_id}/locked
+- Authorization: Bearer {admin_token}
+- Content-Type: application/json
+- Request body:
+  ````json
+  {
+    "locked": "boolean"
+  }
+  ```json
+  ````
+- Response:
+  - 200 OK
+  - 401 Unauthorized
+  - 403 Forbidden
+
 ## 2. Danh mục sản phẩm
 
 ### 2.1. Tạo category
@@ -264,7 +303,14 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
           "product_id": "string",
           "name": "string",
           "description": "string",
-          "categories": ["string"],
+          "categories": [
+            {
+              "category_id": "string",
+              "category_name": "string",
+              "category_code": "string",
+              "category_description": "string"
+            }
+          ],
           "min_price": "number",
           "max_price": "number",
           "image_url": "string"
@@ -286,7 +332,14 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
       "product_id": "string",
       "name": "string",
       "description": "string",
-      "categories": ["string"],
+      "categories": [
+        {
+          "category_id": "string",
+          "category_name": "string",
+          "category_code": "string",
+          "category_description": "string"
+        }
+      ],
       "is_disabled": "boolean",
 
       "options": [
@@ -1120,3 +1173,549 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 400 Bad Request: { "error": "Invalid status" }
   - 401 Unauthorized: { "error": "Unauthorized" }
   - 404 Not Found: { "error": "Order not found" }
+
+### 5.6. Tạo yêu cầu hoàn tiền
+- Method: POST
+- URL: /api/v1/refunds
+- Authorization: Bearer
+- Content-Type: application/json
+- Request body:
+  - order_id
+  - reason: string
+- Response:
+  - 201 Created:
+    ```json
+    {
+      "refund_id": "fade15f8-5320-4b3a-9a09-54f90c0d2c96",
+      "order_id": "5f809a00-b53d-4130-9b4a-1783a6ffbf7f",
+      "reason": "test",
+      "amount": "798000",
+      "status": "PENDING",
+      "created_at": "2025-11-30T14:18:14.374Z"
+    }
+    ```
+  - 400 Bad Request
+  - 401 Unauthorized
+  - 404 Not Found
+  - 409 Conflict
+
+### 5.7. Lấy danh sách yêu cầu hoàn tiền của 1 người dùng
+- Method: GET
+- URL: /api/v1/refunds
+- Authorization: Bearer
+- Response:
+  - 200 OK:
+    ```json
+    [
+      {
+        "refund_id": "fade15f8-5320-4b3a-9a09-54f90c0d2c96",
+        "order_id": "5f809a00-b53d-4130-9b4a-1783a6ffbf7f",
+        "reason": "test",
+        "amount": "798000",
+        "status": "PENDING",
+        "created_at": "2025-11-30T14:18:14.374Z",
+        "processed_at": null,
+        "note": null
+      }
+    ]
+    ```
+  - 401 Unauthorized
+
+### 5.8. Lấy toàn bộ danh sách yêu cầu hoàn tiền (cho admin)
+- Method: GET
+- URL: /api/v1/refunds
+- Authorization: Bearer (admin)
+- Response:
+  - 200 OK:
+    ```json
+    [
+      {
+        "refund_id": "d7e77ef5-f529-4400-bd24-6711065c1157",
+        "order_id": "d6cb7f8f-f1b5-4c37-b1aa-ba8958d2d692",
+        "reason": "test",
+        "amount": "798000",
+        "status": "REJECTED",
+        "created_at": "2025-11-30T13:46:21.588Z",
+        "processed_at": "2025-11-30T13:46:44.761Z",
+        "admin_id": "assmin",
+        "note": "reject 123"
+      }
+    ]
+    ```
+  - 401 Unauthorized
+  - 403 Forbidden
+
+### 5.9. Chấp nhận hoàn tiền
+
+- Method: POST
+- URL: /api/v1/refunds/{refund_id}/approve
+- Authorization: Bearer (admin)
+- Content-Type: application/json
+- Request body:
+  - note
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "refund_id": "fade15f8-5320-4b3a-9a09-54f90c0d2c96",
+      "order_id": "5f809a00-b53d-4130-9b4a-1783a6ffbf7f",
+      "reason": "test",
+      "amount": "798000",
+      "status": "APPROVED",
+      "created_at": "2025-11-30T14:18:14.374Z",
+      "processed_at": "2025-11-30T14:20:44.018Z",
+      "admin_id": "assmin",
+      "note": "approve 123"
+    }
+    ```
+  - 401 Unauthorized
+  - 403 Forbidden
+  - 404 Not Found
+
+### 5.10. Từ chối hoàn tiền
+
+- Method: POST
+- URL: /api/v1/refunds/{refund_id}/reject
+- Authorization: Bearer (admin)
+- Content-Type: application/json
+- Request body:
+  - note
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "refund_id": "fade15f8-5320-4b3a-9a09-54f90c0d2c96",
+      "order_id": "5f809a00-b53d-4130-9b4a-1783a6ffbf7f",
+      "reason": "test",
+      "amount": "798000",
+      "status": "REJECTED",
+      "created_at": "2025-11-30T14:18:14.374Z",
+      "processed_at": "2025-11-30T14:20:44.018Z",
+      "admin_id": "assmin",
+      "note": "approve 123"
+    }
+    ```
+  - 401 Unauthorized
+  - 403 Forbidden
+  - 404 Not Found
+
+### 5.11. Xem danh sách đơn hàng (cho admin)
+
+- Method: GET
+- URL: /api/v1/orders/all
+- Authorization: Bearer (admin)
+- Query:
+  - page
+  - limit
+  - status_code
+  - sort_by (created_at/total_final_price/raw_final_price)
+  - sort_order (asc/desc)
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "page": 1,
+      "limit": 5,
+      "total_items": 2,
+      "total_pages": 1,
+      "orders": [
+        {
+          "order_id": "0c68db1e-994f-4ba1-9e20-125933f62219",
+          "user_id": "f200eeb6-b97b-42f7-bebb-0ba40e524298",
+          "receiver_name": "Tam",
+          "raw_total_price": "798000",
+          "final_total_price": "798000",
+          "created_at": "2025-12-05T05:59:10.841Z",
+          "status": "Đang vận chuyển"
+        },
+        {
+          "order_id": "1793b812-b197-4fd3-b260-d1babde94aec",
+          "user_id": "f200eeb6-b97b-42f7-bebb-0ba40e524298",
+          "receiver_name": "Tam",
+          "raw_total_price": "699000",
+          "final_total_price": "699000",
+          "created_at": "2025-12-05T07:08:54.639Z",
+          "status": "Chờ xác nhận"
+        }
+      ]
+    }
+    ```
+  - 400 Bad Request
+  - 401 Unauthorized
+  - 403 Forbidden
+  - 404 Not Found
+
+### 5.12. Xem chi tiết đơn hàng (cho admin)
+
+- Method: GET
+- URL: /api/v1/orders/{order_id}/detail
+- Authorization: Bearer (admin)
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "order_id": "0c68db1e-994f-4ba1-9e20-125933f62219",
+      "user_id": "f200eeb6-b97b-42f7-bebb-0ba40e524298",
+      "receiver_name": "Tam",
+      "phone": "12345678",
+      "address": "?????",
+      "raw_total_price": "798000",
+      "final_total_price": "798000",
+      "created_at": "2025-12-05T05:59:10.841Z",
+      "status_history": [
+        {
+          "status": {
+            "code": "SHIPPING",
+            "name": "Đang vận chuyển"
+          },
+          "changed_at": "2025-12-05T06:00:26.319Z",
+          "changed_by": "assmin",
+          "note": "Đơn hàng đã đến kho Thẩm Quyến"
+        },
+        {
+          "status": {
+            "code": "CREATED",
+            "name": "Chờ xác nhận"
+          },
+          "changed_at": "2025-12-05T05:59:10.851Z",
+          "changed_by": "f200eeb6-b97b-42f7-bebb-0ba40e524298",
+          "note": "Đơn hàng được tạo"
+        }
+      ],
+      "items": [
+        {
+          "name": "Quần jean slim-fit",
+          "description": "Jean nam nữ co giãn, form ôm vừa.",
+          "sku": "JN-BLU-30",
+          "image_urls": [],
+          "options": [
+            {
+              "name": "Size",
+              "value": "30"
+            },
+            {
+              "name": "Color",
+              "value": "Blue"
+            }
+          ],
+          "quantity": 2,
+          "unit_price": "399000",
+          "promotion": "0",
+          "final_price": "399000",
+          "subtotal": "798000"
+        }
+      ]
+    }
+    ```
+  - 401 Unauthorized
+  - 403 Forbidden
+  - 404 Not Found
+
+## 6. Khuyến mãi
+
+### 6.1. Tạo promotion
+
+- Method: POST
+- Require Headers: Authorization {admin_token}
+- URL: `/api/v1/promotions`
+
+#### **Request Body**
+
+```json
+{
+  "promotion_name": "string",
+  "promotion_description": "string",
+  "promotion_type": "string",
+  "promotion_status": "string",
+  "promotion_value": "number",
+  "promotion_metadata": {
+    "product_id": "string",
+    "exclude_variant_id": [{ "product_variant_id": "string" }],
+    "max_usage": "number",
+    "current_usage": "number",
+    "start_at": "timestamp",
+    "end_at": "timestamp"
+  },
+  "promotion_rules": {
+    "time": {
+      "time_slots_count": "number",
+      "time_slots": [{ "start_time": "timestamp", "end_time": "timestamp" }]
+    },
+    "limit": {
+      "max_per_order": "number",
+      "max_per_user": "number"
+    },
+    "constraints": {
+      "min_order_value": "number",
+      "min_quantity": "number"
+    }
+  }
+}
+```
+
+#### Mô tả trường body
+
+| Trường                    | Kiểu   | Bắt buộc | Mô tả                                      |
+| ------------------------- | ------ | -------- | ------------------------------------------ |
+| **promotion_name**        | string | có       | Tên chương trình khuyến mãi.               |
+| **promotion_description** | string | không    | Mô tả nội dung khuyến mãi.                 |
+| **promotion_type**        | string | có       | Loại khuyến mãi.                           |
+| **promotion_status**      | string | không    | Trạng thái. Mặc định khi tạo sẽ là `DRAFT` |
+| **promotion_value**       | number | có       | Giá trị khuyến mãi.                        |
+| **promotion_metadata**    | object | có       | Thông tin của khuyến mãi                   |
+| **promotion_rules**       | number | có       | Rule set của promotion                     |
+
+#### Mô tả promotion metadata
+
+| Field                | Type      | Required | Description                           |
+| -------------------- | --------- | -------- | ------------------------------------- |
+| product_id           | string    | Yes      | ID của sản phẩm được áp dụng.         |
+| exclude_variant_id   | array     | No       | Danh sách các biến thể cần loại trừ.  |
+| └ product_variant_id | string    | No       | ID biến thể bị loại trừ.              |
+| max_usage            | number    | Yes      | Tổng số lần promotion có thể sử dụng. |
+| current_usage        | number    | Yes      | Số lần đã sử dụng.                    |
+| start_at             | timestamp | Yes      | Thời điểm bắt đầu hiệu lực.           |
+| end_at               | timestamp | Yes      | Thời điểm kết thúc hiệu lực.          |
+
+#### Mô tả promotion rule
+
+- Mô tả Time rule
+
+| Field            | Type      | Required                | Description              |
+| ---------------- | --------- | ----------------------- | ------------------------ |
+| time_slots_count | number    | No                      | Số lượng time slot.      |
+| time_slots       | array     | No                      | Danh sách các time slot. |
+| └ start_time     | timestamp | Yes (nếu có time_slots) | Thời điểm bắt đầu.       |
+| └ end_time       | timestamp | Yes (nếu có time_slots) | Thời điểm kết thúc.      |
+
+- Mô tả Limit rule
+
+| Field         | Type   | Required | Description                         |
+| ------------- | ------ | -------- | ----------------------------------- |
+| max_per_order | number | No       | Số lần áp dụng trên một đơn hàng.   |
+| max_per_user  | number | No       | Số lần áp dụng trên mỗi người dùng. |
+
+- Mô tả constraints
+
+| Field           | Type   | Required | Description                                                                        |
+| --------------- | ------ | -------- | ---------------------------------------------------------------------------------- |
+| min_order_value | number | No       | Giá trị đơn hàng tối thiểu để áp dụng. Để `-1` nếu như không có giá trị tối thiểu  |
+| min_quantity    | number | No       | Số lượng sản phẩm tối thiểu để áp dụng. Để `-1` nếu như không có giá trị tối thiểu |
+
+#### **Response**
+
+- 201 Created
+
+```json
+{
+  "promotion_id": "string",
+  "created_at": "timestamp"
+}
+```
+
+### 6.2. Lấy list khuyến mãi
+
+- Method: GET
+- URL `/api/v1/promotions`
+- Request Headers: Authorization Bearer {admin_token}
+
+### **Query Params**
+
+| Param        | Type   | Required | Description                                      |
+| ------------ | ------ | -------- | ------------------------------------------------ |
+| `product_id` | string | No       | Lọc theo sản phẩm                                |
+| `status`     | string | No       | `DRAFT`, `RUNNING`, `EXPIRED`, `ARCHIVED`        |
+| `type`       | string | No       | `PERCENTAGE`, `FIXED`, `FLASH_SALE`, `SET_PRICE` |
+| `page`       | number | No       | Default `1`                                      |
+| `limit`      | number | No       | Default `20`                                     |
+
+### **Response 200**
+
+```json
+{
+  "pagination": {
+    "page": "number",
+    "limit": "number",
+    "total": "number"
+  },
+  "promotions": [
+    {
+      "promotion_id": "string",
+      "product_id": "string",
+      "promotion_name": "string",
+      "promotion_description": "string",
+      "promotion_type": "string",
+      "promotion_status": "string",
+      "start_at": "timestamp",
+      "end_at": "timestamp"
+    }
+  ]
+}
+```
+
+### 6.3. Lấy khuyến mãi theo id
+
+-Method: GET
+-URL: `/api/v1/promotions/{promotion_id}`
+
+#### **Response 200**
+
+```json
+{
+  "promotion_id": "string",
+  "product_id": "string",
+  "promotion_name": "string",
+  "promotion_description": "string",
+  "promotion_type": "string",
+  "promotion_status": "string",
+  "start_at": "timestamp",
+  "end_at": "timestamp"
+}
+```
+
+#### **Response 404**
+
+```json
+{
+  "error": "Promotion not found"
+}
+```
+
+### 6.4. Update Promotion
+
+- Method: PUT
+- Require Headers: Authorization: Bearer {admin_token}
+- URL `/api/v1/promotions/{promotion_id}`
+
+#### **Request Body**
+
+```json
+{
+  "promotion_name": "string",
+  "promotion_description": "string",
+  "promotion_type": "string",
+  "promotion_status": "string",
+  "start_at": "timestamp",
+  "end_at": "timestamp"
+}
+```
+
+#### **Response 200**
+
+```json
+{
+  "promotion_id": "string",
+  "product_id": "string",
+  "promotion_name": "string",
+  "promotion_description": "string",
+  "promotion_type": "string",
+  "promotion_status": "string",
+  "start_at": "timestamp",
+  "end_at": "timestamp"
+}
+```
+
+---
+
+### 6.5. Delete Promotion
+
+- Method: DELETE
+- Require Headers: Authorization: Bearer {admin_token}
+- URL `/api/v1/promotions/{promotion_id}`
+
+#### **Response 204**
+
+#### **Response 404**
+
+```json
+{ "error": "Promotion not found" }
+```
+
+---
+
+### 6.6. Thay đổi trạng thái của promotion
+
+- Method PATCH
+- Require Headers: Authorization: Bearer {admin_token}
+- URL `/api/v1/promotions/{promotion_id}/status`
+
+#### **Request Body**
+
+```json
+{
+  "promotion_status": "string"
+}
+```
+
+#### **Response 200**
+
+```json
+{
+  "message": "Promotion status updated",
+  "promotion_status": "string"
+}
+```
+
+---
+
+### 6.7. Lấy khuyến mãi đang được áp dụng cho sản phẩm
+
+- Method GET
+- URL `/api/v1/promotions/product/{product_id}/active`
+
+#### Lưu ý: Luật áp dụng promotion cho sản phẩm được mô tả như sau
+
+- Thứ tự áp dụng promotion: (FLASH_SALE || SET_PRICE) > FIXED > PERCENTAGE
+
+- Chỉ áp dụng một promotion cùng loại
+
+- Số lượng promotion áp dụng tối đa: 2
+
+- API chỉ trả về đúng 2 promotion áp dụng cho sản phẩm đó theo quy tắc như trên
+
+- Nếu cùng loại thì luôn chọn promotion có giá trị giảm cao hơn
+
+- Nếu bằng nhau thì chọn theo ngày tạo mới nhất
+
+#### **Response 200**
+
+```json
+{
+  "product_id": "string",
+  "promotions": [
+    {
+      "promotion_id": "string",
+      "promotion_name": "string",
+      "promotion_type": "string",
+      "promotion_status": "string",
+      "start_at": "timestamp",
+      "end_at": "timestamp"
+    }
+  ]
+}
+```
+
+---
+## 7. Thống kê
+
+### 7.1. Doanh thu
+
+- Method: GET
+- URL: /api/v1/stats/revenue
+- Authorization: Bearer {admin_token}
+- Query params:
+  - from: date  (yyyy-mm-dd)
+  - to: date    (yyyy-mm-dd)
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "revenue": 500000,
+      "total_orders": 10,
+      "from": 2025-01-01,
+      "to": 2025-06-01
+    }
+    ```
+  - 400 Bad Request: { "error": "Invalid date" }
+  - 401 Unauthorized
+  - 403 Forbidden

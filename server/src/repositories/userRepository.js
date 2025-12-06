@@ -1,6 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require("../infrastructure/prisma");
 
 async function getUserById(user_id, client = prisma) {
     return await client.user.findUnique({
@@ -31,7 +29,7 @@ async function getUserByEmail(email, client = prisma) {
             created_at: true,
             updated_at: true,
             Cart: {
-                select: {cart_id: true}
+                select: { cart_id: true }
             }
         }
     });
@@ -48,6 +46,7 @@ async function getUserWithPassword(where, client = prisma) {
             avatar_url: true,
             password_hash: true,
             role: true,
+            locked: true,
             created_at: true,
             updated_at: true,
         }
@@ -84,6 +83,17 @@ async function updateUser(user_id, userData, client = prisma) {
     });
 }
 
+async function getAll() {
+    return await prisma.user.findMany();
+}
+
+async function updateLockedState(user_id, locked) {
+    return await prisma.user.update({
+        where: { user_id },
+        data: { locked }
+    });
+}
+
 module.exports = {
     getUserById,
     getUserByEmail,
@@ -91,5 +101,7 @@ module.exports = {
     getUserWithPasswordByEmail,
     getUserHashedPassword,
     updatePassword,
-    updateUser
+    updateUser,
+    getAll,
+    updateLockedState
 };

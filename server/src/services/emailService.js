@@ -1,3 +1,5 @@
+const fs = require("fs/promises");
+const path = require("path");
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
@@ -10,16 +12,32 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-async function sendMail(to, subject, html) {
-    const mailOptions = { from: process.env.SMTP_USER, to, subject, html }
+async function loadTemplate(template_dir, token) {
+    const filePath = path.join(__dirname, "../templates", "email", template_dir);
+
+    let html = await fs.readFile(filePath, "utf8");
+
+    return html;
+}
+
+async function sendMail(from, to, subject, html) {
+    const mailOptions = { from: from, to: to, subject: subject, html: html }
     return await transporter.sendMail(mailOptions);
 }
 
 async function sendResetPasswordEmail(to, token) {
     const subject = "Reset your password";
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-    const html = `<p>Click to reset password: <a href="${resetUrl}" target="_blank">${resetUrl}</a></p>`;
-    return await sendMail(to, subject, html);
+    const html = (await loadTemplate("resetPassword.html"))
+                .replace(/{{RESET_URL}}/g, resetUrl)
+                .replace(/{{TOKEN}}/g, token);
+
+    return await sendMail(
+        process.env.SMTP_FROM,
+        to,
+        subject,
+        html
+    );
 }
 
 module.exports = {

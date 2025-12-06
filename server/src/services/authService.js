@@ -1,31 +1,31 @@
 const jwt = require('jsonwebtoken');
 const { hashPassword, verifyPassword } = require('../utils/passwordUtils');
-const cartRepository = require('../repositories/cartRepository')
+const cartRepository = require('../repositories/cartRepository');
 const userService = require('./userService');
 const emailService = require('./emailService');
-const { NotFoundError } = require('../errors/NotFoundError')
-const {redisClient} = require('../infrastructure/redis');
+const { NotFoundError } = require('../errors/NotFoundError');
+const { redisClient } = require('../infrastructure/redis');
 const { UnauthorizeError } = require('../errors/UnauthorizeError');
 const { BadRequestError } = require('../errors/BadRequestError');
+const { ForbiddenError } = require('../errors/ForbiddenError');
 
 async function loginUser(email, password) {
-    if(!email || !password){
-        throw new BadRequestError("Missing fields", 400)
-    }
-
     const user = await userService.getUserWithPasswordByEmail(email);
-    if(!user){
-        throw new UnauthorizeError("Invalid email or password", 401)
+    if (!user) {
+        throw new UnauthorizeError("Invalid email or password", 401);
     }
 
-    const cart = await cartRepository.getCartFromUserId(user.user_id)
+    if (user.locked)
+        throw new ForbiddenError("Account is locked");
+
+    const cart = await cartRepository.getCartFromUserId(user.user_id);
 
     const password_hash = user.password_hash;
     const isPasswordValid = await verifyPassword(password, password_hash);
     if (!isPasswordValid) {
-         throw new UnauthorizeError("Invalid email or password", 401)
+        throw new UnauthorizeError("Invalid email or password", 401);
     }
-    
+
     const token = jwt.sign(
         {
             user_id: user.user_id,
@@ -34,17 +34,19 @@ async function loginUser(email, password) {
             role: user.role,
         },
         process.env.JWT_SECRET,
-        { expiresIn: '1h' }
+        { expiresIn: process.env.JWT_LOGIN_EXPIRES || '1h' }
     );
-    
-    return { token, user: {
-        user_id: user.user_id,
-        cart_id: cart?.cart_id ?? null,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        avatar_url: user.avatar_url
-    } };
+
+    return {
+        token, user: {
+            user_id: user.user_id,
+            cart_id: cart?.cart_id ?? null,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            avatar_url: user.avatar_url
+        }
+    };
 }
 
 async function changePassword(user_id, old_password, new_password) {

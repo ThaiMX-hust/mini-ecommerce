@@ -17,6 +17,13 @@ import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
 import EditProfilePage from "./components/EditProfilePage/EditProfilePage";
 import ChangePasswordPage from "./components/ChangePasswordPage/ChangePasswordPage";
 
+// Admin Page
+import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
+import AdminLayout from "./components/Admin/AdminLayout/AdminLayout";
+// import ProductManagement from './pages/Admin/ProductManagement/ProductManagement';
+// import OrderManagement from './pages/Admin/OrderManagement/OrderManagement';
+// import CategoryManagement from './pages/Admin/CategoryManagement/CategoryManagement';
+
 function App() {
   return (
     <BrowserRouter>
@@ -42,6 +49,10 @@ function App() {
             <Route path="/order-history" element={<OrderHistoryPage />} />
             <Route path="/payment-result" element={<PaymentResultPage />} />
           </Route>
+        </Route>
+
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

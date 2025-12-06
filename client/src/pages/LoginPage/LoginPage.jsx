@@ -1,6 +1,6 @@
 // src/pages/LoginPage/LoginPage.jsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 // 1. Import CSS Modules. React sẽ xử lý `styles` như một object JavaScript.
@@ -22,7 +22,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAppContext(); // Lấy hàm login từ AuthContext
+  const { login,user } = useAppContext(); // Lấy hàm login từ AuthContext
 
   // Hàm xử lý chung cho các input, giúp code gọn hơn.
   const handleInputChange = (e) => {
@@ -41,14 +41,14 @@ const LoginPage = () => {
       const response = await apiLogin(credentials);
 
       const { token, user } = response.data;
+      console.log("Token:", token);
+      console.log("User:", user);
+      console.log("User role:", user?.role);
 
       // Gọi hàm login từ AuthContext để Context tự lưu token và cập nhật user
       login(token);
-
-      console.log("Đăng nhập thành công!", user);
-
-      // Chuyển hướng người dùng về trang chủ.
       navigate("/");
+      // Chuyển hướng người dùng về trang chủ sau khi đăng nhập thành công
     } catch (err) {
       // 8. Xử lý lỗi từ API và hiển thị thông báo thân thiện.
       if (
@@ -64,6 +64,20 @@ const LoginPage = () => {
       setIsLoading(false); // Dừng loading dù thành công hay thất bại
     }
   };
+  useEffect(() => {
+    if (user) {
+      console.log("User từ context:", user);
+      console.log("User role:", user.role);
+      
+      if (user.role === 'ADMIN') {
+        console.log("Redirect to admin dashboard");
+        navigate("/admin");
+      } else {
+        console.log("Redirect to home page");
+        navigate("/");
+      }
+    }
+  }, [user, navigate]);
 
   return (
     // 9. Sử dụng className từ object `styles` đã import.
