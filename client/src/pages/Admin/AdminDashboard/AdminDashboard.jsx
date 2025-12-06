@@ -214,7 +214,7 @@ const AdminDashboard = () => {
                                 dataKey="revenue" 
                                 stroke="#3498db" 
                                 strokeWidth={2}
-                                name="Revenue"
+                                name="Doanh thu"
                             />
                         </LineChart>
                     </ResponsiveContainer>
