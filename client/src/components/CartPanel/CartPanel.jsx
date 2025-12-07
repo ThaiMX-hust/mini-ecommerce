@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppContext } from "../../contexts/AppContext";
 import styles from "./CartPanel.module.css";
-import QuantitySelector from "../QuantitySelector/QuantitySelector"; // Tái sử dụng component này!
+import QuantitySelector from "../QuantitySelector/QuantitySelector";
 import { Link } from "react-router-dom";
 
 const CartPanel = () => {
@@ -14,11 +14,25 @@ const CartPanel = () => {
     removeCartItem,
   } = useAppContext();
 
+  // Helper function để format giá VNĐ
+  const formatPrice = (price) => {
+    // price có thể là string hoặc number từ API
+    const numPrice = typeof price === "string" ? parseFloat(price) : price;
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(numPrice);
+  };
+
   const renderCartItems = () => {
-    if (cartLoading && !cart) return <p>Loading cart...</p>;
+    if (cartLoading && !cart) {
+      return <p className={styles.loadingMessage}>Loading cart...</p>;
+    }
+
     if (!cart || cart.items.length === 0) {
       return <p className={styles.emptyMessage}>Your cart is empty.</p>;
     }
+
     return cart.items.map((item) => (
       <div key={item.cart_item_id} className={styles.cartItem}>
         <img
@@ -28,12 +42,23 @@ const CartPanel = () => {
         />
         <div className={styles.itemDetails}>
           <p className={styles.itemName}>{item.product.name}</p>
+
+
           <p className={styles.itemOptions}>
             {item.variant.options
-              .map((opt) => `${opt.option_name}: ${opt.value.value}`)
+              .map((opt) => `${opt.option_name}: ${opt.value}`)
               .join(" / ")}
           </p>
-          <p className={styles.itemPrice}>${item.variant.final_price}</p>
+
+          <div className={styles.priceInfo}>
+            <p className={styles.itemPrice}>
+              {formatPrice(item.variant.final_price)} x {item.quantity}
+            </p>
+            <p className={styles.itemSubtotal}>
+              Subtotal: {formatPrice(item.subtotal_after_discount)}
+            </p>
+          </div>
+
           <QuantitySelector
             quantity={item.quantity}
             onQuantityChange={(newQuantity) =>
@@ -42,9 +67,11 @@ const CartPanel = () => {
             maxStock={item.variant.stock_quantity}
           />
         </div>
+
         <button
           onClick={() => removeCartItem(item.cart_item_id)}
           className={styles.removeButton}
+          aria-label="Remove item"
         >
           ×
         </button>
@@ -57,28 +84,45 @@ const CartPanel = () => {
       <div
         className={`${styles.overlay} ${isCartOpen ? styles.show : ""}`}
         onClick={closeCart}
+        aria-hidden={!isCartOpen}
       ></div>
-      <div className={`${styles.cartPanel} ${isCartOpen ? styles.show : ""}`}>
+
+      <div
+        className={`${styles.cartPanel} ${isCartOpen ? styles.show : ""}`}
+        role="dialog"
+        aria-label="Shopping cart"
+      >
         <div className={styles.header}>
           <h2 className={styles.title}>Shopping Cart</h2>
-          <button onClick={closeCart} className={styles.closeButton}>
+          <button
+            onClick={closeCart}
+            className={styles.closeButton}
+            aria-label="Close cart"
+          >
             ×
           </button>
         </div>
+
         <div className={styles.itemList}>{renderCartItems()}</div>
-        <div className={styles.footer}>
-          <div className={styles.subtotal}>
-            <span>Subtotal</span>
-            <span>${cart?.total_price_after_discount || "0.00"}</span>
+
+        {cart && cart.items.length > 0 && (
+          <div className={styles.footer}>
+            <div className={styles.subtotal}>
+              <span>Subtotal:</span>
+              <span className={styles.subtotalAmount}>
+                {formatPrice(cart.total_price_after_discount)}
+              </span>
+            </div>
+
+            <Link
+              to="/checkout"
+              onClick={closeCart}
+              className={styles.checkoutButton}
+            >
+              Proceed to Checkout
+            </Link>
           </div>
-          <Link
-            to="/checkout"
-            onClick={closeCart}
-            className={styles.checkoutButton}
-          >
-            Checkout
-          </Link>
-        </div>
+        )}
       </div>
     </>
   );
