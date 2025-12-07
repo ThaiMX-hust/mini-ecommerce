@@ -1,9 +1,9 @@
 model ProductOptionValue {
-    option_value_id String @id @default(uuid())
-    value String
+  option_value_id      String                 @id @default(uuid())
+  product_option_id    String
+  value                String
+  ProductOption        ProductOption          @relation(fields: [product_option_id], references: [product_option_id], onDelete: Cascade)
+  ProductVariantOption ProductVariantOption[]
 
-    product_option_id String
-    ProductOption     ProductOption @relation(fields: [product_option_id], references: [product_option_id], onDelete: Cascade)
-
-    ProductVariantOption ProductVariantOption[]
+  @@index([product_option_id], map: "ProductOptionValue_product_option_id_fkey")
 }

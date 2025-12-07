@@ -1,11 +1,11 @@
 model ProductOption {
-    product_option_id String @id @default(uuid())
-    option_name       String
+  product_option_id  String               @id @default(uuid())
+  option_name        String
+  product_id         String
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @default(now()) @updatedAt
+  Product            Product              @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+  ProductOptionValue ProductOptionValue[]
 
-    product_id         String
-    Product            Product              @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
-    ProductOptionValue ProductOptionValue[]
-
-    created_at         DateTime  @default(now())
-    updated_at         DateTime  @updatedAt @default(now())
+  @@index([product_id], map: "ProductOption_product_id_fkey")
 }

@@ -1,124 +1,130 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { getAllProducts } from "../../api/productApi";
+import { getAllPossibleCategories } from "../../api/categoryApi"; // Sử dụng hàm này
 import ProductCard from "../../components/ProductCard/ProductCard";
 import SidebarFilters from "../../components/SidebarFilters/SidebarFilters";
-import Pagination from "../../components/Pagination/Pagination"; // 1. Import Pagination
+import Pagination from "../../components/Pagination/Pagination";
 import styles from "./ProductListPage.module.css";
 
-// Hook useDebounce không thay đổi, vẫn rất hữu ích
-const useDebounce = (value, delay) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-  return debouncedValue;
-};
+const ITEMS_PER_PAGE = 9;
 
 const ProductListPage = () => {
-  const [products, setProducts] = useState([]);
-  const [pagination, setPagination] = useState({});
+  const location = useLocation();
+
+  // State để lưu dữ liệu gốc từ API
+  const [allProducts, setAllProducts] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
+
+  // State cho trạng thái UI
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1); // 2. Thêm state cho trang hiện tại
-
-  // 3. Cập nhật state filters cho thanh trượt giá 2 đầu
-  const [filters, setFilters] = useState({
-    categories: [],
-    priceRange: [0, 1000],
-  });
+  const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState("price-asc");
 
-  const debouncedPriceRange = useDebounce(filters.priceRange, 500);
+  // State cho bộ lọc
+  const [filters, setFilters] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    const initialCategory = params.get("category");
+    return {
+      categories: initialCategory ? [initialCategory] : [],
+      priceRange: [0, 1000000],
+    };
+  });
 
-  const fetchProducts = useCallback(
-    async (page) => {
+  // 1. Fetch TẤT CẢ dữ liệu một lần duy nhất
+  useEffect(() => {
+    const fetchInitialData = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const params = {
-          limit: 9,
-          page: page, // 4. Sử dụng page được truyền vào
-          categories: filters.categories,
-          min_price: debouncedPriceRange[0],
-          max_price:
-            debouncedPriceRange[1] === 1000
-              ? undefined
-              : debouncedPriceRange[1],
-        };
-
-        Object.keys(params).forEach((key) =>
-          params[key] === undefined || params[key].length === 0
-            ? delete params[key]
-            : {}
-        );
-
-        const data = await getAllProducts(params);
-        setProducts(data.items);
-        setPagination({
-          page: data.page,
-          limit: data.limit,
-          total_pages: data.total_pages,
-          total_items: data.total_items,
-        });
+        const [productsData, catsData] = await Promise.all([
+          getAllProducts({ limit: 1000 }), // Lấy tất cả sản phẩm
+          getAllPossibleCategories(),
+        ]);
+        setAllProducts(productsData.items || []);
+        setAllCategories(catsData || []);
       } catch (err) {
         setError("Failed to load products.");
+        console.error(err);
       } finally {
         setIsLoading(false);
       }
-    },
-    [filters.categories, debouncedPriceRange]
-  );
+    };
+    fetchInitialData();
+  }, []);
 
-  useEffect(() => {
-    // 5. Gọi API mỗi khi trang hoặc bộ lọc thay đổi
-    fetchProducts(currentPage);
-  }, [fetchProducts, currentPage]);
+  // 2. LOGIC LỌC, SẮP XẾP, VÀ PHÂN TRANG PHÍA CLIENT (sử dụng useMemo)
+  const paginatedProducts = useMemo(() => {
+    let filtered = [...allProducts];
+
+    // Lọc theo category
+    if (filters.categories.length > 0) {
+      filtered = filtered.filter((product) =>
+        filters.categories.some((catCode) =>
+          product.categories.includes(catCode)
+        )
+      );
+    }
+
+    // Lọc theo giá
+    const [minPrice, maxPrice] = filters.priceRange;
+    filtered = filtered.filter(
+      (product) =>
+        product.min_price >= minPrice && product.min_price <= maxPrice
+    );
+
+    // Sắp xếp
+    filtered.sort((a, b) => {
+      if (sort === "price-asc") return a.min_price - b.min_price;
+      if (sort === "price-desc") return b.min_price - a.min_price;
+      return 0;
+    });
+
+    // Phân trang
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+
+    return {
+      items: filtered.slice(startIndex, endIndex),
+      totalItems: filtered.length,
+      totalPages: Math.ceil(filtered.length / ITEMS_PER_PAGE),
+    };
+  }, [allProducts, filters, sort, currentPage]);
 
   const handleFilterChange = (filterName, value) => {
-    // 6. Reset cả trang về 1 khi filter thay đổi
-    setCurrentPage(1);
+    setCurrentPage(1); // Luôn reset về trang 1 khi filter thay đổi
     if (filterName === "reset") {
-      setFilters({ categories: [], priceRange: [0, 1000] });
+      setFilters({ categories: [], priceRange: [0, 1000000] });
       return;
     }
     setFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
   };
 
-  // 7. Hàm xử lý khi người dùng click vào một trang mới
   const handlePageClick = (event) => {
-    // event.selected là index (bắt đầu từ 0), nên ta + 1
-    const newPage = event.selected + 1;
-    setCurrentPage(newPage);
-    window.scrollTo(0, 0); // Cuộn lên đầu trang khi chuyển trang
+    setCurrentPage(event.selected + 1);
+    window.scrollTo(0, 0);
   };
 
-  // Sắp xếp client-side không thay đổi
-  const sortedProducts = [...products].sort((a, b) => {
-    if (sort === "price-asc") return a.min_price - b.min_price;
-    if (sort === "price-desc") return b.min_price - a.min_price;
-    return 0;
-  });
-
   // Tính toán thông tin hiển thị
-  const firstItemIndex = (pagination.page - 1) * pagination.limit + 1;
-  const lastItemIndex = firstItemIndex + products.length - 1;
+  const firstItemIndex = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+  const lastItemIndex = firstItemIndex + paginatedProducts.items.length - 1;
 
   return (
     <div className={styles.container}>
-      <SidebarFilters filters={filters} onFilterChange={handleFilterChange} />
+      <SidebarFilters
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        availableCategories={allCategories}
+      />
       <main className={styles.mainContent}>
         <div className={styles.header}>
           <h1 className={styles.title}>All Products</h1>
           <div className={styles.info}>
-            {pagination.total_items > 0 && (
+            {!isLoading && paginatedProducts.totalItems > 0 && (
               <p>
                 Showing {firstItemIndex}-{lastItemIndex} of{" "}
-                {pagination.total_items} products
+                {paginatedProducts.totalItems} products
               </p>
             )}
           </div>
@@ -129,7 +135,6 @@ const ProductListPage = () => {
           >
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
-            {/* Thêm các option sort khác */}
           </select>
         </div>
 
@@ -140,14 +145,18 @@ const ProductListPage = () => {
         ) : (
           <>
             <div className={styles.productGrid}>
-              {sortedProducts.map((product) => (
-                <ProductCard key={product.product_id} product={product} />
-              ))}
+              {paginatedProducts.items.length > 0 ? (
+                paginatedProducts.items.map((product) => (
+                  <ProductCard key={product.product_id} product={product} />
+                ))
+              ) : (
+                <p className={styles.emptyMessage}>
+                  No products match your filters.
+                </p>
+              )}
             </div>
-
-            {/* 8. Render component Pagination */}
             <Pagination
-              pageCount={pagination.total_pages || 0}
+              pageCount={paginatedProducts.totalPages || 0}
               onPageChange={handlePageClick}
               currentPage={currentPage}
             />

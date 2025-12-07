@@ -78,3 +78,25 @@
 .viewMoreButton:hover {
   background-color: #333;
 }
+
+.statusMessage {
+  text-align: center;
+  padding: 50px 20px;
+  font-size: 1.1rem;
+  color: #888;
+  min-height: 300px; /* Đảm bảo layout không bị vỡ khi không có sản phẩm */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error {
+  color: #d70018;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: #888;
+  padding: 50px 0;
+  font-style: italic;
+}

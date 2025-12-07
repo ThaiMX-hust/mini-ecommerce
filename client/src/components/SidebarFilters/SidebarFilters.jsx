@@ -7,22 +7,19 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import styles from "./SidebarFilters.module.css";
 
-// Tạm thời hardcode danh sách categories. Sau này nên gọi API để lấy.
-const AVAILABLE_CATEGORIES = [
-  "Clothing",
-  "Electronics",
-  "Furniture",
-  "Accessories",
-  "Footwear",
-];
-
-const SidebarFilters = ({ filters, onFilterChange }) => {
+// `availableCategories` được truyền từ cha (mảng string). Mặc định rỗng.
+const SidebarFilters = ({
+  filters,
+  onFilterChange,
+  availableCategories = [],
+}) => {
   const handleCategoryChange = (e) => {
-    const { name, checked } = e.target;
+    const { name: categoryCode, checked } = e.target; // 'name' now holds the category code
     const currentCategories = filters.categories || [];
+
     const newCategories = checked
-      ? [...currentCategories, name]
-      : currentCategories.filter((cat) => cat !== name);
+      ? [...currentCategories, categoryCode]
+      : currentCategories.filter((code) => code !== categoryCode);
     onFilterChange("categories", newCategories);
   };
 
@@ -40,18 +37,23 @@ const SidebarFilters = ({ filters, onFilterChange }) => {
     <aside className={styles.sidebar}>
       <div className={styles.filterGroup}>
         <h3 className={styles.title}>Categories</h3>
-        {AVAILABLE_CATEGORIES.map((category) => (
-          <div key={category} className={styles.checkboxItem}>
-            <input
-              type="checkbox"
-              id={category}
-              name={category}
-              checked={filters.categories?.includes(category) || false}
-              onChange={handleCategoryChange}
-            />
-            <label htmlFor={category}>{category}</label>
-          </div>
-        ))}
+        {availableCategories.length > 0 ? (
+          // availableCategories is an array of objects: { code, name }
+          availableCategories.map((category) => (
+            <div key={category.code} className={styles.checkboxItem}>
+              <input
+                type="checkbox"
+                id={category.code}
+                name={category.code} // use code as identifier
+                checked={filters.categories?.includes(category.code) || false}
+                onChange={handleCategoryChange}
+              />
+              <label htmlFor={category.code}>{category.name}</label>
+            </div>
+          ))
+        ) : (
+          <p>Loading categories...</p>
+        )}
       </div>
 
       {/* 4. Thêm khối JSX cho bộ lọc giá */}
@@ -61,16 +63,16 @@ const SidebarFilters = ({ filters, onFilterChange }) => {
           <Slider
             range // Prop này để kích hoạt chế độ 2 đầu kéo
             min={0}
-            max={1000}
+            max={1000000}
             allowCross={false}
-            defaultValue={[0, 1000]}
-            value={filters.priceRange || [0, 1000]}
+            defaultValue={[0, 1000000]}
+            value={filters.priceRange || [0, 1000000]}
             onChange={handlePriceChange}
           />
         </div>
         <div className={styles.priceLabels}>
           <span>${filters.priceRange ? filters.priceRange[0] : 0}</span>
-          <span>${filters.priceRange ? filters.priceRange[1] : 1000}</span>
+          <span>${filters.priceRange ? filters.priceRange[1] : 1000000}</span>
         </div>
       </div>
 

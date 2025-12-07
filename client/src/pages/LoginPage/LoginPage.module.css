@@ -161,3 +161,26 @@
   margin-bottom: 15px;
   font-size: 14px;
 }
+
+.errorMessage,
+.successMessage {
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+.errorMessage {
+  color: #d70018;
+  background-color: #ffebee;
+}
+.successMessage {
+  color: #155724;
+  background-color: #d4edda;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}

@@ -1,22 +1,23 @@
-enum AdjustmentType {
-    VOUCHER
-    FLASHSALE
-    COMBO
-    MANUAL
+model Adjustment {
+  adjustment_id   String            @id @default(uuid())
+  order_id        String?
+  adjustment_type AdjustmentType
+  value_type      ValueDiscountType
+  value           Decimal           @db.Decimal(12, 2)
+  applied_amount  Decimal           @db.Decimal(12, 2)
+  reason          String?
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+  cart_id         String            @unique
+  cart            Cart              @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade)
+  order           Order?            @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+  @@index([order_id], map: "Adjustment_order_id_fkey")
 }
 
-model Adjustment {
-    adjustment_id   String            @id @default(uuid())
-    cart_id         String            @unique
-    order_id        String?
-    adjustment_type AdjustmentType
-    value_type      ValueDiscountType
-    value           Decimal           @db.Decimal(12, 2)
-    applied_amount  Decimal           @db.Decimal(12, 2)
-    reason          String?
-    created_at      DateTime          @default(now())
-    updated_at      DateTime          @updatedAt
-
-    order Order? @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: Cascade)
-    cart  Cart   @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade, onUpdate: Cascade)
+enum AdjustmentType {
+  VOUCHER
+  FLASHSALE
+  COMBO
+  MANUAL
 }

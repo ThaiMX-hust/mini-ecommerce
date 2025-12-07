@@ -1,0 +1,130 @@
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 15px;
+}
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+}
+
+/* Card Styles */
+.card {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+}
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.iconWrapper {
+  background-color: #f0f4ff;
+  color: #4a6cf7;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+/* Custom icon colors */
+.card:nth-child(2) .iconWrapper {
+  background-color: #fff4e5;
+  color: #ff9800;
+}
+.card:nth-child(3) .iconWrapper {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.cardTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+.cardDescription {
+  color: #666;
+  margin: 5px 0 0;
+}
+.cardBody {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 20px;
+}
+.cardButton {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  background-color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.cardButton:hover {
+  background-color: #f5f5f5;
+  border-color: #888;
+}
+
+/* Specific Card Body Styles */
+.profileInfo p,
+.orderStats p {
+  display: flex;
+  justify-content: space-between;
+  color: #333;
+  margin: 10px 0;
+}
+.profileInfo span,
+.orderStats span {
+  color: #666;
+}
+.settingsActions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.settingButton {
+  width: 100%;
+  text-align: left;
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  background: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.settingButton:hover {
+  background-color: #f9f9f9;
+}
+.logoutButton {
+  background-color: #fff1f0;
+  border-color: #ffccc7;
+  color: #cf1322;
+  font-weight: bold;
+}
+.logoutButton i {
+  margin-right: 8px;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+}
