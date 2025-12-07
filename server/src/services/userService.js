@@ -1,17 +1,18 @@
 const { hashPassword } = require('../utils/passwordUtils');
 const userRepository = require('../repositories/userRepository');
+const cloudinaryService = require('./cloudinaryService');
 
-const {PrismaClient} = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { ForbiddenError } = require('../errors/ForbiddenError');
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function registerUser(userData) {
     const password_hash = await hashPassword(userData.password);
-    
-    // TODO: upload avatarFile and get URL
-    const avatar_url = null;
+
+    const avatarFile = userData.avatarFile;
+    const avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
 
     const newUser = await prisma.user.create({
         data: {
@@ -37,12 +38,12 @@ async function registerUser(userData) {
             total_items: 0,
             total_price: 0,
         }
-    })
+    });
 
-     return {
+    return {
         user: {
             user_id: newUser.user_id,
-            cart_id: newCart.cart_id || null, 
+            cart_id: newCart.cart_id || null,
             first_name: newUser.first_name,
             last_name: newUser.last_name,
             email: newUser.email,
@@ -51,11 +52,11 @@ async function registerUser(userData) {
     };
 }
 
-async function registerAdmin(userData){
+async function registerAdmin(userData) {
     const password_hash = await hashPassword(userData.password);
-    
-    // TODO: upload avatarFile and get URL
-    const avatar_url = null;
+
+    const avatarFile = userData.avatarFile;
+    const avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
 
     const newUser = await prisma.user.create({
         data: {
@@ -99,18 +100,22 @@ async function getUserByEmail(email) {
 async function updateUser(user_id, userData) {
     const { first_name, last_name, avatarFile } = userData;
 
-    const avatar_url = null;
-
-    const user = await userRepository.updateUser(user_id, { first_name, last_name, avatar_url });
+    const user = await userRepository.getUserById(user_id);
     if (!user)
-        return null;
+        throw new NotFoundError("User not found");
+
+    if (user.avatar_url)
+        await cloudinaryService.deleteImage(user.avatar_url);
+    const avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
+
+    const updated_user = await userRepository.updateUser(user_id, { first_name, last_name, avatar_url });
 
     return {
-        user_id: user.user_id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        avatar_url: user.avatar_url
+        user_id: updated_user.user_id,
+        first_name: updated_user.first_name,
+        last_name: updated_user.last_name,
+        email: updated_user.email,
+        avatar_url: updated_user.avatar_url
     };
 }
 
@@ -141,7 +146,7 @@ async function updateLockedState(user_id, locked) {
         throw new NotFoundError("User not found");
     if (user.role === 'ADMIN')
         throw new ForbiddenError("Cannot lock admin");
-    
+
     await userRepository.updateLockedState(user_id, locked);
 }
 
