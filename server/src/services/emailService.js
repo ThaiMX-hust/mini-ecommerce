@@ -1,6 +1,8 @@
 const fs = require("fs/promises");
 const path = require("path");
 const nodemailer = require('nodemailer');
+const { order } = require("../infrastructure/prisma");
+const { formatMoney } = require("../utils/moneyFormatUtils")
 
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -40,6 +42,37 @@ async function sendResetPasswordEmail(to, token) {
     );
 }
 
+async function sendPurchaseSuccessfullyEmail( to, orderDetail ) {
+    try {
+        const subject = "Thanh toán thành công";
+        const html = (await loadTemplate("purchaseSuccessfully.html"))
+                    .replace(/{{CUSTOMER_NAME}}/g, orderDetail.receiver_name)
+                    .replace(/{{ORDER_ID}}/g, orderDetail.order_id)
+                    .replace(/{{AMOUNT_PAID}}/g, formatMoney(orderDetail.final_total_price))
+                    .replace(/{PAYMENT_DATE}/g, new Date())
+
+
+        const emailResult = await sendMail(
+            process.env.SMTP_FROM,
+            to,
+            subject,
+            html
+        );
+
+        if (emailResult.success) {
+            console.log(`Purchase success email sent to ${to} for order ${orderId}`);
+            return true;
+        } else {
+            console.error(`Failed to send email to ${to}:`, emailResult.error);
+            return false;
+        }
+
+    } catch (error) {
+        console.error("Error in sendPurchaseSuccessfullyEmail:", error);
+        return false;
+    }
+}
 module.exports = {
-    sendResetPasswordEmail
+    sendResetPasswordEmail,
+    sendPurchaseSuccessfullyEmail
 }

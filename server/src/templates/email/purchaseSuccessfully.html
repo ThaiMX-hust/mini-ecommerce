@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán Thành Công</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f4f4f4;">
+        <tr>
+            <td align="center" style="padding: 20px;">
+                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <tr>
+                        <td style="padding: 40px; text-align: center;">
+                            <h1 style="color: #4CAF50; margin-bottom: 20px;">🎉 Thanh Toán Thành Công 🎉</h1>
+                            
+                            <h2 style="color: #333;">Xin Chào {{CUSTOMER_NAME}},</h2>
+                            <p style="font-size: 16px;">Cảm ơn bạn đã tin tưởng và hoàn tất thanh toán cho đơn hàng của mình. Giao dịch của bạn đã được xác nhận thành công!</p>
+
+                            <div style="background-color: #e8f5e9; border-radius: 5px; padding: 20px; margin: 30px 0; text-align: left; border-left: 5px solid #4CAF50;">
+                                <h3 style="margin-top: 0; color: #4CAF50;">Chi Tiết Giao Dịch</h3>
+                                <p style="font-size: 15px; margin: 5px 0;"><strong>Mã Đơn Hàng:</strong> <span style="color: #D32F2F;">#{{ORDER_ID}}</span></p>
+                                <p style="font-size: 15px; margin: 5px 0;"><strong>Tổng Tiền:</strong> <span style="color: #000; font-weight: bold;">{{AMOUNT_PAID}}</span></p>
+                                <p style="font-size: 15px; margin: 5px 0;"><strong>Ngày Thanh Toán:</strong>{{PAYMENT_DATE}}</p>
+                            </div>
+
+                            <p style="font-size: 16px;">Chúng tôi đang tiến hành xử lý đơn hàng và sẽ cập nhật thông tin vận chuyển đến email của bạn sớm nhất.</p>
+                            
+                            <a href="LINK_TO_ORDER_DETAILS" style="display: inline-block; background-color: #2196F3; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px; font-weight: bold;">Xem Chi Tiết Đơn Hàng</a>
+
+                            <p style="margin-top: 40px; font-size: 14px; color: #777;">Trân trọng,</p>
+                            <p style="font-size: 14px; color: #555; margin-top: 5px;">Đội ngũ [Tên Cửa Hàng Của Bạn]</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 40px; font-size: 12px; color: #999; text-align: center; border-top: 1px solid #eee;">
+                            <p>&copy; 2025 Mini-Ecommerce. Mọi quyền được bảo lưu.</p>
+                        </td>
+                    </tr>
+                </table>
+                </td>
+        </tr>
+    </table>
+
+</body>
+</html>
