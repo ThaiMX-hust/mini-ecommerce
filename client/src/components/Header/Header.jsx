@@ -1,5 +1,5 @@
-import React from "react";
-import { NavLink, Link } from "react-router-dom";
+import React, { useState } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext";
 import styles from "./Header.module.css";
 
@@ -25,6 +25,16 @@ const CartIcon = () => (
 const Header = () => {
   const { isAuthenticated, user, logout, openCart, cartItemCount } =
     useAppContext();
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery(""); // Clear sau khi search
+    }
+  };
 
   return (
     <header className={styles.header}>
@@ -63,6 +73,33 @@ const Header = () => {
             </NavLink>
           )}
         </nav>
+
+    
+        <form onSubmit={handleSearch} className={styles.searchForm}>
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+          <button type="submit" className={styles.searchButton}>
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path
+                d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+              <path
+                d="M21 21l-4.35-4.35"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+          </svg>
+          </button>
+        </form>
 
         <div className={styles.userActions}>
           {isAuthenticated ? (

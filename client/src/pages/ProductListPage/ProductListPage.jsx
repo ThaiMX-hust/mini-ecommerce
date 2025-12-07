@@ -2,10 +2,11 @@ import React, { useState, useEffect, useCallback } from "react";
 import { getAllProducts } from "../../api/productApi";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import SidebarFilters from "../../components/SidebarFilters/SidebarFilters";
-import Pagination from "../../components/Pagination/Pagination"; // 1. Import Pagination
+import Pagination from "../../components/Pagination/Pagination"; 
+import { useSearchParams } from "react-router-dom";
 import styles from "./ProductListPage.module.css";
 
-// Hook useDebounce không thay đổi, vẫn rất hữu ích
+// Hook useDebounce không thay đổi
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
@@ -20,6 +21,9 @@ const useDebounce = (value, delay) => {
 };
 
 const ProductListPage = () => {
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search");
+
   const [products, setProducts] = useState([]);
   const [pagination, setPagination] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -49,13 +53,23 @@ const ProductListPage = () => {
             debouncedPriceRange[1] === 1000
               ? undefined
               : debouncedPriceRange[1],
+            
         };
+        
+        if(searchQuery && searchQuery.trim()){
+          params.search = searchQuery.trim();
+          console.log(searchQuery.trim());
+          console.log(params.search);
+        }
 
-        Object.keys(params).forEach((key) =>
-          params[key] === undefined || params[key].length === 0
-            ? delete params[key]
-            : {}
-        );
+        Object.keys(params).forEach((key) =>{
+          if(params[key] === undefined || params[key]=== null 
+            || (Array.isArray(params[key]) && params[key].length === 0)
+          ){
+            delete params[key];
+          }
+            
+      });
 
         const data = await getAllProducts(params);
         setProducts(data.items);
@@ -71,13 +85,13 @@ const ProductListPage = () => {
         setIsLoading(false);
       }
     },
-    [filters.categories, debouncedPriceRange]
+    [filters.categories, debouncedPriceRange, searchQuery]
   );
 
   useEffect(() => {
     // 5. Gọi API mỗi khi trang hoặc bộ lọc thay đổi
     fetchProducts(currentPage);
-  }, [fetchProducts, currentPage]);
+  }, [fetchProducts, currentPage, debouncedPriceRange, filters.categories, searchQuery]); // ✅ Thêm searchQuery
 
   const handleFilterChange = (filterName, value) => {
     // 6. Reset cả trang về 1 khi filter thay đổi
@@ -109,7 +123,16 @@ const ProductListPage = () => {
   const lastItemIndex = firstItemIndex + products.length - 1;
 
   return (
+    <>
+    {searchQuery && searchQuery.trim() && (
+      <div className={styles.searchInfoWrapper}> 
+        <p className={styles.searchInfo}>
+          Showing results for: "<strong>{searchQuery}</strong>"
+        </p>
+      </div>
+      )}
     <div className={styles.container}>
+      
       <SidebarFilters filters={filters} onFilterChange={handleFilterChange} />
       <main className={styles.mainContent}>
         <div className={styles.header}>
@@ -155,6 +178,7 @@ const ProductListPage = () => {
         )}
       </main>
     </div>
+    </>
   );
 };
 

@@ -285,6 +285,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - URL: /api/v1/products
 - Query Parameters:
   - name: string (optional)
+  - search: string (optional) - Search by product name
   - categories: [string] (optional)
   - min_price: number (optional)
   - max_price: number (optional)
