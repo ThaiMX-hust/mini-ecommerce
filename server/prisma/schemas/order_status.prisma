@@ -1,7 +1,6 @@
 model OrderStatus {
-    order_status_id   String @id @default(uuid())
-    order_status_code String @unique
-    order_status_name String
-
-    history OrderStatusHistory[]
+  order_status_id   String               @id @default(uuid())
+  order_status_code String               @unique
+  order_status_name String
+  history           OrderStatusHistory[]
 }

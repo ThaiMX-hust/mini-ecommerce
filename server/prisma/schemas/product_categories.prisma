@@ -1,8 +1,9 @@
 model ProductCategories {
-    category_id String
-    product_id  String
-    Category    Category @relation(fields: [category_id], references: [category_id], onDelete: Cascade)
-    Product     Product  @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+  category_id String
+  product_id  String
+  Category    Category @relation(fields: [category_id], references: [category_id], onDelete: Cascade)
+  Product     Product  @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
 
-    @@id([category_id, product_id])
+  @@id([category_id, product_id])
+  @@index([product_id], map: "ProductCategories_product_id_fkey")
 }

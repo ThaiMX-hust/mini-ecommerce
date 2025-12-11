@@ -1,8 +1,3 @@
-enum UserRole {
-    CUSTOMER
-    ADMIN
-}
-
 model User {
     //Primary key
     user_id String @id @default(uuid())
@@ -25,5 +20,10 @@ model User {
     UserVoucherHistory UserVoucherHistory[]
     refundsProcessed   Refund[]
 
-    @@map("user")
+  @@map("user")
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
 }

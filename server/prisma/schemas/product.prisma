@@ -1,22 +1,18 @@
 model Product {
-    //Primary key
-    product_id String @id @default(uuid())
+  product_id        String              @id @default(uuid())
+  name              String
+  description       String
+  image_urls        Json
+  is_disabled       Boolean
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @updatedAt
+  deleted_at        DateTime?           @map("deleted_at")
+  restored_at       DateTime?
+  ProductCategories ProductCategories[]
+  ProductOption     ProductOption[]
+  ProductPromotions ProductPromotions[]
+  ProductVariant    ProductVariant[]
+  Review            Review[]
 
-    //Attr
-    name           String
-    description    String
-    image_urls     Json
-    is_disabled    Boolean
-    created_at     DateTime  @default(now())
-    updated_at     DateTime  @updatedAt
-    deleted_at     DateTime? @map("deleted_at")
-    restored_at    DateTime?
-
-    ProductVariant    ProductVariant[]
-    ProductOption     ProductOption[]
-    ProductPromotions ProductPromotions[]
-    Review            Review[]
-    ProductCategories ProductCategories[]
-
-    @@map("product")
+  @@map("product")
 }

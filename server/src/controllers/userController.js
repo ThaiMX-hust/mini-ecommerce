@@ -1,6 +1,6 @@
 const userService = require('../services/userService');
 const regexUtils = require('../utils/regexUtils');
-const { AppError } = require('../errors/AppError')
+const { AppError } = require('../errors/AppError');
 const { BadRequestError } = require('../errors/BadRequestError');
 
 const register = async (req, res) => {
@@ -27,7 +27,7 @@ const register = async (req, res) => {
         console.error('Error registering user:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const registerAdmin = async (req, res) => {
     try {
@@ -53,9 +53,9 @@ const registerAdmin = async (req, res) => {
         console.error('Error registering user:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
-const getUser = async(req, res) => {
+const getUser = async (req, res) => {
     try {
         const user_id = req.params.user_id;
         if (user_id !== req.user.user_id && req.user.role !== 'ADMIN')
@@ -63,16 +63,16 @@ const getUser = async(req, res) => {
 
         const user = await userService.getUserById(user_id);
         if (!user)
-            return res.status(404).json({ error: 'User not found' }); 
+            return res.status(404).json({ error: 'User not found' });
 
         return res.status(200).json(user);
     } catch (error) {
         console.error('Error getting user info:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
-const updateUser = async(req, res) => {
+const updateUser = async (req, res) => {
     try {
         const user_id = req.params.user_id;
         if (user_id !== req.user.user_id)
@@ -83,14 +83,18 @@ const updateUser = async(req, res) => {
 
         const user = await userService.updateUser(user_id, { first_name, last_name, avatarFile });
         if (!user)
-            return res.status(404).json({ error: 'User not found' }); 
+            return res.status(404).json({ error: 'User not found' });
 
         return res.status(200).json(user);
     } catch (error) {
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({ error: error.message });
+        }
+
         console.error('Error getting user info:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const getUserList = async (req, res) => {
     try {
@@ -100,13 +104,13 @@ const getUserList = async (req, res) => {
         console.error('Error getting user list: ', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 async function updateLockedState(req, res) {
     try {
         const user_id = req.params.user_id;
         const locked = req.body.locked;
-        if (locked == null || typeof(locked) !== 'boolean')
+        if (locked == null || typeof (locked) !== 'boolean')
             throw new BadRequestError("Missing or invalid field");
 
         await userService.updateLockedState(user_id, locked);

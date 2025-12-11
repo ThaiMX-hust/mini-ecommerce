@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
+// src/components/Header/Header.jsx (PHIÊN BẢN SỬA LỖI)
+
+import React from "react";
+import { NavLink, Link } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext";
 import styles from "./Header.module.css";
 
-// Biểu tượng giỏ hàng không thay đổi
+// Đã sửa lại với SVG code đầy đủ
 const CartIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -22,6 +26,23 @@ const CartIcon = () => (
   </svg>
 );
 
+const UserIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+    <circle cx="12" cy="7" r="4"></circle>
+  </svg>
+);
+
 const Header = () => {
   const { isAuthenticated, user, logout, openCart, cartItemCount } =
     useAppContext();
@@ -35,6 +56,7 @@ const Header = () => {
       setSearchQuery(""); // Clear sau khi search
     }
   };
+  const { isAuthenticated, openCart, cartItemCount } = useAppContext();
 
   return (
     <header className={styles.header}>
@@ -42,7 +64,6 @@ const Header = () => {
         <Link to="/" className={styles.logo}>
           FASCO
         </Link>
-
         <nav className={styles.nav}>
           <NavLink
             to="/"
@@ -60,8 +81,6 @@ const Header = () => {
           >
             Products
           </NavLink>
-
-          {/* THAY ĐỔI: Thêm link "Checkout" và chỉ hiển thị khi đã đăng nhập */}
           {isAuthenticated && (
             <NavLink
               to="/checkout"
@@ -103,12 +122,10 @@ const Header = () => {
 
         <div className={styles.userActions}>
           {isAuthenticated ? (
-            // Giao diện khi đã đăng nhập
             <>
-              {/* Link giỏ hàng giờ chỉ còn là biểu tượng */}
               <button
                 onClick={openCart}
-                className={styles.cartLink}
+                className={styles.iconLink}
                 aria-label="View your cart"
               >
                 <CartIcon />
@@ -116,19 +133,15 @@ const Header = () => {
                   <span className={styles.cartCount}>{cartItemCount}</span>
                 )}
               </button>
-
-              <div className={styles.userMenu}>
-                <span className={styles.welcome}>
-                  Hi, {user.first_name || "User"}!
-                </span>
-              </div>
-
-              <button onClick={logout} className={styles.logoutButton}>
-                Sign Out
-              </button>
+              <NavLink
+                to="/account"
+                className={styles.iconLink}
+                aria-label="View your account"
+              >
+                <UserIcon />
+              </NavLink>
             </>
           ) : (
-            // Giao diện khi chưa đăng nhập
             <>
               <NavLink to="/login" className={styles.authLink}>
                 Sign In

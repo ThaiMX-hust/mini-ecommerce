@@ -1,12 +1,14 @@
 model Review {
-    review_id  String   @id @default(uuid())
-    product_id String
-    by_user_id String?
-    rating     Int
-    comment    String?
-    image_urls Json?
-    created_at DateTime @default(now())
+  review_id  String   @id @default(uuid())
+  product_id String
+  by_user_id String?
+  rating     Int
+  comment    String?
+  image_urls Json?
+  created_at DateTime @default(now())
+  user       User?    @relation(fields: [by_user_id], references: [user_id])
+  product    Product  @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
 
-    product Product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
-    user    User?   @relation(fields: [by_user_id], references: [user_id], onDelete: SetNull)
+  @@index([by_user_id], map: "Review_by_user_id_fkey")
+  @@index([product_id], map: "Review_product_id_fkey")
 }

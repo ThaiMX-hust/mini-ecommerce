@@ -1,7 +1,9 @@
 const crypto = require('crypto');
 const moment = require('moment');
 const qs = require('qs');
+const userRepository = require('../repositories/userRepository')
 const orderRepository = require('../repositories/ordersRepository'); 
+const emailService = require('../services/emailService');
 
 // Hàm sortObject chuẩn: Sắp xếp theo key alphabet và trả về object đã sort
 function sortObject(obj) {
@@ -132,6 +134,12 @@ const handleVnpayIpn = async (vnp_Params) => {
                         note: `Payment successful via VNPay. Transaction: ${transactionNo}`
                     }
                 });
+                
+                const order = await orderRepository.getDetail(orderId)
+                const userEmail = await userRepository.getUserById(order.user_id, prisma)
+
+                await emailService.sendPurchaseSuccessfullyEmail(userEmail, order)
+
                 console.log(`Payment for order ${orderId} is successfull`);
                 return {RspCode: '00', Message:'Success'};
             }
