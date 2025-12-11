@@ -1,9 +1,6 @@
-import React, { useState } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
-// src/components/Header/Header.jsx (PHIÊN BẢN SỬA LỖI)
 
-import React from "react";
-import { NavLink, Link } from "react-router-dom";
+import React ,{ useState }from "react";
+import { NavLink, Link,useNavigate } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext";
 import styles from "./Header.module.css";
 
@@ -56,7 +53,6 @@ const Header = () => {
       setSearchQuery(""); // Clear sau khi search
     }
   };
-  const { isAuthenticated, openCart, cartItemCount } = useAppContext();
 
   return (
     <header className={styles.header}>
