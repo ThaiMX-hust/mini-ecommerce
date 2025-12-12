@@ -221,8 +221,10 @@ async function updateProduct(product_id, productData) {
 
     await CacheManager.clearByPrefix("products:list:");
 
-    for (const cat of categories) {
-        await CacheManager.clearByPrefix(`products:list:category:${cat}`);
+    if (categories) {
+        for (const cat of categories) {
+            await CacheManager.clearByPrefix(`products:list:category:${cat}`);
+        }
     }
 
     return {

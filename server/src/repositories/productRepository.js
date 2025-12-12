@@ -328,7 +328,7 @@ async function updateProduct(client, product_id, productData) {
             product_id: true,
             name: true,
             description: true,
-            ProductCategories: { select: { category_id: true } },
+            ProductCategories: { select: { Category: { select: { category_code: true } } } },
             is_disabled: true,
             created_at: true,
             updated_at: true,
