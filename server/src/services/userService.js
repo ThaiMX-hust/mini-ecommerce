@@ -5,10 +5,14 @@ const cloudinaryService = require('./cloudinaryService');
 const { PrismaClient } = require('@prisma/client');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { ForbiddenError } = require('../errors/ForbiddenError');
+const { ConflictError } = require("../errors/ConflictError");
 
 const prisma = new PrismaClient();
 
 async function registerUser(userData) {
+    if (await userRepository.getUserByEmail(userData.email))
+        throw new ConflictError("Email already exists");
+
     const password_hash = await hashPassword(userData.password);
 
     const avatarFile = userData.avatarFile;
@@ -56,8 +60,10 @@ async function registerUser(userData) {
 }
 
 async function registerAdmin(userData) {
-    const password_hash = await hashPassword(userData.password);
+    if (await userRepository.getUserByEmail(userData.email))
+        throw new ConflictError("Email already exists");
 
+    const password_hash = await hashPassword(userData.password);
     const avatarFile = userData.avatarFile;
 
     let avatar_url;
@@ -88,7 +94,7 @@ async function registerAdmin(userData) {
 async function getUserById(user_id) {
     const user = await userRepository.getUserById(user_id);
     if (!user)
-        return null;
+        throw new NotFoundError("User not found");
 
     return {
         user_id: user.user_id,

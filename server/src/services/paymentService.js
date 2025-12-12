@@ -1,11 +1,11 @@
 const crypto = require('crypto');
 const moment = require('moment');
 const qs = require('qs');
-const userRepository = require('../repositories/userRepository')
-const orderRepository = require('../repositories/ordersRepository'); 
+const userRepository = require('../repositories/userRepository');
+const orderRepository = require('../repositories/ordersRepository');
 const emailService = require('../services/emailService');
 
-// Hàm sortObject chuẩn: Sắp xếp theo key alphabet và trả về object đã sort
+// sortObject: Sắp xếp theo key alphabet và trả về object đã sort
 function sortObject(obj) {
     let sorted = {};
     let str = [];
@@ -27,54 +27,47 @@ function sortObject(obj) {
 }
 
 const createPaymentUrl = async ({ amount, orderInfo, orderId, ipAddr }) => {
-    try {
-        if (!process.env.VNP_TMNCODE || !process.env.VNP_HASHSECRET) {
-            throw new Error('VNPay configuration is missing in environment variables');
-        }
-        process.env.TZ = 'Asia/Ho_Chi_Minh';
-
-        const tmnCode = process.env.VNP_TMNCODE;
-        const secretKey = process.env.VNP_HASHSECRET;
-        let vnpUrl = process.env.VNP_URL;
-        const returnUrl = process.env.VNP_RETURNURL;
-        let date = new Date();
-        let createDate = moment(date).format('YYYYMMDDHHmmss');
-
-        // Đảm bảo IP hợp lệ (nếu chạy localhost ::1 có thể gây lỗi bên VNPay, nên fallback về 127.0.0.1)
-        const finalIp = ipAddr === '::1' ? '127.0.0.1' : ipAddr;
-
-        let vnpParams = {};
-        vnpParams['vnp_Version'] = '2.1.0';
-        vnpParams['vnp_Command'] = 'pay';
-        vnpParams['vnp_TmnCode'] = tmnCode;
-        vnpParams['vnp_Locale'] = 'vn';
-        vnpParams['vnp_CurrCode'] = 'VND';
-        vnpParams['vnp_TxnRef'] = orderId;
-        vnpParams['vnp_OrderInfo'] = orderInfo;
-        vnpParams['vnp_OrderType'] = 'other';
-        vnpParams['vnp_Amount'] = amount * 100;
-        vnpParams['vnp_ReturnUrl'] = returnUrl;
-        vnpParams['vnp_IpAddr'] = finalIp;
-        vnpParams['vnp_CreateDate'] = createDate;
-
-        vnpParams = sortObject(vnpParams);
-
-        // Sử dụng qs với encode: false vì sortObject đã encode rồi
-        const signData = qs.stringify(vnpParams, { encode: false });
-        
-        const hmac = crypto.createHmac("sha512", secretKey);
-        // SỬA LỖI: Dùng Buffer.from thay vì new Buffer.from
-        const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex"); 
-        
-        vnpParams['vnp_SecureHash'] = signed;
-        vnpUrl += '?' + qs.stringify(vnpParams, { encode: false });
-
-        return vnpUrl;
-    } catch (error) {
-        console.error('Error creating payment URL: ', error);
-        throw error;
+    if (!process.env.VNP_TMNCODE || !process.env.VNP_HASHSECRET) {
+        throw new Error('VNPay configuration is missing in environment variables');
     }
-}
+    process.env.TZ = 'Asia/Ho_Chi_Minh';
+
+    const tmnCode = process.env.VNP_TMNCODE;
+    const secretKey = process.env.VNP_HASHSECRET;
+    let vnpUrl = process.env.VNP_URL;
+    const returnUrl = process.env.VNP_RETURNURL;
+    let date = new Date();
+    let createDate = moment(date).format('YYYYMMDDHHmmss');
+
+    // Đảm bảo IP hợp lệ (nếu chạy localhost ::1 có thể gây lỗi bên VNPay, nên fallback về 127.0.0.1)
+    const finalIp = ipAddr === '::1' ? '127.0.0.1' : ipAddr;
+
+    let vnpParams = {};
+    vnpParams['vnp_Version'] = '2.1.0';
+    vnpParams['vnp_Command'] = 'pay';
+    vnpParams['vnp_TmnCode'] = tmnCode;
+    vnpParams['vnp_Locale'] = 'vn';
+    vnpParams['vnp_CurrCode'] = 'VND';
+    vnpParams['vnp_TxnRef'] = orderId;
+    vnpParams['vnp_OrderInfo'] = orderInfo;
+    vnpParams['vnp_OrderType'] = 'other';
+    vnpParams['vnp_Amount'] = amount * 100;
+    vnpParams['vnp_ReturnUrl'] = returnUrl;
+    vnpParams['vnp_IpAddr'] = finalIp;
+    vnpParams['vnp_CreateDate'] = createDate;
+
+    vnpParams = sortObject(vnpParams);
+
+    const signData = qs.stringify(vnpParams, { encode: false });
+
+    const hmac = crypto.createHmac("sha512", secretKey);
+    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+
+    vnpParams['vnp_SecureHash'] = signed;
+    vnpUrl += '?' + qs.stringify(vnpParams, { encode: false });
+
+    return vnpUrl;
+};
 
 const handleVnpayIpn = async (vnp_Params) => {
     // Encode lại các giá trị nhận được từ URL (vì express thường tự decode)
@@ -91,64 +84,63 @@ const handleVnpayIpn = async (vnp_Params) => {
 
     const secretKey = process.env.VNP_HASHSECRET;
     const signData = qs.stringify(vnp_Params, { encode: false });
-    
+
     const hmac = crypto.createHmac("sha512", secretKey);
-    // SỬA LỖI: Dùng Buffer.from
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
 
     if (vnp_SecureHash === signed) {
         const orderId = vnp_Params['vnp_TxnRef'];
         const rspCode = vnp_Params['vnp_ResponseCode'];
-        const amount = vnp_Params['vnp_Amount']/100;
-        const transactionNo= vnp_Params['vnp_TransactionNo'];
+        const amount = vnp_Params['vnp_Amount'] / 100;
+        const transactionNo = vnp_Params['vnp_TransactionNo'];
 
-        try{
+        try {
             const prisma = orderRepository.getPrismaClientInstance();
 
             const order = await prisma.order.findUnique({
-                where: {order_id: orderId}
+                where: { order_id: orderId }
             });
-            if(!order){
+            if (!order) {
                 console.error(`Order ${orderId} not found`);
-                return {RspCode: '01', Message:'Order not found'};
-            }
-            
-            if(Number(order.final_total_price) != amount){
-                console.error(`Amount mismatch`);
-                return {RspCode:'04', Message: 'Invalid amount'};
+                return { RspCode: '01', Message: 'Order not found' };
             }
 
-            if(rspCode == '00'){
+            if (Number(order.final_total_price) != amount) {
+                console.error(`Amount mismatch`);
+                return { RspCode: '04', Message: 'Invalid amount' };
+            }
+
+            if (rspCode == '00') {
                 // thanh toan thanh cong
                 const confirmedStatus = await orderRepository.getStatusByCode("CONFIRMED");
-                if(!confirmedStatus){
+                if (!confirmedStatus) {
                     console.error("CONFIRM status not found in database");
-                    return {RspCode:'99', Message:'System error'};
+                    return { RspCode: '99', Message: 'System error' };
                 }
                 console.log(confirmedStatus);
                 await prisma.orderStatusHistory.create({
                     data: {
                         order_id: orderId,
                         order_status_id: confirmedStatus.order_status_id,
-                        changed_by:null,
+                        changed_by: null,
                         note: `Payment successful via VNPay. Transaction: ${transactionNo}`
                     }
                 });
-                
-                const order = await orderRepository.getDetail(orderId)
-                const userEmail = await userRepository.getUserById(order.user_id, prisma)
 
-                await emailService.sendPurchaseSuccessfullyEmail(userEmail, order)
+                const order = await orderRepository.getDetail(orderId);
+                const userEmail = await userRepository.getUserById(order.user_id, prisma);
+
+                await emailService.sendPurchaseSuccessfullyEmail(userEmail, order);
 
                 console.log(`Payment for order ${orderId} is successfull`);
-                return {RspCode: '00', Message:'Success'};
+                return { RspCode: '00', Message: 'Success' };
             }
-            else{
+            else {
                 // thanh toan that bai
                 const cancelledStatus = await orderRepository.getStatusByCode("CANCELLED");
-                if(!cancelledStatus){
+                if (!cancelledStatus) {
                     console.error('CANCELLED status not found in database');
-                    return {RspCode: '99', Message:'System error'};
+                    return { RspCode: '99', Message: 'System error' };
                 }
                 await prisma.orderStatusHistory.create({
                     data: {
@@ -159,10 +151,10 @@ const handleVnpayIpn = async (vnp_Params) => {
                     }
                 });
                 console.log(`Payment for order ${orderId} failed with code ${rspCode}`);
-                return {RspCode: '00', Message:'Success'};
+                return { RspCode: '00', Message: 'Success' };
             }
         }
-        catch (error){
+        catch (error) {
             console.error(' Error handling VNPay IPN:', error);
             return { RspCode: '99', Message: 'System error' };
         }
@@ -170,7 +162,7 @@ const handleVnpayIpn = async (vnp_Params) => {
         // Trường hợp sai chữ ký, trả về mã lỗi 97
         return { RspCode: '97', Message: 'Checksum failed' };
     }
-}
+};
 
 const handleVnpayReturn = async (vnp_Params) => {
     let vnp_SecureHash = vnp_Params['vnp_SecureHash'];
@@ -181,9 +173,8 @@ const handleVnpayReturn = async (vnp_Params) => {
 
     const secretKey = process.env.VNP_HASHSECRET;
     const signData = qs.stringify(vnp_Params, { encode: false });
-    
+
     const hmac = crypto.createHmac("sha512", secretKey);
-    // SỬA LỖI: Dùng Buffer.from
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
 
     if (vnp_SecureHash === signed) {
@@ -195,10 +186,10 @@ const handleVnpayReturn = async (vnp_Params) => {
     } else {
         return { isSuccess: false, message: 'Invalid signature' };
     }
-}
+};
 
 module.exports = {
     createPayment: createPaymentUrl,
     handleVnpayIpn: handleVnpayIpn,
     handleVnpayReturn: handleVnpayReturn,
-}
+};

@@ -1,9 +1,9 @@
-const productService = require('../services/productService')
-const productRepository = require('../repositories/productRepository')
+const productService = require('../services/productService');
+const productRepository = require('../repositories/productRepository');
 const cartRepository = require("../repositories/cartRepository");
-const { NotFoundError } = require('../errors/NotFoundError');
-const { BadRequestError } = require('../errors/BadRequestError');
 const CacheManager = require('../utils/cacheManager');
+
+const { NotFoundError } = require('../errors/NotFoundError');
 
 /**
  * Thêm sản phẩm vào giỏ hàng theo cart_id, product_variant_id
@@ -16,11 +16,11 @@ async function addItemToCart(cart_id, product_variant_id, quantity = 1) {
     );
 
     let result;
-    
+
     if (!exists) {
       const createdItem = await cartRepository.addNewItemToCartById(
-        cart_id, 
-        product_variant_id, 
+        cart_id,
+        product_variant_id,
         quantity
       );
       result = { item: createdItem, method: "add" };
@@ -43,23 +43,23 @@ async function addItemToCart(cart_id, product_variant_id, quantity = 1) {
 }
 
 
-async function getCartIdFromUserId(user_id){
-  if(user_id == null){
-    throw new BadRequestError("User not found", 400)
+async function getCartIdFromUserId(user_id) {
+  if (user_id == null) {
+    throw new NotFoundError("User not found");
   }
 
-  const cart = await cartRepository.getCartFromUserId(user_id)
+  const cart = await cartRepository.getCartFromUserId(user_id);
 }
 
-async function getCartItems(cart_id){
-  const cached = await CacheManager.getCart(cart_id)
-  if(cached) return cached
+async function getCartItems(cart_id) {
+  const cached = await CacheManager.getCart(cart_id);
+  if (cached) return cached;
 
   const cartItems = await cartRepository.getCartItems(cart_id);
 
-  await CacheManager.setCart(cart_id, cartItems) 
+  await CacheManager.setCart(cart_id, cartItems);
 
-  return cartItems
+  return cartItems;
 }
 
 /**
@@ -82,17 +82,17 @@ async function getCart(cart_id) {
     let totalPriceAfterDiscount = 0;
 
     const itemsWithDetail = await Promise.all(
-      cartItems.map(async (item) => { 
-        const productVariant = await productService.getProductVariantById(item.product_variant_id)
+      cartItems.map(async (item) => {
+        const productVariant = await productService.getProductVariantById(item.product_variant_id);
 
         if (!productVariant || !productVariant.Product) {
-          throw new NotFoundError(`Variant or product not found for item ${item.cart_item_id}`, 404);
+          throw new NotFoundError(`Variant or product not found for item ${item.cart_item_id}`);
         }
 
-        const product = await productService.getProductById(productVariant.Product.product_id)
+        const product = await productService.getProductById(productVariant.Product.product_id);
 
-        const options = product.options
-        const categoryCodes = product.categories
+        const options = product.options;
+        const categoryCodes = product.categories;
 
         const quantity = Number(item.quantity);
         const rawUnitPrice = Number(productVariant.raw_price);
@@ -168,37 +168,29 @@ async function getCart(cart_id) {
  * Cập nhật số lượng sản phẩm trong giỏ hàng
  */
 
-async function updateItemQuantityFromCart(cart_id, cart_item_id, quantity = 1){
-  try {
-    const updatedItem = await cartRepository.updateItemQuantityFromCartById(cart_id, cart_item_id, quantity);
+async function updateItemQuantityFromCart(cart_id, cart_item_id, quantity = 1) {
+  const updatedItem = await cartRepository.updateItemQuantityFromCartById(cart_id, cart_item_id, quantity);
 
-    await CacheManager.clearCart(cart_id)
+  await CacheManager.clearCart(cart_id);
 
-    return updatedItem;
-  } catch (err) {
-    throw err; 
-  }
+  return updatedItem;
 }
 
 /**
  * Xóa sản phẩm trong giỏ hàng
  */
-async function deleteItemFromCart(cart_id, cart_item_id){
-  try{
-    const deleteItem = await cartRepository.deleteItemFromCartById(cart_id, cart_item_id)
+async function deleteItemFromCart(cart_id, cart_item_id) {
+  const deleteItem = await cartRepository.deleteItemFromCartById(cart_id, cart_item_id);
 
-    await CacheManager.clearCart(cart_id)
+  await CacheManager.clearCart(cart_id);
 
-    return deleteItem
-  } catch(err){
-    throw err
-  }
+  return deleteItem;
 }
 
 module.exports = {
-    addItemToCart,
-    getCartIdFromUserId,
-    getCart,
-    updateItemQuantityFromCart,
-    deleteItemFromCart
-}
+  addItemToCart,
+  getCartIdFromUserId,
+  getCart,
+  updateItemQuantityFromCart,
+  deleteItemFromCart
+};

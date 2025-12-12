@@ -3,6 +3,7 @@ const categoryRepository = require('../repositories/categoryRepository');
 const userService = require('../services/userService');
 const cloudinaryService = require('../services/cloudinaryService');
 const CacheManager = require('../utils/cacheManager');
+
 const { BadRequestError } = require('../errors/BadRequestError');
 const { NotFoundError } = require("../errors/NotFoundError");
 
@@ -86,7 +87,7 @@ async function getProductById(product_id, isAdmin) {
 
     const product = await productRepository.getProductById(product_id, isAdmin, isAdmin);
     if (!product)
-        return null;
+        throw new NotFoundError("Product not found");
 
     const categories = product.ProductCategories.map(c => {
         return {
@@ -153,8 +154,7 @@ async function getProductVariantById(product_variant_id) {
 }
 
 async function addProduct(productData) {
-
-    const { name, description, categories, is_disabled = false, options, variants, images } = productData;
+    const { name, description, categories, is_disabled, options, variants, images } = productData;
 
     let image_urls = [];
     if (images) {
@@ -167,7 +167,8 @@ async function addProduct(productData) {
     try {
         return await productRepository.getPrismaClientInstance().$transaction(async (tx) => {
             // Create product
-            const createdProduct = await productRepository.createProduct(tx, name, description, image_urls, is_disabled === true || is_disabled === 'true');
+            const createdProduct =
+                await productRepository.createProduct(tx, name, description, image_urls, is_disabled);
 
             // Ensure product codes are valid
             for (const category_code of categories) {
@@ -183,7 +184,8 @@ async function addProduct(productData) {
             await productRepository.createProductCategories(tx, createdProduct.product_id, categories);
 
             // Create options
-            const createdOptions = await productRepository.createProductOptionsWithValues(tx, createdProduct.product_id, options);
+            const createdOptions =
+                await productRepository.createProductOptionsWithValues(tx, createdProduct.product_id, options);
             const optionList = createdOptions.map(({ createdOption, createdValues }) => ({
                 product_option_id: createdOption.product_option_id,
                 option_name: createdOption.option_name,
@@ -218,7 +220,9 @@ async function addProduct(productData) {
                 };
             });
 
-            const createdVariants = await productRepository.createProductVariantsWithOptions(tx, createdProduct.product_id, _variants);
+            const createdVariants =
+                await productRepository.createProductVariantsWithOptions(tx, createdProduct.product_id, _variants);
+
             const variantList = createdVariants.map(variant => ({
                 product_variant_id: variant.product_variant_id,
                 sku: variant.sku,
@@ -268,7 +272,8 @@ async function updateProduct(product_id, productData) {
 
     try {
         const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) =>
-            await productRepository.updateProduct(tx, product_id, { name, description, categories, is_disabled, image_urls })
+            await productRepository.updateProduct(tx, product_id,
+                { name, description, categories, is_disabled, image_urls })
         );
 
         await CacheManager.clearProduct(product_id);
@@ -304,11 +309,11 @@ async function updateProductOption(product_id, product_option_id, optionData) {
 
     const product = await productRepository.getProductById(product_id);
     if (!product)
-        return null;
+        throw new NotFoundError("Product not found");
 
     const productOption = await productRepository.getProductOptionById(product_option_id);
     if (!productOption || productOption.product_id !== product_id)
-        return null;
+        throw new NotFoundError("Option not found");
 
     const updatedProductOption = await prismaClient.$transaction(async (tx) => {
         return await productRepository.updateProductOption(tx, product_option_id, option_name, value);
@@ -336,7 +341,7 @@ async function updateProductVariant(product_id, product_variant_id, variantData)
 
     const productVariant = await productRepository.getProductVariantById(prismaClient, product_variant_id);
     if (!productVariant || productVariant.product_id !== product_id)
-        return null;
+        throw new NotFoundError("Product variant not found");
 
     const image_urls = image_indexes.map(i => product.image_urls[i]).filter(e => e);
     const newData = { sku, raw_price, stock_quantity, image_urls, options };
@@ -375,11 +380,10 @@ async function deleteProduct(product_id) {
 }
 
 async function deleteProductVariant(product_id, product_variant_id) {
-    // const prisma = productRepository.getPrismaClientInstance();
     const productVariant = await productRepository.getProductVariantById(product_variant_id);
 
-    if (productVariant.product_id !== product_id)
-        return null;
+    if (!productVariant || productVariant.product_id !== product_id)
+        throw new NotFoundError("Product variant not found");
 
     return await productRepository.deleteProductVariant(product_variant_id);
 }
@@ -387,11 +391,11 @@ async function deleteProductVariant(product_id, product_variant_id) {
 async function addReview(product_id, review) {
     const product = productRepository.getProductById(product_id);
     if (!product)
-        return null;
+        throw new NotFoundError("Product not found");
 
     const user = await userService.getUserById(review.by_user_id);
     if (!user)
-        return null;
+        throw new NotFoundError("User not found");
 
     const result = await productRepository.addReview(product_id, review);
 
@@ -413,7 +417,7 @@ async function addReview(product_id, review) {
 async function getReviews(product_id) {
     const product = await productRepository.getProductById(product_id);
     if (!product)
-        return null;
+        throw new NotFoundError("Product not found");
 
     const reviews = await productRepository.getReviewsWithUserInfo(product_id);
 
@@ -437,7 +441,7 @@ async function getReviews(product_id) {
 async function softDelete(product_id) {
     const product = await productRepository.softDelete(product_id);
     if (!product)
-        return null;
+        throw new NotFoundError("Product not found");
 
     return {
         product_id: product.product_id,
@@ -449,7 +453,7 @@ async function softDelete(product_id) {
 async function restore(product_id) {
     const product = await productRepository.restore(product_id);
     if (!product)
-        return null;
+        throw new NotFoundError("Product not found");
 
     return {
         product_id: product.product_id,

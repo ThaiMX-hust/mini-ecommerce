@@ -1,131 +1,104 @@
-const cartService = require('../services/cartService')
-const cartRepository = require('../repositories/cartRepository')
+const cartService = require('../services/cartService');
+const cartRepository = require('../repositories/cartRepository');
 const productService = require('../services/productService');
-const { OutOfStockError } = require('../errors/BadRequestError');
+
+const { BadRequestError } = require('../errors/BadRequestError');
+const { NotFoundError } = require("../errors/NotFoundError");
 
 const cartTest = async (req, res) => {
     const responsePayload = await cartService.cartTest();
     return res.status(200).json(responsePayload);
-}
+};
 
 const addToCart = async (req, res) => {
-    const userId = req.user.user_id
-    if(!userId) return res.status(404).json({error: "No user found"})
+    const userId = req.user.user_id;
+    if (!userId)
+        throw new BadRequestError("Missing user id");
 
-    const cartId = req.user.cart_id
-    if(!cartId) return res.status(404).json({error: "No cart found"})
+    const cartId = req.user.cart_id;
+    if (!cartId)
+        throw new BadRequestError("Missing cart id");
 
-    try {
-        const productVariantId = req.body.product_variant_id
-        const quantity = req.body.quantity
+    const productVariantId = req.body.product_variant_id;
+    const quantity = req.body.quantity;
 
-        if(!productVariantId || !quantity){
-            return res.status(400).json({error: "Missing or invalid fields"})
-        }
+    if (!productVariantId || !quantity)
+        throw new BadRequestError("Missing or invalid fields");
 
-        const productVariant = await productService.getProductVariantById(productVariantId)
-    
-        if (!productVariant){
-            return res.status(404).json({error: "Product variant not found"})
-        }
+    const productVariant = await productService.getProductVariantById(productVariantId);
 
-        const cartObject = await cartService.addItemToCart(cartId, productVariantId, quantity)
-        if(cartObject.method === 'add'){
-            return res.status(201).json(cartObject.item)
-        } else if(cartObject.method === 'update'){
-            return res.status(200).json(cartObject.item)
-        }
-    } catch (err){
-        console.log(err)
-        if(err instanceof OutOfStockError){
-            return res.status(400).json({error: err.message})
-        } else 
-            return res.status(500).json({error: "Internal server error"})
+    if (!productVariant) {
+        throw new NotFoundError("Product variant not found");
     }
-}
 
+    const cartObject = await cartService.addItemToCart(cartId, productVariantId, quantity);
+    if (cartObject.method === 'add') {
+        return res.status(201).json(cartObject.item);
+    } else if (cartObject.method === 'update') {
+        return res.status(200).json(cartObject.item);
+    }
+};
 
 const getCart = async (req, res) => {
     const { user_id: userId, cart_id: cartId } = req.user ?? {};
 
-    if (!userId) {
-        return res.status(404).json({ error: "User not found" });
-    }
+    if (!userId)
+        throw new BadRequestError("Missing user id");
 
-    if (!cartId) {
-        return res.status(404).json({ error: "Cart not found" });
-    }
+    if (!cartId)
+        throw new BadRequestError("Missing cart id");
 
+    const cartItems = await cartService.getCart(cartId);
 
-    try {
-        const cartItems = await cartService.getCart(cartId);
-        
-        return res.status(200).json(cartItems)
-        
-    } catch(e){
-        console.log(e)
-        return res.status(500).json({error: "Internal server error"})
-    }
-}
-
-const updateItemFromCart = async (req, res) => {
-}
+    return res.status(200).json(cartItems);
+};
 
 const updateItemQuantityFromCart = async (req, res) => {
-    const userId = req.user.user_id
-    if(!userId) return res.status(404).json({error: "No user found"})
+    const userId = req.user.user_id;
+    if (!userId)
+        throw new BadRequestError("Missing user id");
 
-    const cartId = req.user.cart_id
-    if(!cartId) return res.status(404).json({error: "No cart found"})
+    const cartId = req.user.cart_id;
+    if (!cartId)
+        throw new BadRequestError("Missing cart id");
 
     const cartItemId = req.params.cart_item_id;
-    const quantity = req.body.quantity
+    const quantity = req.body.quantity;
 
-    try {
-        const cartItem = await cartRepository.getCartItem(cartId, cartItemId)
-        if(!cartItem){
-            return res.status(404).json({error: "Cart item not found or does not belong to this user"})
-        }
-
-        const updatedItem = await cartService.updateItemQuantityFromCart(cartId, cartItemId, quantity)
-        return res.status(200).json(updatedItem)
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).json({error: "Internal server error"})
+    const cartItem = await cartRepository.getCartItem(cartId, cartItemId);
+    if (!cartItem) {
+        throw new NotFoundError("Cart item not found or does not belong to this user");
     }
-}
+
+    const updatedItem = await cartService.updateItemQuantityFromCart(cartId, cartItemId, quantity);
+    return res.status(200).json(updatedItem);
+};
 
 const deleteItemFromCart = async (req, res) => {
-    const userId = req.user.user_id
-    if(!userId) return res.status(404).json({error: "No user found"})
+    const userId = req.user.user_id;
+    if (!userId)
+        throw new BadRequestError("Missing user id");
 
-    const cartId = req.user.cart_id
-    if(!cartId) return res.status(404).json({error: "No cart found"})
+    const cartId = req.user.cart_id;
+    if (!cartId)
+        throw new BadRequestError("Missing cart id");
 
     const cartItemId = req.params.cart_item_id;
-    console.log(cartItemId)
+    console.log(cartItemId);
 
-    try {
-        const cartItem = await cartRepository.getCartItem(cartId, cartItemId)
-        if(!cartItem){
-            return res.status(404).json({error: "Cart item not found or does not belong to this user"})
-        }
-
-        await cartService.deleteItemFromCart(cartId, cartItemId)
-        return res.status(204).send()
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).json({error: "Internal server error"})
+    const cartItem = await cartRepository.getCartItem(cartId, cartItemId);
+    if (!cartItem) {
+        throw new NotFoundError("Cart item not found or does not belong to this user");
     }
-}
+
+    await cartService.deleteItemFromCart(cartId, cartItemId);
+    return res.status(204).send();
+};
 
 module.exports = {
     cartTest,
     addToCart,
     getCart,
-    updateItemFromCart,
     updateItemQuantityFromCart,
     deleteItemFromCart
-}
+};

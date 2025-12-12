@@ -1,11 +1,11 @@
-const { AppError } = require('./AppError')
+const { AppError } = require('./AppError');
 
-class UnauthorizeError extends AppError{
-    constructor(message = "Unauthorized", statusCode = 401) {
-      super(message, statusCode);
-    }
+class UnauthorizeError extends AppError {
+  constructor(message = "Unauthorized") {
+    super(message, 401);
+  }
 }
 
 module.exports = {
   UnauthorizeError
-}
+};
