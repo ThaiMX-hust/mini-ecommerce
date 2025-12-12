@@ -131,6 +131,7 @@ async function getProductById(product_id, isAdmin) {
         name: product.name,
         description: product.description,
         categories,
+        images: product.image_urls,
         is_disabled: product.is_disabled,
         options,
         variants
