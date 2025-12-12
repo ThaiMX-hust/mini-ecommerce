@@ -156,10 +156,13 @@ async function addProduct(productData) {
 
     const { name, description, categories, is_disabled = false, options, variants, images } = productData;
 
-    const image_urls = await cloudinaryService.uploadMultipleImages(
-        images.map(i => i.buffer),
-        "products"
-    );
+    let image_urls = [];
+    if (images) {
+        image_urls = await cloudinaryService.uploadMultipleImages(
+            images.map(i => i.buffer),
+            "products"
+        );
+    }
 
     try {
         return await productRepository.getPrismaClientInstance().$transaction(async (tx) => {
@@ -257,7 +260,10 @@ async function updateProduct(product_id, productData) {
     if (!product)
         throw new NotFoundError("Product not found");
 
-    const new_image_urls = await cloudinaryService.uploadMultipleImages(images.map(i => i.buffer));
+    let new_image_urls;
+    if (images) {
+        new_image_urls = await cloudinaryService.uploadMultipleImages(images.map(i => i.buffer));
+    }
     const image_urls = [...product.image_urls, ...new_image_urls];
 
     try {

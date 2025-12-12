@@ -12,7 +12,10 @@ async function registerUser(userData) {
     const password_hash = await hashPassword(userData.password);
 
     const avatarFile = userData.avatarFile;
-    const avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
+
+    let avatar_url;
+    if (avatarFile)
+        avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
 
     const newUser = await prisma.user.create({
         data: {
@@ -56,7 +59,10 @@ async function registerAdmin(userData) {
     const password_hash = await hashPassword(userData.password);
 
     const avatarFile = userData.avatarFile;
-    const avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
+
+    let avatar_url;
+    if (avatarFile)
+        avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
 
     const newUser = await prisma.user.create({
         data: {
@@ -104,9 +110,12 @@ async function updateUser(user_id, userData) {
     if (!user)
         throw new NotFoundError("User not found");
 
-    if (user.avatar_url)
-        await cloudinaryService.deleteImage(user.avatar_url);
-    const avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
+    let avatar_url;
+    if (avatarFile) {
+        if (user.avatar_url)
+            await cloudinaryService.deleteImage(user.avatar_url);
+        avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
+    }
 
     const updated_user = await userRepository.updateUser(user_id, { first_name, last_name, avatar_url });
 
