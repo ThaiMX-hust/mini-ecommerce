@@ -93,7 +93,7 @@ async function getProductVariantById(client, product_variant_id) {
     return productVariant;
 }
 
-async function getProductOptionById(client, product_option_id) {
+async function getProductOptionById(product_option_id, client = prisma) {
     return await client.productOption.findUnique({
         where: { product_option_id },
         include: {
@@ -152,7 +152,6 @@ async function updateProductVariant(client, product_variant_id, variantData) {
     return await getProductVariantById(client, product_variant_id);
 }
 
-// Need transaction
 async function updateProductOption(client, product_option_id, option_name, values) {
     await client.productOption.update({
         where: { product_option_id },
@@ -175,6 +174,7 @@ async function updateProductOption(client, product_option_id, option_name, value
         // Delete unused values
         const valuesToDelete = existingValues.filter(v => !values.includes(v.value)).map(v => v.option_value_id);
         if (valuesToDelete.length > 0) {
+            // Skip values used by variants
             const usedIds = await client.productVariantOption.findMany({
                 where: { option_value_id: { in: valuesToDelete } },
                 select: { option_value_id: true },
@@ -190,7 +190,7 @@ async function updateProductOption(client, product_option_id, option_name, value
         }
     }
 
-    return await getProductOptionById(client, product_option_id);
+    return await getProductOptionById(product_option_id, client);
 }
 
 async function createProduct(client, name, description, image_urls, is_disabled) {
