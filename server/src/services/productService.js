@@ -386,7 +386,8 @@ async function deleteProductVariant(product_id, product_variant_id) {
     if (!productVariant || productVariant.product_id !== product_id)
         throw new NotFoundError("Product variant not found");
 
-    return await productRepository.deleteProductVariant(product_variant_id);
+    await productRepository.deleteProductVariant(product_variant_id);
+    await CacheManager.clearProduct(product_id);
 }
 
 async function addReview(product_id, review) {

@@ -58,7 +58,7 @@ async function getProductById(productId, dd = false, client = prisma) {
     return product;
 }
 
-async function getProductVariantById(client, product_variant_id) {
+async function getProductVariantById(product_variant_id, client = prisma) {
     const productVariant = await client.productVariant.findUnique({
         where: { product_variant_id },
         include: {
@@ -116,7 +116,6 @@ async function getProductOptions(client, product_id) {
     return product?.ProductOption;
 }
 
-// Need transaction
 async function updateProductVariant(client, product_variant_id, variantData) {
     const { sku, raw_price, stock_quantity, image_urls, options } = variantData;
     const productVariant = await client.productVariant.update({
@@ -149,7 +148,7 @@ async function updateProductVariant(client, product_variant_id, variantData) {
         });
     }
 
-    return await getProductVariantById(client, product_variant_id);
+    return await getProductVariantById(product_variant_id, client);
 }
 
 async function updateProductOption(client, product_option_id, option_name, values) {
@@ -331,7 +330,7 @@ async function deleteProduct(product_id) {
     });
 }
 
-async function deleteProductVariant(client, product_variant_id) {
+async function deleteProductVariant(product_variant_id, client = prisma) {
     return await client.productVariant.delete({
         where: { product_variant_id }
     });
