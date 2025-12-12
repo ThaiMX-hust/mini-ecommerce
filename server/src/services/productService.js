@@ -147,7 +147,7 @@ async function getProductVariantById(product_variant_id) {
     if (cached) return cached;
 
     const prisma = productRepository.getPrismaClientInstance();
-    const productVariant = await productRepository.getProductVariantById(prisma, product_variant_id);
+    const productVariant = await productRepository.getProductVariantById(product_variant_id, prisma);
 
     await CacheManager.setProductVariant(product_variant_id, productVariant);
 
@@ -340,7 +340,7 @@ async function updateProductVariant(product_id, product_variant_id, variantData)
     if (!product)
         throw new NotFoundError("Product not found");
 
-    const productVariant = await productRepository.getProductVariantById(prismaClient, product_variant_id);
+    const productVariant = await productRepository.getProductVariantById(product_variant_id, prisma);
     if (!productVariant || productVariant.product_id !== product_id)
         throw new NotFoundError("Product variant not found");
 
@@ -373,10 +373,14 @@ async function updateProductVariant(product_id, product_variant_id, variantData)
 }
 
 async function deleteProduct(product_id) {
-    const product = await productRepository.deleteProduct(product_id);
+    const product = await productRepository.getProductById(product_id);
     if (!product)
         throw new NotFoundError("Product not found");
 
+    await productRepository.deleteProduct(product_id);
+
+    await CacheManager.clearProduct(product_id);
+    await CacheManager.clearByPrefix("products:list:");
     await Promise.all(product.image_urls.map(u => cloudinaryService.deleteImage(u)));
 }
 
