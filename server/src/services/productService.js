@@ -207,7 +207,7 @@ async function addProduct(productData) {
                     ...variant,
                     stock_quantity: parseInt(variant.stock_quantity),
                     is_disabled: variant.is_disabled === 'true',
-                    image_urls: variant.image_indexes.map(i => image_urls[i]),
+                    image_urls: variant.image_indexes.map(i => image_urls[i]).filter(e => e),
                     options: variant.options.map(({ option_name, value }) => {
                         const option = optionValueMap[option_name];
                         return option ? {
