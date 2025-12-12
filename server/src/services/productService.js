@@ -1,8 +1,10 @@
 const productRepository = require('../repositories/productRepository');
 const categoryRepository = require('../repositories/categoryRepository');
 const userService = require('../services/userService');
+const cloudinaryService = require('../services/cloudinaryService');
 const CacheManager = require('../utils/cacheManager');
 const { BadRequestError } = require('../errors/BadRequestError');
+const { NotFoundError } = require("../errors/NotFoundError");
 
 async function getProducts(query) {
     const cached = await CacheManager.getProducts(query);
@@ -151,12 +153,15 @@ async function getProductVariantById(product_variant_id) {
 }
 
 async function addProduct(productData) {
+
+    const { name, description, categories, is_disabled = false, options, variants, images } = productData;
+
+    const image_urls = await cloudinaryService.uploadMultipleImages(
+        images.map(i => i.buffer),
+        "products"
+    );
+
     try {
-        const { name, description, categories, is_disabled = false, options, variants, variant_images } = productData;
-
-        // TODO: upload images and get URLs
-        const image_urls = [];
-
         return await productRepository.getPrismaClientInstance().$transaction(async (tx) => {
             // Create product
             const createdProduct = await productRepository.createProduct(tx, name, description, image_urls, is_disabled === true || is_disabled === 'true');
@@ -193,12 +198,11 @@ async function addProduct(productData) {
 
             // Create variants
             const _variants = variants.map(variant => {
-                const variantImagesUrls = [];
                 return {
                     ...variant,
                     stock_quantity: parseInt(variant.stock_quantity),
                     is_disabled: variant.is_disabled === 'true',
-                    image_urls: variantImagesUrls,
+                    image_urls: variant.image_indexes.map(i => image_urls[i]),
                     options: variant.options.map(({ option_name, value }) => {
                         const option = optionValueMap[option_name];
                         return option ? {
@@ -242,38 +246,49 @@ async function addProduct(productData) {
             };
         });
     } catch (error) {
+        await Promise.all(image_urls.map(u => cloudinaryService.deleteImage(u)));
         throw error;
     }
 }
 
 async function updateProduct(product_id, productData) {
-    const { name, description, categories, is_disabled, variant_images } = productData;
+    const { name, description, categories, is_disabled, images } = productData;
+    const product = await productRepository.getProductById(product_id);
+    if (!product)
+        throw new NotFoundError("Product not found");
 
-    const image_urls = [];
-    const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) =>
-        await productRepository.updateProduct(tx, product_id, { name, description, categories, is_disabled, image_urls })
-    );
+    const new_image_urls = await cloudinaryService.uploadMultipleImages(images.map(i => i.buffer));
+    const image_urls = [...product.image_urls, ...new_image_urls];
 
-    await CacheManager.clearProduct(product_id);
+    try {
+        const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) =>
+            await productRepository.updateProduct(tx, product_id, { name, description, categories, is_disabled, image_urls })
+        );
 
-    await CacheManager.clearByPrefix("products:list:");
+        await CacheManager.clearProduct(product_id);
 
-    if (categories) {
-        for (const cat of categories) {
-            await CacheManager.clearByPrefix(`products:list:category:${cat}`);
+        await CacheManager.clearByPrefix("products:list:");
+
+        if (categories) {
+            for (const cat of categories) {
+                await CacheManager.clearByPrefix(`products:list:category:${cat}`);
+            }
         }
-    }
 
-    return {
-        product_id: updatedProduct.product_id,
-        name: updatedProduct.name,
-        description: updatedProduct.description,
-        categories: updatedProduct.ProductCategories.map(c => c.Category.category_code),
-        is_disabled: updatedProduct.is_disabled,
-        created_at: updatedProduct.created_at,
-        updated_at: updatedProduct.updated_at,
-        image_urls: updatedProduct.image_urls,
-    };
+        return {
+            product_id: updatedProduct.product_id,
+            name: updatedProduct.name,
+            description: updatedProduct.description,
+            categories: updatedProduct.ProductCategories.map(c => c.Category.category_code),
+            is_disabled: updatedProduct.is_disabled,
+            created_at: updatedProduct.created_at,
+            updated_at: updatedProduct.updated_at,
+            image_urls: updatedProduct.image_urls,
+        };
+    } catch (error) {
+        await Promise.all(new_image_urls.map(u => cloudinaryService.deleteImage(u)));
+        throw error;
+    }
 }
 
 async function updateProductOption(product_id, product_option_id, optionData) {
@@ -305,19 +320,19 @@ async function updateProductOption(product_id, product_option_id, optionData) {
 }
 
 async function updateProductVariant(product_id, product_variant_id, variantData) {
-    const { sku, raw_price, stock_quantity, image_indexes, options, variant_images } = variantData;
+    const { sku, raw_price, stock_quantity, image_indexes, options } = variantData;
 
     const prismaClient = productRepository.getPrismaClientInstance();
 
     const product = await productRepository.getProductById(product_id);
     if (!product)
-        return null;
+        throw new NotFoundError("Product not found");
 
-    const productVariant = await productRepository.getProductVariantById(product_variant_id);
+    const productVariant = await productRepository.getProductVariantById(prismaClient, product_variant_id);
     if (!productVariant || productVariant.product_id !== product_id)
         return null;
 
-    const image_urls = [];  // TODO: upload images
+    const image_urls = image_indexes.map(i => product.image_urls[i]).filter(e => e);
     const newData = { sku, raw_price, stock_quantity, image_urls, options };
 
     const updatedProductVariant = await prismaClient.$transaction(async (tx) => {
@@ -346,7 +361,11 @@ async function updateProductVariant(product_id, product_variant_id, variantData)
 }
 
 async function deleteProduct(product_id) {
-    return await productRepository.deleteProduct(product_id);
+    const product = await productRepository.deleteProduct(product_id);
+    if (!product)
+        throw new NotFoundError("Product not found");
+
+    await Promise.all(product.image_urls.map(u => cloudinaryService.deleteImage(u)));
 }
 
 async function deleteProductVariant(product_id, product_variant_id) {

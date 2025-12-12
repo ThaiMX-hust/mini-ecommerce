@@ -79,7 +79,7 @@ const addProduct = async (req, res) => {
             return res.status(400).json({ "error": "Missing or invalid fields" });
         }
 
-        productData.variants_images = req.files;
+        productData.images = req.files;
 
         const newProduct = await productService.addProduct(productData);
         console.log('Added new product:', newProduct);
@@ -97,7 +97,7 @@ const addProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const product_id = req.params.product_id;
-        const productData = { ...req.body, variant_images: req.files };
+        const productData = { ...req.body, images: req.files };
 
         try {
             if (productData.categories) {
@@ -155,7 +155,6 @@ const updateProductVariant = async (req, res) => {
         }
 
         const variantData = { sku, raw_price, stock_quantity, image_indexes, options };
-        variantData.variant_images = req.files;
 
         const updatedVariant = await productService.updateProductVariant(product_id, product_variant_id, variantData);
         if (!updatedVariant) {
@@ -170,11 +169,8 @@ const updateProductVariant = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
-        const product_id = req.params.productId;
-        const deletedProduct = await productService.deleteProduct(product_id);
-        if (!deletedProduct) {
-            return res.status(404).json({ error: 'Product not found' });
-        }
+        const product_id = req.params.product_id;
+        await productService.deleteProduct(product_id);
         return res.status(204).send();
     } catch (error) {
         console.error('Error deleting product:', error);
