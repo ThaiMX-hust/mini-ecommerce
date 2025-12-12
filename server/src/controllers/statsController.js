@@ -1,6 +1,5 @@
 const statsService = require('../services/statsService');
 
-const { AppError } = require('../errors/AppError');
 const { BadRequestError } = require('../errors/BadRequestError');
 
 async function getRevenueStats(req, res) {

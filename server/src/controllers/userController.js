@@ -1,8 +1,8 @@
 const userService = require('../services/userService');
 const regexUtils = require('../utils/regexUtils');
-const { AppError } = require('../errors/AppError');
-const { BadRequestError } = require('../errors/BadRequestError');
 const { cleanText } = require('../utils/sanitizer');
+
+const { BadRequestError } = require('../errors/BadRequestError');
 const { ForbiddenError } = require("../errors/ForbiddenError");
 
 const register = async (req, res) => {

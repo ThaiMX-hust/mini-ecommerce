@@ -1,7 +1,6 @@
 const refundService = require('../services/refundService');
 const { cleanText } = require('../utils/sanitizer');
 
-const { AppError } = require('../errors/AppError');
 const { BadRequestError } = require('../errors/BadRequestError');
 
 const requestRefund = async (req, res) => {
@@ -12,7 +11,7 @@ const requestRefund = async (req, res) => {
 
     reason = cleanText(reason);
 
-    const result = await refundService.addRefundRequest(order_id, reason);
+    const result = await refundService.addRefundRequest(req.user.user_id, order_id, reason);
     return res.status(201).json(result);
 };
 

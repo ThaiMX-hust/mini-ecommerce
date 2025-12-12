@@ -2,8 +2,6 @@ const orderService = require('../services/orderService');
 const { cleanText } = require('../utils/sanitizer');
 
 const { BadRequestError } = require('../errors/BadRequestError');
-const { NotFoundError } = require('../errors/NotFoundError');
-const { AppError } = require('../errors/AppError');
 
 const createOrder = async (req, res) => {
     const userId = req.user.user_id;
