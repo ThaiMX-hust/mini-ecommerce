@@ -1,7 +1,7 @@
 # API Contract – Website Bán sản phẩm
 
-Phiên bản: 3.0\
-Ngày cập nhật: 30/11/2025
+Phiên bản: 3.1\
+Ngày cập nhật: 12/12/2025
 
 ## Tổng quan
 
@@ -843,6 +843,51 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
   - 204 No Content
   - 401 Unauthorized: { "error": "Unauthorized" }
   - 404 Not Found: { "error": "Product or variant not found" }
+
+### 3.13. Xem danh sách sản phẩm cho admin
+
+- Method: GET
+- URL: /api/v1/products/all
+- Query Parameters:
+  - name: string (optional)
+  - search: string (optional) - Search by product name
+  - categories: [string] (optional)
+  - min_price: number (optional)
+  - max_price: number (optional)
+  - page: number (optional, default: 1)
+  - limit: number (optional, default: 10)
+- Response:
+  - 200 OK:
+    ```json
+    {
+      "page": "number",
+      "limit": "number",
+      "total_pages": "number",
+      "total_items": "number",
+      "items": [
+        {
+          "product_id": "string",
+          "name": "string",
+          "description": "string",
+          "categories": [
+            {
+              "category_id": "string",
+              "category_name": "string",
+              "category_code": "string",
+              "category_description": "string"
+            }
+          ],
+          "min_price": "number",
+          "max_price": "number",
+          "image_url": "string"
+        }
+      ],
+      "is_disabled": "boolean",
+      "created_at": "string",
+      "deleted_at": "string",
+      "restored_at": "string"
+    }
+    ```
 
 ## 4. Giỏ hàng
 

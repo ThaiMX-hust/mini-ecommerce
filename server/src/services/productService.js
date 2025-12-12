@@ -1,34 +1,34 @@
 const productRepository = require('../repositories/productRepository');
-const categoryRepository = require('../repositories/categoryRepository')
+const categoryRepository = require('../repositories/categoryRepository');
 const userService = require('../services/userService');
 const CacheManager = require('../utils/cacheManager');
 const { BadRequestError } = require('../errors/BadRequestError');
 
-async function getProducts(query, isAdmin) {
+async function getProducts(query) {
     const cached = await CacheManager.getProducts(query);
     if (cached) return cached;
 
-    const { name, categories, min_price, max_price, page, limit } = query;
-    const { total_items, products } = await productRepository.getProducts({ name, categories, min_price, max_price, page, limit }, isAdmin, isAdmin);
+    const { page, limit } = query;
+    const { total_items, products } = await productRepository.getProducts(query);
     const total_pages = Math.ceil(total_items / limit);
     const items = products.map(product => ({
         product_id: product.product_id,
         name: product.name,
         description: product.description,
-        categories: product.ProductCategories.map( c => {
+        categories: product.ProductCategories.map(c => {
             return {
                 category_id: c.Category.category_id,
                 category_name: c.Category.category_name,
                 category_code: c.Category.category_code,
                 category_description: c.Category.category_description
-            }
+            };
         }),
         min_price: Math.min(...product.ProductVariant.map(v => v.raw_price)),
         max_price: Math.max(...product.ProductVariant.map(v => v.raw_price)),
         image_url: product.image_urls[0] || null,
     }));
 
-    const result =  {
+    const result = {
         page,
         limit,
         total_pages,
@@ -36,27 +36,64 @@ async function getProducts(query, isAdmin) {
         items
     };
 
-    await CacheManager.setProducts(query, result)
+    await CacheManager.setProducts(query, result);
 
-    return result
+    return result;
+}
+
+async function getAllProducts(query) {
+    const { page, limit } = query;
+
+    const { total_items, products } = await productRepository.getProducts(query, true);
+    const total_pages = Math.ceil(total_items / limit);
+    const items = products.map(product => ({
+        product_id: product.product_id,
+        name: product.name,
+        description: product.description,
+        categories: product.ProductCategories.map(c => {
+            return {
+                category_id: c.Category.category_id,
+                category_name: c.Category.category_name,
+                category_code: c.Category.category_code,
+                category_description: c.Category.category_description
+            };
+        }),
+        min_price: Math.min(...product.ProductVariant.map(v => v.raw_price)),
+        max_price: Math.max(...product.ProductVariant.map(v => v.raw_price)),
+        image_url: product.image_urls[0] || null,
+        is_disabled: product.is_disabled,
+        created_at: product.created_at,
+        deleted_at: product.deleted_at,
+        restored_at: product.restored_at
+    }));
+
+    const result = {
+        page,
+        limit,
+        total_pages,
+        total_items,
+        items
+    };
+
+    return result;
 }
 
 async function getProductById(product_id, isAdmin) {
-    const cached = await CacheManager.getProduct(product_id)
-    if(cached) return cached
+    const cached = await CacheManager.getProduct(product_id);
+    if (cached) return cached;
 
     const product = await productRepository.getProductById(product_id, isAdmin, isAdmin);
     if (!product)
         return null;
 
-    const categories = product.ProductCategories.map( c => {
+    const categories = product.ProductCategories.map(c => {
         return {
             category_id: c.Category.category_id,
             category_name: c.Category.category_name,
             category_code: c.Category.category_code,
             category_description: c.Category.category_description
-        }
-    })
+        };
+    });
 
     // lookup map: option_value_id -> option_name
     const optionValueMap = {};
@@ -96,25 +133,25 @@ async function getProductById(product_id, isAdmin) {
         variants
     };
 
-    await CacheManager.setProduct(product_id, res)
+    await CacheManager.setProduct(product_id, res);
 
-    return res
+    return res;
 }
 
-async function getProductVariantById(product_variant_id){
-    const cached = await CacheManager.getProductVariant(product_variant_id)
-    if(cached) return cached
+async function getProductVariantById(product_variant_id) {
+    const cached = await CacheManager.getProductVariant(product_variant_id);
+    if (cached) return cached;
 
-    const prisma = productRepository.getPrismaClientInstance()
-    const productVariant = await productRepository.getProductVariantById(prisma, product_variant_id)
+    const prisma = productRepository.getPrismaClientInstance();
+    const productVariant = await productRepository.getProductVariantById(prisma, product_variant_id);
 
-    await CacheManager.setProductVariant(product_variant_id, productVariant)
+    await CacheManager.setProductVariant(product_variant_id, productVariant);
 
-    return productVariant
+    return productVariant;
 }
 
 async function addProduct(productData) {
-    try{
+    try {
         const { name, description, categories, is_disabled = false, options, variants, variant_images } = productData;
 
         // TODO: upload images and get URLs
@@ -204,8 +241,8 @@ async function addProduct(productData) {
                 created_at: createdProduct.created_at
             };
         });
-    } catch (error){
-        throw error
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -213,7 +250,7 @@ async function updateProduct(product_id, productData) {
     const { name, description, categories, is_disabled, variant_images } = productData;
 
     const image_urls = [];
-    const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) => 
+    const updatedProduct = await productRepository.getPrismaClientInstance().$transaction(async (tx) =>
         await productRepository.updateProduct(tx, product_id, { name, description, categories, is_disabled, image_urls })
     );
 
@@ -231,12 +268,12 @@ async function updateProduct(product_id, productData) {
         product_id: updatedProduct.product_id,
         name: updatedProduct.name,
         description: updatedProduct.description,
-        categories: updatedProduct.ProductCategories.map(c => c.category_id),
+        categories: updatedProduct.ProductCategories.map(c => c.Category.category_code),
         is_disabled: updatedProduct.is_disabled,
         created_at: updatedProduct.created_at,
         updated_at: updatedProduct.updated_at,
         image_urls: updatedProduct.image_urls,
-    }
+    };
 }
 
 async function updateProductOption(product_id, product_option_id, optionData) {
@@ -247,7 +284,7 @@ async function updateProductOption(product_id, product_option_id, optionData) {
     const product = await productRepository.getProductById(product_id);
     if (!product)
         return null;
-    
+
     const productOption = await productRepository.getProductOptionById(product_option_id);
     if (!productOption || productOption.product_id !== product_id)
         return null;
@@ -275,7 +312,7 @@ async function updateProductVariant(product_id, product_variant_id, variantData)
     const product = await productRepository.getProductById(product_id);
     if (!product)
         return null;
-    
+
     const productVariant = await productRepository.getProductVariantById(product_variant_id);
     if (!productVariant || productVariant.product_id !== product_id)
         return null;
@@ -289,7 +326,7 @@ async function updateProductVariant(product_id, product_variant_id, variantData)
 
     await CacheManager.clearProduct(product_id);
 
-    await CacheManager.del(`product_varaint: ${product_variant_id}`)
+    await CacheManager.del(`product_varaint: ${product_variant_id}`);
 
     return {
         product_variant_id: updatedProductVariant.product_variant_id,
@@ -398,6 +435,7 @@ async function restore(product_id) {
 
 module.exports = {
     getProducts,
+    getAllProducts,
     getProductById,
     getProductVariantById,
     addProduct,

@@ -13,9 +13,27 @@ const getProducts = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
 
-        const isAdmin = req.user && req.user.role === 'ADMIN';
+        const products = await productService.getProducts({ name, categories, min_price, max_price, page, limit });
+        return res.status(200).json(products);
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
-        const products = await productService.getProducts({ name, categories, min_price, max_price, page, limit }, isAdmin);
+const getAllProducts = async (req, res) => {
+    try {
+        const name = req.query.name || req.query.search;
+        let categories = req.query.categories;
+        if (categories && !Array.isArray(categories)) {
+            categories = [categories];
+        }
+        const min_price = Number(req.query.min_price);
+        const max_price = Number(req.query.max_price);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const products = await productService.getAllProducts({ name, categories, min_price, max_price, page, limit });
         return res.status(200).json(products);
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -36,7 +54,7 @@ const getProductById = async (req, res) => {
         console.error('Error fetching product:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const addProduct = async (req, res) => {
     try {
@@ -59,7 +77,7 @@ const addProduct = async (req, res) => {
             }
         } catch (error) {
             return res.status(400).json({ "error": "Missing or invalid fields" });
-        }    
+        }
 
         productData.variants_images = req.files;
 
@@ -68,13 +86,13 @@ const addProduct = async (req, res) => {
         return res.status(201).json(newProduct);
     } catch (error) {
         console.error('Error adding product:', error);
-        if(error instanceof BadRequestError){
-            return res.status(error.statusCode).json({error: error.message})
+        if (error instanceof BadRequestError) {
+            return res.status(error.statusCode).json({ error: error.message });
         } else {
             return res.status(500).json({ error: 'Internal server error' });
         }
     }
-}
+};
 
 const updateProduct = async (req, res) => {
     try {
@@ -101,7 +119,7 @@ const updateProduct = async (req, res) => {
         console.error('Error updating product:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const updateProductOption = async (req, res) => {
     try {
@@ -118,13 +136,13 @@ const updateProductOption = async (req, res) => {
         console.error('Error updating product option:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const updateProductVariant = async (req, res) => {
     try {
         const product_id = req.params.product_id;
         const product_variant_id = req.params.product_variant_id;
-        
+
         let { sku, raw_price, stock_quantity, image_indexes, options } = req.body;
 
         try {
@@ -138,7 +156,7 @@ const updateProductVariant = async (req, res) => {
 
         const variantData = { sku, raw_price, stock_quantity, image_indexes, options };
         variantData.variant_images = req.files;
-        
+
         const updatedVariant = await productService.updateProductVariant(product_id, product_variant_id, variantData);
         if (!updatedVariant) {
             return res.status(404).json({ error: 'Product or variant not found' });
@@ -148,7 +166,7 @@ const updateProductVariant = async (req, res) => {
         console.error('Error updating product variant:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const deleteProduct = async (req, res) => {
     try {
@@ -162,7 +180,7 @@ const deleteProduct = async (req, res) => {
         console.error('Error deleting product:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const deleteProductVariant = async (req, res) => {
     try {
@@ -177,7 +195,7 @@ const deleteProductVariant = async (req, res) => {
         console.error('Error deleting variant:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const addReview = async (req, res) => {
     try {
@@ -199,7 +217,7 @@ const addReview = async (req, res) => {
         console.error('Error adding review:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const getReviews = async (req, res) => {
     try {
@@ -213,7 +231,7 @@ const getReviews = async (req, res) => {
         console.error('Error getting review:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const softDelete = async (req, res) => {
     try {
@@ -227,7 +245,7 @@ const softDelete = async (req, res) => {
         console.error('Error soft deleting product:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 const restore = async (req, res) => {
     try {
@@ -241,10 +259,11 @@ const restore = async (req, res) => {
         console.error('Error restoring product:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 module.exports = {
     getProducts,
+    getAllProducts,
     getProductById,
     addProduct,
     updateProduct,

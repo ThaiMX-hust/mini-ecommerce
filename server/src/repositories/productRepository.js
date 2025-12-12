@@ -4,43 +4,33 @@ function getPrismaClientInstance() {
     return prisma;
 }
 
-async function getProducts(query, getDisabled = false, getDeleted = false, client = prisma) {
+async function getProducts(query, dd = false, client = prisma) {
     const { name, categories, min_price, max_price, page, limit } = query;
     const where = {
         AND: [
             name ? { name: { contains: name } } : {},
             categories && categories.length > 0
-                ? {
-                    ProductCategories: {
-                        some: {
-                            Category: {
-                                category_code: { in: categories },
-                            }
-                        }
-                    }
-                }
+                ? { ProductCategories: { some: { Category: { category_code: { in: categories }, } } } }
                 : {},
             min_price ? { ProductVariant: { some: { raw_price: { gte: min_price } } } } : {},
             max_price ? { ProductVariant: { some: { raw_price: { lte: max_price } } } } : {},
-            !getDisabled ? { is_disabled: false } : {},
-            !getDeleted ? { deleted_at: null } : {}
+            dd ? {} : { is_disabled: false, deleted_at: null }
         ]
     };
 
-    const count = await client.product.count({ where });
-    const products = await client.product.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        select: {
-            product_id: true,
-            name: true,
-            description: true,
-            image_urls: true,
-            ProductCategories: { select: { Category: {} } },
-            ProductVariant: { select: { raw_price: true } }
-        }
-    });
+    const [count, products] = await Promise.all([
+        client.product.count({ where }),
+        client.product.findMany({
+            where,
+            skip: (page - 1) * limit,
+            take: limit,
+            include: {
+                ProductCategories: { select: { Category: {} } },
+                ProductVariant: { select: { raw_price: true } }
+            }
+        })
+    ]);
+
     return { total_items: count, products };
 }
 
@@ -307,7 +297,6 @@ async function createProductVariantsWithOptions(client, productId, variants) {
     return createdVariants.map(({ createdVariant, options }) => ({ ...createdVariant, options }));
 }
 
-// Need transaction
 async function updateProduct(client, product_id, productData) {
     const { name, description, categories, is_disabled, image_urls } = productData;
     const data = {};

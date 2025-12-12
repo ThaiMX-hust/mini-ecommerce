@@ -7,7 +7,8 @@ const { authenticate, requireAdmin, authenticateOptional } = require('../middlew
 const upload = require('../middleware/upload');
 
 
-router.get('/', authenticateOptional, productController.getProducts);
+router.get('/', productController.getProducts);
+router.get('/all', authenticate, requireAdmin, productController.getAllProducts);
 router.get('/:product_id', authenticateOptional, productController.getProductById);
 router.post('/', authenticate, requireAdmin, upload.array('variants_images'), productController.addProduct);
 router.patch('/:product_id', authenticate, requireAdmin, upload.array('variants_images'), productController.updateProduct);
