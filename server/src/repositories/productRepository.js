@@ -34,13 +34,12 @@ async function getProducts(query, dd = false, client = prisma) {
     return { total_items: count, products };
 }
 
-async function getProductById(productId, getDisabled = false, getDeleted = false, client = prisma) {
+async function getProductById(productId, dd = false, client = prisma) {
     const product = await client.product.findFirst({
         where: {
             AND: [
                 { product_id: productId },
-                !getDisabled ? { is_disabled: false } : {},
-                !getDeleted ? { deleted_at: null } : {}
+                dd ? {} : { is_disabled: false, deleted_at: null }
             ]
         },
         include: {
@@ -51,7 +50,7 @@ async function getProductById(productId, getDisabled = false, getDeleted = false
             },
             ProductOption: { include: { ProductOptionValue: true } },
             ProductVariant: {
-                where: !getDisabled ? { is_disabled: false } : {},
+                where: dd ? {} : { is_disabled: false },
                 include: { ProductVariantOption: { include: { ProductOptionValue: true } } }
             }
         }

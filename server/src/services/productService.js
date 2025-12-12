@@ -85,7 +85,7 @@ async function getProductById(product_id, isAdmin) {
     const cached = await CacheManager.getProduct(product_id);
     if (cached) return cached;
 
-    const product = await productRepository.getProductById(product_id, isAdmin, isAdmin);
+    const product = await productRepository.getProductById(product_id, isAdmin);
     if (!product)
         throw new NotFoundError("Product not found");
 
@@ -260,7 +260,7 @@ async function addProduct(productData) {
 
 async function updateProduct(product_id, productData) {
     const { name, description, categories, is_disabled, images } = productData;
-    const product = await productRepository.getProductById(product_id);
+    const product = await productRepository.getProductById(product_id, true);
     if (!product)
         throw new NotFoundError("Product not found");
 
@@ -307,7 +307,7 @@ async function updateProductOption(product_id, product_option_id, optionData) {
 
     const prismaClient = productRepository.getPrismaClientInstance();
 
-    const product = await productRepository.getProductById(product_id);
+    const product = await productRepository.getProductById(product_id, true);
     if (!product)
         throw new NotFoundError("Product not found");
 
@@ -335,7 +335,7 @@ async function updateProductVariant(product_id, product_variant_id, variantData)
 
     const prismaClient = productRepository.getPrismaClientInstance();
 
-    const product = await productRepository.getProductById(product_id);
+    const product = await productRepository.getProductById(product_id, true);
     if (!product)
         throw new NotFoundError("Product not found");
 
