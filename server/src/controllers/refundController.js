@@ -1,14 +1,16 @@
 const refundService = require('../services/refundService');
-
+const { cleanText } = require('../utils/sanitizer');
 const { AppError } = require('../errors/AppError');
 const { BadRequestError } = require('../errors/BadRequestError');
 
 const requestRefund = async (req, res) => {
     try {
-        const { order_id, reason } = req.body;
+        let { order_id, reason } = req.body;
         if (order_id == null || reason == null) {
             throw new BadRequestError('Missing field(s)');
         }
+
+        reason = cleanText(reason);
 
         const result = await refundService.addRefundRequest(order_id, reason);
 
@@ -21,7 +23,7 @@ const requestRefund = async (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
     }
-}
+};
 
 const getUserRefundList = async (req, res) => {
     try {
@@ -37,7 +39,7 @@ const getUserRefundList = async (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
     }
-}
+};
 
 const getAllRefundsForAdmin = async (req, res) => {
     try {
@@ -51,7 +53,7 @@ const getAllRefundsForAdmin = async (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
     }
-}
+};
 
 const approveRefund = async (req, res) => {
     try {
@@ -69,7 +71,7 @@ const approveRefund = async (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
     }
-}
+};
 
 const rejectRefund = async (req, res) => {
     try {
@@ -87,7 +89,7 @@ const rejectRefund = async (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
     }
-}
+};
 
 module.exports = {
     requestRefund,

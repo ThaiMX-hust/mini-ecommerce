@@ -2,6 +2,8 @@ const { EmptyCartError, BadRequestError, OutOfStockError } = require('../errors/
 const { NotFoundError } = require('../errors/NotFoundError');
 const { AppError } = require('../errors/AppError');
 
+const { cleanText } = require('../utils/sanitizer');
+
 const orderService = require('../services/orderService');
 
 const createOrder = async (req, res) => {
@@ -11,16 +13,17 @@ const createOrder = async (req, res) => {
     const cartId = req.user.cart_id;
     if (!cartId) return res.status(404).json({ error: "No cart found" });
 
-    const receiverName = req.body.receiver_name;
-    const phone = req.body.phone;
-    const address = req.body.address;
+    let { receiver_name, phone, address } = req.body;
 
-    if (!receiverName || !phone || !address) {
+    if (!receiver_name || !phone || !address) {
         return res.status(400).json({ error: "Missing or invalid fields" });
     }
 
+    receiver_name = cleanText(receiver_name);
+    address = cleanText(address);
+
     try {
-        const newOrder = await orderService.createOrder(userId, cartId, receiverName, phone, address);
+        const newOrder = await orderService.createOrder(userId, cartId, receiver_name, phone, address);
 
         return res.status(201).json(newOrder);
     } catch (e) {

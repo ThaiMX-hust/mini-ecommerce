@@ -1,5 +1,6 @@
 const { BadRequestError } = require('../errors/BadRequestError');
 const productService = require('../services/productService');
+const { cleanText } = require('../utils/sanitizer');
 
 const getProducts = async (req, res) => {
     try {
@@ -203,7 +204,7 @@ const addReview = async (req, res) => {
             return res.status(400).json({ error: 'Missing or invalid fields' });
         }
 
-        const review = { rating, comment, by_user_id };
+        const review = { rating, comment: cleanText(comment), by_user_id };
         const result = await productService.addReview(product_id, review);
         if (!result) {
             return res.status(404).json({ error: 'Product not found' });

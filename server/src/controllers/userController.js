@@ -2,10 +2,11 @@ const userService = require('../services/userService');
 const regexUtils = require('../utils/regexUtils');
 const { AppError } = require('../errors/AppError');
 const { BadRequestError } = require('../errors/BadRequestError');
+const { cleanText } = require('../utils/sanitizer');
 
 const register = async (req, res) => {
     try {
-        const { first_name, last_name, email, password } = req.body;
+        let { first_name, last_name, email, password } = req.body;
         const avatarFile = req.file;
 
         if (!first_name || !last_name || !email || !password) {
@@ -14,6 +15,9 @@ const register = async (req, res) => {
         if (!regexUtils.isValidEmail(email)) {
             return res.status(400).json({ error: 'Missing or invalid fields' });
         }
+
+        first_name = cleanText(first_name);
+        last_name = cleanText(last_name);
 
         if (await userService.getUserByEmail(email)) {
             return res.status(409).json({ error: 'Email already exists' });
@@ -78,7 +82,10 @@ const updateUser = async (req, res) => {
         if (user_id !== req.user.user_id)
             return res.status(403).json({ error: 'Forbidden' });
 
-        const { first_name, last_name } = req.body;
+        let { first_name, last_name } = req.body;
+        first_name = cleanText(first_name);
+        last_name = cleanText(last_name);
+
         const avatarFile = req.file;
 
         const user = await userService.updateUser(user_id, { first_name, last_name, avatarFile });
