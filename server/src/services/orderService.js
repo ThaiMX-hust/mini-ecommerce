@@ -461,10 +461,27 @@ async function getOrderDetail(order_id) {
     };
 }
 
+async function cancelOrder(user_id, order_id, reason) {
+    const order = await orderRepository.getWithStatus(order_id);
+    if (!order)
+        throw new NotFoundError("Order not found");
+
+    if (order.user_id !== user_id)
+        throw new NotFoundError("Order not found");
+
+    const status = order.history.reduce((latest, o) => o.changed_at > latest.changed_at ? o : latest).status;
+    if (status.order_status_code !== "CREATED")
+        throw new BadRequestError("The order has been paid");
+
+    const prisma = orderRepository.getPrismaClientInstance();
+    await orderRepository.createNewStatusToHistory(prisma, order_id, "CANCELLED", user_id, reason);
+}
+
 module.exports = {
     createOrder,
     getOrders,
     updateOrderStatus,
     getAllOrders,
-    getOrderDetail
+    getOrderDetail,
+    cancelOrder
 };

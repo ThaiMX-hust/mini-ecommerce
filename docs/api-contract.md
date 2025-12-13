@@ -1,7 +1,7 @@
 # API Contract – Website Bán sản phẩm
 
-Phiên bản: 3.1\
-Ngày cập nhật: 12/12/2025
+Phiên bản: 3.2\
+Ngày cập nhật: 13/12/2025
 
 ## Tổng quan
 
@@ -1455,6 +1455,18 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
     ```
   - 401 Unauthorized
   - 403 Forbidden
+  - 404 Not Found
+
+### 5.13. Hủy đơn
+
+- Method: GET
+- URL: /api/v1/orders/{order_id}/cancel
+- Authorization: Bearer
+- Body:
+  - reason
+- Response:
+  - 200 OK
+  - 401 Unauthorized
   - 404 Not Found
 
 ## 6. Khuyến mãi

@@ -77,10 +77,25 @@ const getOrderDetail = async (req, res) => {
     return res.status(200).json(result);
 };
 
+const cancelOrder = async (req, res) => {
+    const order_id = req.params.order_id;
+    const user_id = req.user.user_id;
+    let reason = req.body.reason;
+
+    if (!reason)
+        throw new BadRequestError("Missing fields");
+
+    reason = cleanText(reason);
+
+    await orderService.cancelOrder(user_id, order_id, reason);
+    return res.status(200).send("Ok");
+};
+
 module.exports = {
     createOrder,
     getOrdersHistory,
     updateOrderStatus,
     getAllOrders,
-    getOrderDetail
+    getOrderDetail,
+    cancelOrder
 };
