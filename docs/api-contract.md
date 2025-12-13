@@ -1,6 +1,6 @@
 # API Contract – Website Bán sản phẩm
 
-Phiên bản: 3.2\
+Phiên bản: 3.3\
 Ngày cập nhật: 13/12/2025
 
 ## Tổng quan
@@ -277,6 +277,21 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 }
 ```
 
+### 2.4. Xem danh sách category
+
+- Method: GET
+- URL: /api/categories
+- Content-Type: application/json
+- Response
+```json
+{
+  "category_id": "string",
+  "category_name": "string",
+  "category_code": "string",
+  "category_description": "string"
+}
+```
+
 ## 3. Sản phẩm
 
 ### 3.1. Xem danh sách sản phẩm
@@ -341,8 +356,8 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
           "category_description": "string"
         }
       ],
+      "images": ["string"],
       "is_disabled": "boolean",
-
       "options": [
         {
           "product_option_id": "string",
@@ -632,7 +647,7 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Method: PATCH
 - URL: /api/v1/products/{product_id}
 - Request Headers: Authorization: Bearer {admin_token}
-- Content-Type: application/json
+- Content-Type: multipart/form-data
 - Mô tả body
 
 | Trường chính     | Kiểu     | Yêu cầu        | Mô tả                                   |
