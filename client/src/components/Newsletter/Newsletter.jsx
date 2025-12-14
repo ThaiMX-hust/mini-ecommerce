@@ -32,9 +32,9 @@ const Newsletter = () => {
         <div className={styles.content}>
           <h2 className={styles.title}>Subscribe To Our Newsletter</h2>
           <p className={styles.description}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Scelerisque
-            duis ultrices sollicitudin aliquam sem. Scelerisque duis ultrices
-            sollicitudin
+            Get 10% off your first order.
+            Be the first to know about new arrivals and exclusive offers.
+
           </p>
           <form className={styles.subscribeForm} onSubmit={handleSubmit}>
             <input

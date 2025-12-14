@@ -77,7 +77,7 @@ const Header = () => {
           >
             Products
           </NavLink>
-          {isAuthenticated && (
+          {/* {isAuthenticated && (
             <NavLink
               to="/checkout"
               className={({ isActive }) =>
@@ -86,7 +86,7 @@ const Header = () => {
             >
               Checkout
             </NavLink>
-          )}
+          )} */}
         </nav>
 
     

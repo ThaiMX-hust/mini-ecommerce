@@ -12,6 +12,7 @@ const CheckoutPage = () => {
     const [cart, setCart] = useState({ items: [], total_price_after_discount: 0 });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [paymentMethod, setPaymentMethod] = useState("vnpay"); // ✅ Thêm state chọn phương thức
     const navigate = useNavigate();
 
     // Fetch cart data
@@ -44,26 +45,36 @@ const CheckoutPage = () => {
         e.preventDefault();
         setError("");
         setLoading(true);
+        
         try {
+            // Tạo đơn hàng
             const orderRes = await api.post("/orders", formData);
-
-            // Get orderID, amout from orderRes
             const { order_id, total_price_after_discount } = orderRes.data;
 
-            // ✅ Sửa: Gửi tham số đúng tên
-            const paymentRes = await api.post("/payments/vnpay", {
-                orderInfo: 'Thanh toán đơn hàng ' + order_id,  // ✅ order_id thay vì orderID
-                orderId: order_id,  // ✅ orderId thay vì orderID
-                amount: total_price_after_discount,  // ✅ total_price_after_discount thay vì final_total_price
-            });
+            // ✅ Kiểm tra phương thức thanh toán
+            if (paymentMethod === "vnpay") {
+                // Thanh toán ngay qua VNPay
+                const paymentRes = await api.post("/payments/vnpay", {
+                    orderInfo: `Thanh toán đơn hàng ${order_id}`,
+                    orderId: order_id,
+                    amount: total_price_after_discount,
+                });
 
-            if (paymentRes.data.url) {
-                window.location.href = paymentRes.data.url;
+                if (paymentRes.data.url) {
+                    window.location.href = paymentRes.data.url;
+                }
+            } else {
+                // Thanh toán sau - redirect về Order History
+                navigate(`/orders?new_order=${order_id}`, {
+                    state: { 
+                        message: "Order created successfully! You can pay anytime from Order History." 
+                    }
+                });
             }
         } catch (err) {
             const errorMessage = err.response?.data?.message || "An error occurred while processing the order.";
             setError(errorMessage);
-            console.error("Error creating payment:", err);
+            console.error("Error creating order:", err);
         } finally {
             setLoading(false);
         }
@@ -107,6 +118,38 @@ const CheckoutPage = () => {
                             required
                         />
 
+                        {/* ✅ THÊM LỰA CHỌN PHƯƠNG THỨC THANH TOÁN */}
+                        <h3>Payment Method</h3>
+                        <div className={styles.paymentMethodGroup}>
+                            <label className={styles.paymentMethodOption}>
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="vnpay"
+                                    checked={paymentMethod === "vnpay"}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                />
+                                <div className={styles.radioLabel}>
+                                    <strong>💳 Pay Now with VNPay</strong>
+                                    <p>Redirect to VNPay for instant payment</p>
+                                </div>
+                            </label>
+
+                            <label className={styles.paymentMethodOption}>
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="later"
+                                    checked={paymentMethod === "later"}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                />
+                                <div className={styles.radioLabel}>
+                                    <strong>🕐 Pay Later</strong>
+                                    <p>Create order and pay anytime from Order History</p>
+                                </div>
+                            </label>
+                        </div>
+
                         {error && <p className={styles.error}>{error}</p>}
                         
                         <button
@@ -114,7 +157,9 @@ const CheckoutPage = () => {
                             className={styles.payButton}
                             disabled={loading || cart.items.length === 0}
                         >
-                            {loading ? "Processing..." : "Pay with VNPay"}
+                            {loading ? "Processing..." : (
+                                paymentMethod === "vnpay" ? "Proceed to VNPay" : "Place Order"
+                            )}
                         </button>
                     </form>
                 </div>
