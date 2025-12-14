@@ -6,6 +6,7 @@ const CacheManager = require('../utils/cacheManager');
 
 const { BadRequestError } = require('../errors/BadRequestError');
 const { NotFoundError } = require("../errors/NotFoundError");
+const { ConflictError } = require("../errors/ConflictError");
 
 async function getProducts(query) {
     const cached = await CacheManager.getProducts(query);
@@ -203,6 +204,12 @@ async function addProduct(productData) {
             });
 
             // Create variants
+            const skus = variants.map(v => v.sku);
+            const existedSkus = (await productRepository.getVariantsBySkus(skus)).map(v => v.sku);
+            if (existedSkus.length > 0) {
+                throw new ConflictError(`Sku existed: ${existedSkus}`);
+            }
+
             const _variants = variants.map(variant => {
                 return {
                     ...variant,
@@ -340,9 +347,13 @@ async function updateProductVariant(product_id, product_variant_id, variantData)
     if (!product)
         throw new NotFoundError("Product not found");
 
-    const productVariant = await productRepository.getProductVariantById(product_variant_id, prisma);
+    const productVariant = await productRepository.getProductVariantById(product_variant_id, prismaClient);
     if (!productVariant || productVariant.product_id !== product_id)
         throw new NotFoundError("Product variant not found");
+
+    if ((await productRepository.getVariantsBySkus([sku])).length > 0) {
+        throw new ConflictError("Sku existed");
+    }
 
     const image_urls = image_indexes.map(i => product.image_urls[i]).filter(e => e);
     const newData = { sku, raw_price, stock_quantity, image_urls, options };
