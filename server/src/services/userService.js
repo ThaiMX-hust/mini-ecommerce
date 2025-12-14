@@ -5,14 +5,21 @@ const cloudinaryService = require('./cloudinaryService');
 const { PrismaClient } = require('@prisma/client');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { ForbiddenError } = require('../errors/ForbiddenError');
+const { ConflictError } = require("../errors/ConflictError");
 
 const prisma = new PrismaClient();
 
 async function registerUser(userData) {
+    if (await userRepository.getUserByEmail(userData.email))
+        throw new ConflictError("Email already exists");
+
     const password_hash = await hashPassword(userData.password);
 
     const avatarFile = userData.avatarFile;
-    const avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
+
+    let avatar_url;
+    if (avatarFile)
+        avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
 
     const newUser = await prisma.user.create({
         data: {
@@ -53,10 +60,15 @@ async function registerUser(userData) {
 }
 
 async function registerAdmin(userData) {
-    const password_hash = await hashPassword(userData.password);
+    if (await userRepository.getUserByEmail(userData.email))
+        throw new ConflictError("Email already exists");
 
+    const password_hash = await hashPassword(userData.password);
     const avatarFile = userData.avatarFile;
-    const avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
+
+    let avatar_url;
+    if (avatarFile)
+        avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
 
     const newUser = await prisma.user.create({
         data: {
@@ -82,7 +94,7 @@ async function registerAdmin(userData) {
 async function getUserById(user_id) {
     const user = await userRepository.getUserById(user_id);
     if (!user)
-        return null;
+        throw new NotFoundError("User not found");
 
     return {
         user_id: user.user_id,
@@ -104,9 +116,12 @@ async function updateUser(user_id, userData) {
     if (!user)
         throw new NotFoundError("User not found");
 
-    if (user.avatar_url)
-        await cloudinaryService.deleteImage(user.avatar_url);
-    const avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
+    let avatar_url;
+    if (avatarFile) {
+        if (user.avatar_url)
+            await cloudinaryService.deleteImage(user.avatar_url);
+        avatar_url = await cloudinaryService.uploadImage(avatarFile.buffer, "avatars");
+    }
 
     const updated_user = await userRepository.updateUser(user_id, { first_name, last_name, avatar_url });
 

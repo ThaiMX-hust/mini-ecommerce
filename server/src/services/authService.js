@@ -4,7 +4,6 @@ const cartRepository = require('../repositories/cartRepository');
 const userService = require('./userService');
 const emailService = require('./emailService');
 const { NotFoundError } = require('../errors/NotFoundError');
-const { redisClient } = require('../infrastructure/redis');
 const { UnauthorizeError } = require('../errors/UnauthorizeError');
 const { BadRequestError } = require('../errors/BadRequestError');
 const { ForbiddenError } = require('../errors/ForbiddenError');
@@ -12,18 +11,19 @@ const { ForbiddenError } = require('../errors/ForbiddenError');
 async function loginUser(email, password) {
     const user = await userService.getUserWithPasswordByEmail(email);
     if (!user) {
-        throw new UnauthorizeError("Invalid email or password", 401);
+        throw new UnauthorizeError("Invalid email or password");
     }
 
-    if (user.locked)
+    if (user.locked) {
         throw new ForbiddenError("Account is locked");
+    }
 
     const cart = await cartRepository.getCartFromUserId(user.user_id);
 
     const password_hash = user.password_hash;
     const isPasswordValid = await verifyPassword(password, password_hash);
     if (!isPasswordValid) {
-        throw new UnauthorizeError("Invalid email or password", 401);
+        throw new UnauthorizeError("Invalid email or password");
     }
 
     const token = jwt.sign(
@@ -52,29 +52,26 @@ async function loginUser(email, password) {
 async function changePassword(user_id, old_password, new_password) {
     const user = await userService.getUserWithPasswordById(user_id);
     if (!user)
-        return false;
+        throw new NotFoundError("User not found");
 
     let password_hash = user.password_hash;
     const isPasswordValid = await verifyPassword(old_password, password_hash);
     if (!isPasswordValid)
-        return false;
+        throw new BadRequestError("Wrong password");
 
     password_hash = await hashPassword(new_password);
     await userService.updatePassword(user_id, password_hash);
-    return true;
 }
 
 async function requestPasswordReset(email) {
     const user = await userService.getUserByEmail(email);
     if (!user)
-        return false;
+        throw new NotFoundError("User not found");
 
     const user_id = user.user_id;
     const token = jwt.sign({ user_id }, process.env.JWT_SECRET, { expiresIn: '15m' });
 
     await emailService.sendResetPasswordEmail(email, token);
-
-    return true;
 }
 
 async function resetPassword(token, new_password) {
@@ -82,13 +79,11 @@ async function resetPassword(token, new_password) {
     try {
         user_id = jwt.verify(token, process.env.JWT_SECRET).user_id;
     } catch (error) {
-        return false;
+        throw new BadRequestError("Invalid or expired token");
     }
 
     const password_hash = await hashPassword(new_password);
     await userService.updatePassword(user_id, password_hash);
-
-    return true;
 }
 
 module.exports = {

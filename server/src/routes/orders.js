@@ -15,4 +15,6 @@ router.get('/all', authenticate, requireAdmin, orderController.getAllOrders);
 
 router.get('/:order_id/detail', authenticate, requireAdmin, orderController.getOrderDetail);
 
+router.post('/:order_id/cancel', authenticate, orderController.cancelOrder);
+
 module.exports = router;

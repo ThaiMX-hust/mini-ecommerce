@@ -72,7 +72,7 @@ async function addExistingItemToCartById(cart_id, cart_item_id, quantity = 1) {
     if (!currentItem) throw new Error('Cart item not found');
 
     if (quantity > currentItem.product_variant.stock_quantity)
-        throw new OutOfStockError("Out of stock", 400);
+        throw new OutOfStockError("Out of stock");
 
     const newQuantity = currentItem.quantity + quantity;
     if (newQuantity <= 0) {
@@ -120,10 +120,10 @@ async function updateItemQuantityFromCartById(cart_id, cart_item_id, quantity) {
 
 
 async function addNewItemToCartById(cart_id, product_variant_id, quantity = 1) {
-    const productVariant = await productRepository.getProductVariantById(prisma, product_variant_id);
+    const productVariant = await productRepository.getProductVariantById(product_variant_id, prisma);
 
     if (quantity > productVariant.stock_quantity)
-        throw new OutOfStockError("Out of stock", 400);
+        throw new OutOfStockError("Out of stock");
 
     const rawUnitPrice = Number(productVariant.raw_price);
     const finalUnitPrice = Number(productVariant.final_price ?? rawUnitPrice);
@@ -204,7 +204,7 @@ async function deleteItemFromCartById(cart_id, cart_item_id) {
     });
 
     if (!item) {
-        throw new NotFoundError('Cart item not found or does not belong to this cart', 404);
+        throw new NotFoundError('Cart item not found or does not belong to this cart');
     }
 
     const deletedItem = await prisma.cartItems.delete({
@@ -239,7 +239,7 @@ async function getCartItems(cart_id) {
     });
 
     if (!cartItems) {
-        throw new NotFoundError("This cart_id does not exist or has been deleted", 404);
+        throw new NotFoundError("This cart_id does not exist or has been deleted");
     }
 
     return cartItems;

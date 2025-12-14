@@ -8,129 +8,126 @@ const CacheManager = require('../utils/cacheManager');
 async function createOrder(user_id, cart_id, receiver_name, phone, address) {
     const cart = await cartService.getCart(cart_id);
     const cartItems = cart.items;
-    try {
-        const result = await orderRepository.getPrismaClientInstance().$transaction(async (tx) => {
-            if (!cart || cartItems.length === 0) {
-                throw new EmptyCartError("Cart is empty!", 400);
-            }
 
-            let rawTotal = 0;
-            let finalTotal = 0;
-            const adjustmentRecords = [];
+    if (!cart || cartItems.length === 0) {
+        throw new EmptyCartError("Cart is empty!");
+    }
 
-            for (const item of cartItems) {
-                const variant = item.variant;
-                const quantity = item.quantity;
+    const result = await orderRepository.getPrismaClientInstance().$transaction(async (tx) => {
+        let rawTotal = 0;
+        let finalTotal = 0;
+        const adjustmentRecords = [];
 
-                const currentQuantity = await tx.productVariant.findUnique({
-                    where: { product_variant_id: variant.product_variant_id }
-                });
+        for (const item of cartItems) {
+            const variant = item.variant;
+            const quantity = item.quantity;
 
-                if (quantity > currentQuantity) {
-                    throw new OutOfStockError(`Product id ${variant.product_variant_id} out of stock`, 400);
-                }
-
-                //Using optimistic lock
-                const updated = await tx.productVariant.updateMany({
-                    where: {
-                        product_variant_id: variant.product_variant_id,
-                        version: variant.version,
-                        stock_quantity: { gte: quantity },
-                    },
-                    data: {
-                        stock_quantity: { decrement: quantity },
-                        version: { increment: 1 },
-                    },
-                });
-
-                if (updated.count === 0) {
-                    throw new BadRequestError(`Stock conflict or outdated version for ${variant.product_variant_id}`, 400);
-                }
-            }
-
-
-            const activeAdjustments = await orderRepository.getAdjustmentsByCartId(tx, cart_id);
-            for (const adj of activeAdjustments) {
-                let discountValue = 0;
-                if (adj.value_type === "PERCENT") {
-                    discountValue = (finalTotal * Number(adj.value)) / 100;
-                } else if (adj.value_type === "AMOUNT") {
-                    discountValue = Number(adj.value);
-                }
-                finalTotal = Math.max(finalTotal - discountValue, 0);
-                adjustmentRecords.push({
-                    adjustment_type: adj.adjustment_type,
-                    value_type: adj.value_type,
-                    value: adj.value,
-                    applied_amount: discountValue,
-                    reason: adj.reason || "Auto-applied",
-                });
-            }
-
-            //Create order
-            const order = await tx.order.create({
-                data: {
-                    receiver_name,
-                    phone,
-                    address,
-                    raw_total_price: cart.total_price,
-                    final_total_price: cart.total_price_after_discount,
-                    user_id: user_id,
-                    items: {
-                        create: cart.items.map((item) => ({
-                            product_variant_id: item.variant.product_variant_id,
-                            quantity: item.quantity,
-                            unit_price: item.variant.raw_price,
-                            promotion: item.variant.final_price - item.variant.raw_price,
-                            final_price: item.variant.final_price,
-                            subtotal: item.subtotal_before_discount,
-                        })),
-                    },
-                },
-                include: { items: true },
+            const currentQuantity = await tx.productVariant.findUnique({
+                where: { product_variant_id: variant.product_variant_id }
             });
 
-            const createStatus = await orderRepository.getStatusByCode("CREATED");
-            const createdStatusHistory = await orderRepository.createNewStatusToHistory(tx, order.order_id, "CREATED", user_id, "Đơn hàng được tạo");
-
-            if (adjustmentRecords.length > 0) {
-                await Promise.all(
-                    adjustmentRecords.map((adj) =>
-                        tx.adjustment.updateMany({
-                            where: { cart_id },
-                            data: {
-                                order_id: order.order_id,
-                                adjustment_type: adj.adjustment_type,
-                                value_type: adj.value_type,
-                                value: adj.value,
-                                applied_amount: adj.applied_amount,
-                                reason: adj.reason,
-                            },
-                        })
-                    )
-                );
+            if (quantity > currentQuantity) {
+                throw new OutOfStockError(`Product id ${variant.product_variant_id} out of stock`);
             }
 
-            if (order) {
-                await tx.cartItems.deleteMany({
-                    where: { cart_id }
-                });
+            //Using optimistic lock
+            const updated = await tx.productVariant.updateMany({
+                where: {
+                    product_variant_id: variant.product_variant_id,
+                    version: variant.version,
+                    stock_quantity: { gte: quantity },
+                },
+                data: {
+                    stock_quantity: { decrement: quantity },
+                    version: { increment: 1 },
+                },
+            });
 
-                await CacheManager.clearCart(cart_id);
+            if (updated.count === 0) {
+                throw new BadRequestError(`Stock conflict or outdated version for ${variant.product_variant_id}`);
             }
+        }
 
-            return {
-                order: order,
-                create_status: createStatus,
-                create_status_history: createdStatusHistory
-            };
+
+        const activeAdjustments = await orderRepository.getAdjustmentsByCartId(tx, cart_id);
+        for (const adj of activeAdjustments) {
+            let discountValue = 0;
+            if (adj.value_type === "PERCENT") {
+                discountValue = (finalTotal * Number(adj.value)) / 100;
+            } else if (adj.value_type === "AMOUNT") {
+                discountValue = Number(adj.value);
+            }
+            finalTotal = Math.max(finalTotal - discountValue, 0);
+            adjustmentRecords.push({
+                adjustment_type: adj.adjustment_type,
+                value_type: adj.value_type,
+                value: adj.value,
+                applied_amount: discountValue,
+                reason: adj.reason || "Auto-applied",
+            });
+        }
+
+        //Create order
+        const order = await tx.order.create({
+            data: {
+                receiver_name,
+                phone,
+                address,
+                raw_total_price: cart.total_price,
+                final_total_price: cart.total_price_after_discount,
+                user_id: user_id,
+                items: {
+                    create: cart.items.map((item) => ({
+                        product_variant_id: item.variant.product_variant_id,
+                        quantity: item.quantity,
+                        unit_price: item.variant.raw_price,
+                        promotion: item.variant.final_price - item.variant.raw_price,
+                        final_price: item.variant.final_price,
+                        subtotal: item.subtotal_before_discount,
+                    })),
+                },
+            },
+            include: { items: true },
         });
 
-        return formatOrderResponse(result.order, cartItems, result.create_status, result.create_status_history);
-    } catch (err) {
-        console.error("Create order failed:", err);
-        throw err;
-    }
+        const createStatus = await orderRepository.getStatusByCode("CREATED");
+        const createdStatusHistory =
+            await orderRepository.createNewStatusToHistory(tx, order.order_id, "CREATED", user_id, "Đơn hàng được tạo");
+
+        if (adjustmentRecords.length > 0) {
+            await Promise.all(
+                adjustmentRecords.map((adj) =>
+                    tx.adjustment.updateMany({
+                        where: { cart_id },
+                        data: {
+                            order_id: order.order_id,
+                            adjustment_type: adj.adjustment_type,
+                            value_type: adj.value_type,
+                            value: adj.value,
+                            applied_amount: adj.applied_amount,
+                            reason: adj.reason,
+                        },
+                    })
+                )
+            );
+        }
+
+        if (order) {
+            await tx.cartItems.deleteMany({
+                where: { cart_id }
+            });
+
+            await CacheManager.clearCart(cart_id);
+        }
+
+        return {
+            order: order,
+            create_status: createStatus,
+            create_status_history: createdStatusHistory
+        };
+    });
+
+    return formatOrderResponse(result.order, cartItems, result.create_status, result.create_status_history);
 }
 
 async function getOrders(user_id) {
@@ -310,18 +307,14 @@ async function getOrderFromId(order_id) {
 }
 
 async function updateOrderStatus(order_id, status_code, changed_by, note = null) {
-    if (!status_code) {
-        throw new BadRequestError("Invalid status", 400);
-    }
-
     const status = await orderRepository.getStatusByCode(status_code);
     if (!status) {
-        throw new NotFoundError(`Status code ${status_code} not found. Please add this code before you can use it`, 404);
+        throw new NotFoundError(`Status code ${status_code} not found. Please add this code before you can use it`);
     }
 
     const order = await getOrderFromId(order_id);
     if (!order) {
-        throw new NotFoundError(`Order not found`, 404);
+        throw new NotFoundError(`Order not found`);
     }
 
     const prisma = orderRepository.getPrismaClientInstance();
@@ -468,10 +461,27 @@ async function getOrderDetail(order_id) {
     };
 }
 
+async function cancelOrder(user_id, order_id, reason) {
+    const order = await orderRepository.getWithStatus(order_id);
+    if (!order)
+        throw new NotFoundError("Order not found");
+
+    if (order.user_id !== user_id)
+        throw new NotFoundError("Order not found");
+
+    const status = order.history.reduce((latest, o) => o.changed_at > latest.changed_at ? o : latest).status;
+    if (status.order_status_code !== "CREATED")
+        throw new BadRequestError("The order has been paid");
+
+    const prisma = orderRepository.getPrismaClientInstance();
+    await orderRepository.createNewStatusToHistory(prisma, order_id, "CANCELLED", user_id, reason);
+}
+
 module.exports = {
     createOrder,
     getOrders,
     updateOrderStatus,
     getAllOrders,
-    getOrderDetail
+    getOrderDetail,
+    cancelOrder
 };
