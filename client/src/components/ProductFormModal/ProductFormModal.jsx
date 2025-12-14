@@ -268,9 +268,7 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
         formData.append("description", product.description.trim());
 
         // Append categories as JSON array string
-        product.categories.forEach((category) => {
-          formData.append("categories[]", category);
-        });
+        formData.append("categories", JSON.stringify(product.categories));
 
         formData.append("is_disabled", product.is_disabled);
 
@@ -292,8 +290,8 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
       console.error("Error response:", err.response?.data);
       setError(
         err.response?.data?.error ||
-          err.message ||
-          "Đã có lỗi xảy ra. Vui lòng kiểm tra lại dữ liệu."
+        err.message ||
+        "Đã có lỗi xảy ra. Vui lòng kiểm tra lại dữ liệu."
       );
     } finally {
       setIsLoading(false);
@@ -626,8 +624,8 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
                 {isLoading
                   ? "Đang lưu..."
                   : mode === "create"
-                  ? "Tạo mới"
-                  : "Cập nhật"}
+                    ? "Tạo mới"
+                    : "Cập nhật"}
               </button>
             )}
           </div>
