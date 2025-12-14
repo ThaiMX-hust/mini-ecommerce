@@ -20,9 +20,9 @@ import ChangePasswordPage from "./components/ChangePasswordPage/ChangePasswordPa
 // Admin Page
 import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
 import AdminLayout from "./components/Admin/AdminLayout/AdminLayout";
-// import ProductManagement from './pages/Admin/ProductManagement/ProductManagement';
-// import OrderManagement from './pages/Admin/OrderManagement/OrderManagement';
-// import CategoryManagement from './pages/Admin/CategoryManagement/CategoryManagement';
+import ProductManagement from "./pages/Admin/ProductManagement/ProductManagement";
+import OrderManagement from "./pages/Admin/OrderManagement/OrderManagement";
+import CategoryManagement from "./pages/Admin/CategoryManagement/CategoryManagement";
 
 function App() {
   return (
@@ -53,6 +53,9 @@ function App() {
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
+          <Route path="products" element={<ProductManagement />} />
+          <Route path="categories" element={<CategoryManagement />} />
+          <Route path="orders" element={<OrderManagement />} />
         </Route>
       </Routes>
     </BrowserRouter>

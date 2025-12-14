@@ -45,3 +45,42 @@ export const getAllCategories = async () => {
 export const getAllPossibleCategories = () => {
   return Object.entries(CATEGORY_MAP).map(([code, name]) => ({ code, name }));
 };
+
+/**
+ * Fetches all categories.
+ * Note: The API might need a dedicated endpoint like GET /api/categories.
+ * We'll assume one exists for this admin page.
+ * @returns {Promise<object>}
+ */
+export const getAllCategoriesAdmin = () => {
+  // Assuming the backend provides a GET /categories endpoint. If not, this needs adjustment.
+  return api.get("/categories");
+};
+
+/**
+ * Creates one or more new categories.
+ * @param {Array<object>} categoriesData - Array of category objects to create.
+ * @returns {Promise<object>}
+ */
+export const createCategories = (categoriesData) => {
+  return api.post("/categories", { categories: categoriesData });
+};
+
+/**
+ * Updates a specific category.
+ * @param {string} categoryId - The ID of the category to update.
+ * @param {object} categoryData - The new data for the category.
+ * @returns {Promise<object>}
+ */
+export const updateCategory = (categoryId, categoryData) => {
+  return api.patch(`/categories/${categoryId}`, categoryData);
+};
+
+/**
+ * Deletes a specific category.
+ * @param {string} categoryId - The ID of the category to delete.
+ * @returns {Promise<object>}
+ */
+export const deleteCategory = (categoryId) => {
+  return api.delete(`/categories/${categoryId}`);
+};
