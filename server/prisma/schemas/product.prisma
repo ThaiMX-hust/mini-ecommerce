@@ -10,7 +10,6 @@ model Product {
   restored_at       DateTime?
   ProductCategories ProductCategories[]
   ProductOption     ProductOption[]
-  ProductPromotions ProductPromotions[]
   ProductVariant    ProductVariant[]
   Review            Review[]
 
