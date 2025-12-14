@@ -262,32 +262,26 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
 
         await createProduct(formData);
       } else {
-        // EDIT MODE - Check if we actually have data to send
-        if (
-          !product.name ||
-          !product.description ||
-          !product.categories.length
-        ) {
-          setError("Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.");
-          setIsLoading(false);
-          return;
-        }
+        // EDIT MODE - Use FormData (backend requires multipart/form-data)
+        const formData = new FormData();
+        formData.append("name", product.name.trim());
+        formData.append("description", product.description.trim());
 
-        // EDIT MODE - Use JSON only for basic product info
-        const updateData = {
-          name: product.name.trim(),
-          description: product.description.trim(),
-          categories: product.categories,
-          is_disabled: product.is_disabled,
-        };
+        // Append categories as JSON array string
+        product.categories.forEach((category) => {
+          formData.append("categories[]", category);
+        });
+
+        formData.append("is_disabled", product.is_disabled);
 
         console.log("EDIT - Product ID:", productId);
-        console.log(
-          "EDIT - Sending data:",
-          JSON.stringify(updateData, null, 2)
-        );
+        console.log("EDIT - Form Data:");
+        console.log("  name:", product.name.trim());
+        console.log("  description:", product.description.trim());
+        console.log("  categories:", product.categories);
+        console.log("  is_disabled:", product.is_disabled);
 
-        const response = await updateProduct(productId, updateData);
+        const response = await updateProduct(productId, formData);
         console.log("EDIT - Response:", response.data);
       }
 

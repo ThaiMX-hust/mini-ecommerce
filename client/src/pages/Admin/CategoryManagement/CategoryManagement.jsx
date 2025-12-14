@@ -31,7 +31,8 @@ const CategoryManagement = () => {
     setIsLoading(true);
     try {
       const response = await getAllCategoriesAdmin();
-      setCategories(response.data.categories || []);
+      // API returns array directly, not wrapped in an object
+      setCategories(response.data || []);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
       setError("Could not load categories.");
