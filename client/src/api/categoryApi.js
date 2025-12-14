@@ -1,3 +1,5 @@
+import api from "../api";
+
 // Bản đồ để chuyển code thành tên. Đây là "nguồn sự thật" của chúng ta.
 const CATEGORY_MAP = {
   CAT_COAT: "Áo Khoác",
