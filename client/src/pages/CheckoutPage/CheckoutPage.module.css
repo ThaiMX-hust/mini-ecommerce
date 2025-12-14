@@ -1,4 +1,3 @@
-
 .container {
   max-width: 1000px;
   margin: 40px auto;
@@ -113,4 +112,52 @@
     grid-row-start: 1; /* Đảo tóm tắt đơn hàng lên đầu */
     margin-bottom: 30px;
   }
+}
+
+.paymentMethodGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.paymentMethodOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.paymentMethodOption:hover {
+  border-color: #667eea;
+  background-color: #f8f9ff;
+}
+
+.paymentMethodOption input[type="radio"] {
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.paymentMethodOption input[type="radio"]:checked + .radioLabel {
+  color: #667eea;
+}
+
+.radioLabel {
+  flex: 1;
+}
+
+.radioLabel strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1rem;
+}
+
+.radioLabel p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
 }

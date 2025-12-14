@@ -89,6 +89,10 @@ class CacheManager {
         return this.set(this.key.productsList(query), data, this.TTL.PRODUCTS)
     }
 
+    async clearProduct(id){
+        return this.del(this.key.product(id))
+    }
+
     /** CART */
     async getCart(id) {
         return this.get(this.key.cart(id));

@@ -1,76 +1,56 @@
-const e = require('express')
-const { BadRequestError } = require('../errors/BadRequestError')
-const categoryService = require('../services/categoryService')
-const { NotFoundError } = require('../errors/NotFoundError')
+const categoryService = require('../services/categoryService');
+
+const { BadRequestError } = require('../errors/BadRequestError');
 
 const getCategories = async (req, res) => {
-    try {
-        const result = await categoryService.getCategoryList();
-        return res.status(200).json(result);
-    } catch (error) {
-        console.error("Error getting category list: ", error);
-        return res.status(500).json({error: "Internal server error"});
-    }
-}
+    const result = await categoryService.getCategoryList();
+    return res.status(200).json(result);
+};
 
 const getCategoryDetail = async (req, res) => {
-    try {
-        const category_id = req.params.category_id;
-        const result = await categoryService.getCategoryById(category_id);
-        return res.status(200).json(result);
-    } catch (error) {
-        console.error("Error getting category detail: ", error);
-        return res.status(500).json({error: "Internal server error"});
-    }
-}
+    const category_id = req.params.category_id;
+    const result = await categoryService.getCategoryById(category_id);
+    return res.status(200).json(result);
+};
 
 const createCategories = async (req, res) => {
-    try {
-        const categories = req.body.categories
-        const created = await categoryService.createCategories(categories)
-
-        return res.status(201).json(created)
-
-    } catch (error){
-        if(error instanceof BadRequestError){
-            return res.status(400).json({error: error.message})
-        } else {
-            return res.status(500).json({error: "Internal server error"})
-        }
+    const categories = req.body.categories;
+    if (!categories || categories.length === 0) {
+        throw new BadRequestError("Missing fields or invalid body");
     }
-}
+    categories.forEach(cat => {
+        if (!cat.category_name || !cat.category_code || !cat.category_description) {
+            throw new BadRequestError("Missing fields or invalid body");
+        }
+    });
+
+    const created = await categoryService.createCategories(categories);
+
+    return res.status(201).json(created);
+};
 
 const updateCategory = async (req, res) => {
-    try {
-        const category_id = req.params.category_id;
-        const payload = req.body;
+    const category_id = req.params.category_id;
+    const payload = req.body;
 
-        const updated = await categoryService.updateCategory(category_id, payload);
-
-        return res.status(200).json(updated);
-    } catch (error){
-        if (error instanceof BadRequestError || error instanceof NotFoundError){
-            return res.status(error.statusCode).json({error: error.message})
-        } else {
-            return res.status(500).json({error: "Internal server error"})
+    if (payload.category_code) {
+        const code = payload.category_code;
+        if (!/^[A-Z0-9_]+$/.test(code)) {
+            throw new BadRequestError("category_code must be uppercase alphanumeric");
         }
     }
-}
+
+    const updated = await categoryService.updateCategory(category_id, payload);
+
+    return res.status(200).json(updated);
+};
 
 const deleteCategory = async (req, res) => {
-    try {
-        const category_id = req.params.category_id
-        await categoryService.deleteCategory(category_id)
+    const category_id = req.params.category_id;
+    await categoryService.deleteCategory(category_id);
 
-        return res.status(204).send()
-    } catch (error){
-        if (error instanceof BadRequestError || error instanceof NotFoundError){
-            return res.status(error.statusCode).json({error: error.message})
-        } else {
-            return res.status(500).json({error: "Internal server error"})
-        }
-    }
-}
+    return res.status(204).send();
+};
 
 module.exports = {
     getCategories,
@@ -78,4 +58,4 @@ module.exports = {
     createCategories,
     updateCategory,
     deleteCategory
-}
+};

@@ -1,0 +1,127 @@
+[
+  {
+    "category_code": "CAT_TSHIRTS",
+    "category_name": "Tshirts",
+    "category_description": "Thời trang thuộc nhóm Tshirts."
+  },
+  {
+    "category_code": "CAT_SHIRTS",
+    "category_name": "Shirts",
+    "category_description": "Thời trang thuộc nhóm Shirts."
+  },
+  {
+    "category_code": "CAT_KURTAS",
+    "category_name": "Kurtas",
+    "category_description": "Thời trang thuộc nhóm Kurtas."
+  },
+  {
+    "category_code": "CAT_WATCHES",
+    "category_name": "Watches",
+    "category_description": "Thời trang thuộc nhóm Watches."
+  },
+  {
+    "category_code": "CAT_CASUAL_SHOES",
+    "category_name": "Casual Shoes",
+    "category_description": "Thời trang thuộc nhóm Casual Shoes."
+  },
+  {
+    "category_code": "CAT_HANDBAGS",
+    "category_name": "Handbags",
+    "category_description": "Thời trang thuộc nhóm Handbags."
+  },
+  {
+    "category_code": "CAT_TOPS",
+    "category_name": "Tops",
+    "category_description": "Thời trang thuộc nhóm Tops."
+  },
+  {
+    "category_code": "CAT_HEELS",
+    "category_name": "Heels",
+    "category_description": "Thời trang thuộc nhóm Heels."
+  },
+  {
+    "category_code": "CAT_SUNGLASSES",
+    "category_name": "Sunglasses",
+    "category_description": "Thời trang thuộc nhóm Sunglasses."
+  },
+  {
+    "category_code": "CAT_WALLETS",
+    "category_name": "Wallets",
+    "category_description": "Thời trang thuộc nhóm Wallets."
+  },
+  {
+    "category_code": "CAT_BELTS",
+    "category_name": "Belts",
+    "category_description": "Thời trang thuộc nhóm Belts."
+  },
+  {
+    "category_code": "CAT_SOCKS",
+    "category_name": "Socks",
+    "category_description": "Thời trang thuộc nhóm Socks."
+  },
+  {
+    "category_code": "CAT_FORMAL_SHOES",
+    "category_name": "Formal Shoes",
+    "category_description": "Thời trang thuộc nhóm Formal Shoes."
+  },
+  {
+    "category_code": "CAT_JEANS",
+    "category_name": "Jeans",
+    "category_description": "Thời trang thuộc nhóm Jeans."
+  },
+  {
+    "category_code": "CAT_SANDALS",
+    "category_name": "Sandals",
+    "category_description": "Thời trang thuộc nhóm Sandals."
+  },
+  {
+    "category_code": "CAT_BRIEFS",
+    "category_name": "Briefs",
+    "category_description": "Thời trang thuộc nhóm Briefs."
+  },
+  {
+    "category_code": "CAT_TROUSERS",
+    "category_name": "Trousers",
+    "category_description": "Thời trang thuộc nhóm Trousers."
+  },
+  {
+    "category_code": "CAT_BACKPACKS",
+    "category_name": "Backpacks",
+    "category_description": "Thời trang thuộc nhóm Backpacks."
+  },
+  {
+    "category_code": "CAT_EARRINGS",
+    "category_name": "Earrings",
+    "category_description": "Thời trang thuộc nhóm Earrings."
+  },
+  {
+    "category_code": "CAT_FLATS",
+    "category_name": "Flats",
+    "category_description": "Thời trang thuộc nhóm Flats."
+  },
+  {
+    "category_code": "CAT_FLIP_FLOPS",
+    "category_name": "Flip Flops",
+    "category_description": "Thời trang thuộc nhóm Flip Flops."
+  },
+  {
+    "category_code": "CAT_SAREES",
+    "category_name": "Sarees",
+    "category_description": "Thời trang thuộc nhóm Sarees."
+  },
+  {
+    "category_code": "CAT_DRESSES",
+    "category_name": "Dresses",
+    "category_description": "Thời trang thuộc nhóm Dresses."
+  },
+  {
+    "category_code": "CAT_TIES",
+    "category_name": "Ties",
+    "category_description": "Thời trang thuộc nhóm Ties."
+  },
+  {
+    "category_code": "CAT_SHORTS",
+    "category_name": "Shorts",
+    "category_description": "Thời trang thuộc nhóm Shorts."
+  }
+]

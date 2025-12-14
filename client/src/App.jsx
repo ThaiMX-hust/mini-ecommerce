@@ -13,11 +13,11 @@ import ProductDetailPage from "./pages/ProductDetailPage/ProductDetailPage";
 //import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import PaymentResultPage from "./pages/PaymentResultPage/PaymentResultPage";
-import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
+import OrderPage from "./pages/OrderPage/OrderPage";
 import EditProfilePage from "./components/EditProfilePage/EditProfilePage";
 import ChangePasswordPage from "./components/ChangePasswordPage/ChangePasswordPage";
 
-// Admin Page
+// Admin Pages
 import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
 import AdminLayout from "./components/Admin/AdminLayout/AdminLayout";
 import ProductManagement from "./pages/Admin/ProductManagement/ProductManagement";
@@ -46,7 +46,7 @@ function App() {
             />
             <Route path="/cart" element={<div>Cart Page</div>} />
             <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/order-history" element={<OrderHistoryPage />} />
+            <Route path="/orders" element={<OrderPage />} />
             <Route path="/payment-result" element={<PaymentResultPage />} />
           </Route>
         </Route>

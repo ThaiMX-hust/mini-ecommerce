@@ -115,7 +115,7 @@ const AccountPage = () => {
 
         {/* Card 2: Order History */}
         <DashboardCard
-          title="Order History"
+          title="My order"
           description="Track your orders"
           icon={<i className="fas fa-box-open"></i>}
         >
@@ -131,10 +131,10 @@ const AccountPage = () => {
             </p>
           </div>
           <button
-            onClick={() => navigate("/order-history")}
+            onClick={() => navigate("/orders")}
             className={styles.cardButton}
           >
-            View Orders
+            View All Orders  
           </button>
         </DashboardCard>
 

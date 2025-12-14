@@ -4,53 +4,42 @@ function getPrismaClientInstance() {
     return prisma;
 }
 
-async function getProducts(query, getDisabled = false, getDeleted = false, client = prisma) {
+async function getProducts(query, dd = false, client = prisma) {
     const { name, categories, min_price, max_price, page, limit } = query;
     const where = {
         AND: [
             name ? { name: { contains: name } } : {},
             categories && categories.length > 0
-                ? {
-                    ProductCategories: {
-                        some: {
-                            Category: {
-                                category_code: { in: categories },
-                            }
-                        }
-                    }
-                }
+                ? { ProductCategories: { some: { Category: { category_code: { in: categories }, } } } }
                 : {},
             min_price ? { ProductVariant: { some: { raw_price: { gte: min_price } } } } : {},
             max_price ? { ProductVariant: { some: { raw_price: { lte: max_price } } } } : {},
-            !getDisabled ? { is_disabled: false } : {},
-            !getDeleted ? { deleted_at: null } : {}
+            dd ? {} : { is_disabled: false, deleted_at: null }
         ]
     };
 
-    const count = await client.product.count({ where });
-    const products = await client.product.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        select: {
-            product_id: true,
-            name: true,
-            description: true,
-            image_urls: true,
-            ProductCategories: { select: { Category: {} } },
-            ProductVariant: { select: { raw_price: true } }
-        }
-    });
+    const [count, products] = await Promise.all([
+        client.product.count({ where }),
+        client.product.findMany({
+            where,
+            skip: (page - 1) * limit,
+            take: limit,
+            include: {
+                ProductCategories: { select: { Category: {} } },
+                ProductVariant: { select: { raw_price: true } }
+            }
+        })
+    ]);
+
     return { total_items: count, products };
 }
 
-async function getProductById(productId, getDisabled = false, getDeleted = false, client = prisma) {
+async function getProductById(productId, dd = false, client = prisma) {
     const product = await client.product.findFirst({
         where: {
             AND: [
                 { product_id: productId },
-                !getDisabled ? { is_disabled: false } : {},
-                !getDeleted ? { deleted_at: null } : {}
+                dd ? {} : { is_disabled: false, deleted_at: null }
             ]
         },
         include: {
@@ -61,7 +50,7 @@ async function getProductById(productId, getDisabled = false, getDeleted = false
             },
             ProductOption: { include: { ProductOptionValue: true } },
             ProductVariant: {
-                where: !getDisabled ? { is_disabled: false } : {},
+                where: dd ? {} : { is_disabled: false },
                 include: { ProductVariantOption: { include: { ProductOptionValue: true } } }
             }
         }
@@ -69,7 +58,7 @@ async function getProductById(productId, getDisabled = false, getDeleted = false
     return product;
 }
 
-async function getProductVariantById(client, product_variant_id) {
+async function getProductVariantById(product_variant_id, client = prisma) {
     const productVariant = await client.productVariant.findUnique({
         where: { product_variant_id },
         include: {
@@ -104,7 +93,7 @@ async function getProductVariantById(client, product_variant_id) {
     return productVariant;
 }
 
-async function getProductOptionById(client, product_option_id) {
+async function getProductOptionById(product_option_id, client = prisma) {
     return await client.productOption.findUnique({
         where: { product_option_id },
         include: {
@@ -127,7 +116,6 @@ async function getProductOptions(client, product_id) {
     return product?.ProductOption;
 }
 
-// Need transaction
 async function updateProductVariant(client, product_variant_id, variantData) {
     const { sku, raw_price, stock_quantity, image_urls, options } = variantData;
     const productVariant = await client.productVariant.update({
@@ -160,10 +148,9 @@ async function updateProductVariant(client, product_variant_id, variantData) {
         });
     }
 
-    return await getProductVariantById(client, product_variant_id);
+    return await getProductVariantById(product_variant_id, client);
 }
 
-// Need transaction
 async function updateProductOption(client, product_option_id, option_name, values) {
     await client.productOption.update({
         where: { product_option_id },
@@ -186,6 +173,7 @@ async function updateProductOption(client, product_option_id, option_name, value
         // Delete unused values
         const valuesToDelete = existingValues.filter(v => !values.includes(v.value)).map(v => v.option_value_id);
         if (valuesToDelete.length > 0) {
+            // Skip values used by variants
             const usedIds = await client.productVariantOption.findMany({
                 where: { option_value_id: { in: valuesToDelete } },
                 select: { option_value_id: true },
@@ -201,7 +189,7 @@ async function updateProductOption(client, product_option_id, option_name, value
         }
     }
 
-    return await getProductOptionById(client, product_option_id);
+    return await getProductOptionById(product_option_id, client);
 }
 
 async function createProduct(client, name, description, image_urls, is_disabled) {
@@ -307,7 +295,6 @@ async function createProductVariantsWithOptions(client, productId, variants) {
     return createdVariants.map(({ createdVariant, options }) => ({ ...createdVariant, options }));
 }
 
-// Need transaction
 async function updateProduct(client, product_id, productData) {
     const { name, description, categories, is_disabled, image_urls } = productData;
     const data = {};
@@ -328,7 +315,7 @@ async function updateProduct(client, product_id, productData) {
             product_id: true,
             name: true,
             description: true,
-            ProductCategories: { select: { category_id: true } },
+            ProductCategories: { select: { Category: { select: { category_code: true } } } },
             is_disabled: true,
             created_at: true,
             updated_at: true,
@@ -343,7 +330,7 @@ async function deleteProduct(product_id) {
     });
 }
 
-async function deleteProductVariant(client, product_variant_id) {
+async function deleteProductVariant(product_variant_id, client = prisma) {
     return await client.productVariant.delete({
         where: { product_variant_id }
     });

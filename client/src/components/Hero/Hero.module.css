@@ -1,98 +1,344 @@
 .heroSection {
-  padding: 40px 0;
-  background-color: #fff;
+  padding: 60px 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   overflow: hidden;
+  position: relative;
+}
+
+.heroSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)" /></svg>');
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .container {
-  max-width: 1400px; /* Tăng max-width để có không gian cho 3 cột */
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 15px;
-  display: flex;
-  justify-content: center;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  gap: 30px;
   align-items: center;
-  gap: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .heroImageContainer {
-  border-radius: 12px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.heroImageContainer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.2) 100%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.heroImageContainer:hover::after {
+  opacity: 1;
+}
+
+.heroImageContainer:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
 }
 
 .heroImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block; /* Loại bỏ khoảng trống thừa dưới ảnh */
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Cột trái và phải */
+.heroImageContainer:hover .heroImage {
+  transform: scale(1.1);
+}
+
+/* Left and Right columns */
 #left,
 #right {
-  flex: 1; /* Chia đều không gian còn lại */
-  max-width: 350px;
-  height: 600px;
+  height: 650px;
+  animation: fadeInScale 1s ease-out;
 }
 
-/* Cột giữa */
+/* Center column */
 .heroCenter {
-  flex: 1.2; /* Lớn hơn một chút */
-  max-width: 500px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 25px;
+  animation: fadeInUp 1s ease-out 0.2s both;
 }
 
 .smallImage {
-  height: 150px;
+  height: 180px;
 }
 
-/* Phần nội dung SALE */
+#top {
+  animation: fadeInDown 1s ease-out 0.3s both;
+}
+
+#bottom {
+  animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+/* Sale Content */
 .saleContent {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 40px 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 20px;
+  padding: 60px 30px;
   text-align: center;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.saleContent::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .mainHeading {
-  font-family: "Montserrat", sans-serif; /* Sử dụng một font mạnh mẽ, hiện đại */
-  font-size: 6rem;
-  font-weight: 800;
-  line-height: 1;
-  color: #222;
+  font-family: 'Montserrat', 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 900;
+  line-height: 0.9;
+  color: #111;
   margin: 0;
+  letter-spacing: -2px;
+  position: relative;
+  z-index: 1;
+  text-transform: uppercase;
+  animation: slideInLeft 0.8s ease-out;
 }
 
 .outline {
   color: transparent;
-  -webkit-text-stroke: 2px #222;
+  -webkit-text-stroke: 3px #111;
+  text-stroke: 3px #111;
+  animation: slideInRight 0.8s ease-out;
 }
 
 .subHeading {
-  font-size: 1rem;
-  letter-spacing: 4px;
-  color: #555;
-  margin: 20px 0;
+  font-size: 1.1rem;
+  letter-spacing: 6px;
+  color: #666;
+  margin: 25px 0;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 1s ease-out 0.4s both;
 }
 
 .shopButton {
   display: inline-block;
-  padding: 15px 45px;
-  background-color: #111;
+  padding: 18px 50px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
   text-decoration: none;
   font-weight: 700;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
+  font-size: 1rem;
+  border-radius: 50px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  letter-spacing: 2px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.shopButton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.shopButton:hover::before {
+  opacity: 1;
 }
 
 .shopButton:hover {
-  background-color: #333;
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+}
+
+.shopButton span {
+  position: relative;
+  z-index: 1;
+}
+
+/* Animations */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .container {
+    grid-template-columns: 1fr 1.3fr 1fr;
+    gap: 20px;
+  }
+
+  #left,
+  #right {
+    height: 550px;
+  }
+}
+
+@media (max-width: 992px) {
+  .heroSection {
+    padding: 40px 0;
+  }
+
+  .container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  #left,
+  #right {
+    height: 400px;
+    display: none;
+  }
+
+  .heroCenter {
+    max-width: 100%;
+  }
+
+  .smallImage {
+    height: 150px;
+  }
+
+  .saleContent {
+    padding: 50px 25px;
+  }
+
+  .mainHeading {
+    font-size: 4rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .heroSection {
+    padding: 30px 0;
+  }
+
+  .container {
+    padding: 0 15px;
+  }
+
+  .saleContent {
+    padding: 40px 20px;
+  }
+
+  .mainHeading {
+    font-size: 3rem;
+  }
+
+  .subHeading {
+    font-size: 0.9rem;
+    letter-spacing: 4px;
+  }
+
+  .shopButton {
+    padding: 15px 40px;
+    font-size: 0.9rem;
+  }
 }

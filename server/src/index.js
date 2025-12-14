@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const errorHandler = require('./errors/errorHandler');
 const { redisClient } = require('./infrastructure/redis');
 const { mongooseClient } = require('./infrastructure/mongo');
 
@@ -30,6 +31,8 @@ app.use('/api/v1/payments', require('./routes/payment'));
 app.use('/api/v1/refunds', require('./routes/refunds'));
 
 app.use('/api/v1/stats', require('./routes/stats'));
+
+app.use(errorHandler);
 
 (async () => {
     await redisClient();
