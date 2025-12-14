@@ -1,20 +1,21 @@
-enum PromotionStatus {
-    DRAFT
-    RUNNING
-    EXPIRED
-    ARCHIVED
+model ProductPromotions {
+  promotion_id          String            @id @default(uuid())
+  product_id            String
+  promotion_name        String
+  promotion_description String?
+  promotion_type        ValueDiscountType
+  promotion_status      PromotionStatus
+  start_at              DateTime
+  end_at                DateTime
+  promotion_metadata    Json
+  product               Product           @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+
+  @@index([product_id], map: "ProductPromotions_product_id_fkey")
 }
 
-model ProductPromotions {
-    promotion_id          String            @id @default(uuid())
-    product_id            String
-    promotion_name        String
-    promotion_description String?
-    promotion_type        ValueDiscountType
-    promotion_metadata    Json
-    promotion_status      PromotionStatus
-    start_at              DateTime
-    end_at                DateTime
-
-    product Product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+enum PromotionStatus {
+  DRAFT
+  RUNNING
+  EXPIRED
+  ARCHIVED
 }
