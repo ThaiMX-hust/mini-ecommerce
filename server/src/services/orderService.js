@@ -4,6 +4,7 @@ const orderRepository = require('../repositories/ordersRepository');
 const cacheManager = require('../utils/cacheManager');
 const cartService = require('./cartService');
 const CacheManager = require('../utils/cacheManager');
+const { ForbiddenError } = require('../errors/ForbiddenError');
 
 async function createOrder(user_id, cart_id, receiver_name, phone, address) {
     const cart = await cartService.getCart(cart_id);
@@ -461,13 +462,14 @@ async function getOrderDetail(order_id) {
     };
 }
 
-async function cancelOrder(user_id, order_id, reason) {
+async function cancelOrder(user_id, order_id, reason, role) {
     const order = await orderRepository.getWithStatus(order_id);
     if (!order)
         throw new NotFoundError("Order not found");
 
-    if (order.user_id !== user_id)
-        throw new NotFoundError("Order not found");
+    if (order.user_id !== user_id && role !== 'ADMIN') {
+        throw new ForbiddenError("Cannot perform this operation")
+    }
 
     const status = order.history.reduce((latest, o) => o.changed_at > latest.changed_at ? o : latest).status;
     if (status.order_status_code !== "CREATED")
