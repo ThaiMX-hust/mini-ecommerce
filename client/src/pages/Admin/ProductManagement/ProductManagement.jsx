@@ -40,10 +40,14 @@ const ProductManagement = () => {
     productId: null,
   });
 
-  const fetchProducts = useCallback(async (page, name) => {
+  const fetchProducts = useCallback(async (page, searchQuery) => {
     setIsLoading(true);
     try {
-      const params = { limit: 4, page, name: name || undefined };
+      const params = {
+        limit: 4,
+        page,
+        search: searchQuery || undefined,
+      };
       const data = await getAllProducts(params);
       setProducts(data.items || []);
       setPagination({

@@ -35,7 +35,7 @@ const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.sidePanel} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h2 className={styles.title}>Order Details</h2>
           <button onClick={onClose} className={styles.closeButton}>

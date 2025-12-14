@@ -288,8 +288,8 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
       console.error("Error response:", err.response?.data);
       setError(
         err.response?.data?.error ||
-        err.message ||
-        "Đã có lỗi xảy ra. Vui lòng kiểm tra lại dữ liệu."
+          err.message ||
+          "Đã có lỗi xảy ra. Vui lòng kiểm tra lại dữ liệu."
       );
     } finally {
       setIsLoading(false);
@@ -560,7 +560,7 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h2>
-            {mode === "create" ? "Chỉnh sửa sản phẩm" : "Chỉnh sửa sản phẩm"}
+            {mode === "create" ? "Thêm sản phẩm mới" : "Chỉnh sửa sản phẩm"}
           </h2>
           <button onClick={onClose} className={styles.closeButton}>
             ×
@@ -622,8 +622,8 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
                 {isLoading
                   ? "Đang lưu..."
                   : mode === "create"
-                    ? "Tạo mới"
-                    : "Cập nhật"}
+                  ? "Tạo mới"
+                  : "Cập nhật"}
               </button>
             )}
           </div>

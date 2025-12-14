@@ -61,7 +61,8 @@ const OrderManagement = () => {
         name: debouncedSearch || undefined,
       };
 
-      const data = await getAllOrders(params);
+      const response = await getAllOrders(params);
+      const data = response.data;
       setOrders(data.orders || []);
       setPagination({
         currentPage: data.page,
