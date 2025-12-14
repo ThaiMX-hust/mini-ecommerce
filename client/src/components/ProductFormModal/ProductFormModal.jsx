@@ -228,36 +228,34 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
     try {
       if (mode === "create") {
         // CREATE MODE - Use FormData with metadata
-        const metadata = {
-          name: product.name,
-          description: product.description,
-          categories: product.categories,
-          is_disabled: product.is_disabled,
-          options: product.options
-            .filter((o) => o.name && o.values.length > 0)
-            .map((o) => ({
-              option_name: o.name,
-              values: o.values,
-            })),
-          variants: product.variants.map((v) => ({
-            sku: v.sku,
-            raw_price: String(v.price), // Ensure it's a string
-            stock_quantity: parseInt(v.stock) || 0,
-            is_disabled: v.is_disabled || false,
-            image_indexes: [],
-            options: Object.entries(v.options).map(([key, value]) => ({
-              option_name: key,
-              value,
-            })),
-          })),
-        };
-
         const formData = new FormData();
-        formData.append("metadata", JSON.stringify(metadata));
-
-        console.log(
-          "CREATE - Sending metadata:",
-          JSON.stringify(metadata, null, 2)
+        formData.append("name", product.name);
+        formData.append("description", product.description);
+        formData.append("categories", JSON.stringify(product.categories));
+        formData.append("is_disabled", String(product.is_disabled));
+        formData.append(
+          "options",
+          JSON.stringify(
+            product.options
+              .filter((o) => o.name && o.values.length > 0)
+              .map((o) => ({ option_name: o.name, values: o.values }))
+          )
+        );
+        formData.append(
+          "variants",
+          JSON.stringify(
+            product.variants.map((v) => ({
+              sku: v.sku,
+              raw_price: String(v.price),
+              stock_quantity: String(v.stock_quantity || v.stock || 0),
+              is_disabled: String(v.is_disabled || false),
+              image_indexes: v.image_indexes || [],
+              options: Object.entries(v.options).map(([key, value]) => ({
+                option_name: key,
+                value,
+              })),
+            }))
+          )
         );
 
         await createProduct(formData);
