@@ -2,17 +2,27 @@
   {
     "name": "Classic Polo Men Printed pack of 3 Tshirts",
     "description": "Men Apparel Topwear (Grey)",
-    "categories": ["CAT_TSHIRTS"],
-    "is_disabled": false,
-    "image_urls": [],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black", "Blue", "Brown", "Grey"]
+        "values": [
+          "Black",
+          "Blue",
+          "Brown",
+          "Grey"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -123,15 +133,24 @@
   {
     "name": "United Colors of Benetton Women Solid Brown Handbags",
     "description": "Women Accessories Bags (Brown)",
-    "categories": ["CAT_HANDBAGS"],
+    "categories": [
+      "CAT_HANDBAGS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Brown"]
+        "values": [
+          "Brown"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -208,15 +227,25 @@
   {
     "name": "Catwalk Women Brown Wedges",
     "description": "Women Footwear Shoes (Brown)",
-    "categories": ["CAT_HEELS"],
+    "categories": [
+      "CAT_HEELS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Bronze", "Brown"]
+        "values": [
+          "Bronze",
+          "Brown"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -327,15 +356,24 @@
   {
     "name": "Angry Birds Women White T-shirt",
     "description": "Women Apparel Topwear (White)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -395,15 +433,24 @@
   {
     "name": "FNF Green Sari",
     "description": "Women Apparel Saree (Green)",
-    "categories": ["CAT_SAREES"],
+    "categories": [
+      "CAT_SAREES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Green"]
+        "values": [
+          "Green"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -514,15 +561,24 @@
   {
     "name": "Gini and Jony Boys United White T-shirt",
     "description": "Boys Apparel Topwear (White)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -633,15 +689,24 @@
   {
     "name": "French Connection Women Black Dress",
     "description": "Women Apparel Dress (Black)",
-    "categories": ["CAT_DRESSES"],
+    "categories": [
+      "CAT_DRESSES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -735,15 +800,24 @@
   {
     "name": "Stoln Women Black Belt",
     "description": "Women Accessories Belts (Black)",
-    "categories": ["CAT_BELTS"],
+    "categories": [
+      "CAT_BELTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -854,15 +928,25 @@
   {
     "name": "FNF Multi Coloured Sari",
     "description": "Women Apparel Saree (White)",
-    "categories": ["CAT_SAREES"],
+    "categories": [
+      "CAT_SAREES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Multi", "White"]
+        "values": [
+          "Multi",
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -973,15 +1057,24 @@
   {
     "name": "Gini and Jony Boys Surfs Up Black T-shirt",
     "description": "Boys Apparel Topwear (Black)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1041,15 +1134,24 @@
   {
     "name": "Proline Men Olive Green Polo T-shirt",
     "description": "Men Apparel Topwear (Olive)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Olive"]
+        "values": [
+          "Olive"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1109,15 +1211,24 @@
   {
     "name": "HM Women Brown Heels",
     "description": "Women Footwear Shoes (Brown)",
-    "categories": ["CAT_HEELS"],
+    "categories": [
+      "CAT_HEELS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Brown"]
+        "values": [
+          "Brown"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1194,15 +1305,24 @@
   {
     "name": "John Miller Men Striped Blue Shirt",
     "description": "Men Apparel Topwear (Blue)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1313,15 +1433,24 @@
   {
     "name": "Elle Women Blue Jeans",
     "description": "Women Apparel Bottomwear (Blue)",
-    "categories": ["CAT_JEANS"],
+    "categories": [
+      "CAT_JEANS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1398,15 +1527,24 @@
   {
     "name": "BIBA Women Ethnic White Kurta",
     "description": "Women Apparel Topwear (White)",
-    "categories": ["CAT_KURTAS"],
+    "categories": [
+      "CAT_KURTAS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1483,15 +1621,24 @@
   {
     "name": "Turtle Men Check Purple Shirt",
     "description": "Men Apparel Topwear (Purple)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Purple"]
+        "values": [
+          "Purple"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1568,15 +1715,24 @@
   {
     "name": "Guess Men Chase Steel Watch",
     "description": "Men Accessories Watches (Steel)",
-    "categories": ["CAT_WATCHES"],
+    "categories": [
+      "CAT_WATCHES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Steel"]
+        "values": [
+          "Steel"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1636,15 +1792,24 @@
   {
     "name": "Catwalk Women Casual Beige Flats",
     "description": "Women Footwear Shoes (Beige)",
-    "categories": ["CAT_HEELS"],
+    "categories": [
+      "CAT_HEELS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Beige"]
+        "values": [
+          "Beige"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1738,15 +1903,24 @@
   {
     "name": "Puma Men Grey T-shirt",
     "description": "Men Apparel Topwear (Grey)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Grey"]
+        "values": [
+          "Grey"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1857,15 +2031,24 @@
   {
     "name": "FNF Blue Printed Sari",
     "description": "Women Apparel Saree (Blue)",
-    "categories": ["CAT_SAREES"],
+    "categories": [
+      "CAT_SAREES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -1976,15 +2159,24 @@
   {
     "name": "Lino Perros Men Brown Wallet",
     "description": "Men Accessories Wallets (Brown)",
-    "categories": ["CAT_WALLETS"],
+    "categories": [
+      "CAT_WALLETS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Brown"]
+        "values": [
+          "Brown"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2044,15 +2236,24 @@
   {
     "name": "Carlton London Men Black Formal Shoes",
     "description": "Men Footwear Shoes (Black)",
-    "categories": ["CAT_FORMAL_SHOES"],
+    "categories": [
+      "CAT_FORMAL_SHOES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2129,15 +2330,24 @@
   {
     "name": "United Colors of Benetton Women Pink T-shirt",
     "description": "Women Apparel Topwear (Pink)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Pink"]
+        "values": [
+          "Pink"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2248,15 +2458,24 @@
   {
     "name": "Vishudh Women Maroon Kurta",
     "description": "Women Apparel Topwear (Maroon)",
-    "categories": ["CAT_KURTAS"],
+    "categories": [
+      "CAT_KURTAS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Maroon"]
+        "values": [
+          "Maroon"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2316,15 +2535,24 @@
   {
     "name": "Puma Men Pop Art Black Flip Flops",
     "description": "Men Footwear Flip Flops (Black)",
-    "categories": ["CAT_FLIP_FLOPS"],
+    "categories": [
+      "CAT_FLIP_FLOPS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2384,15 +2612,24 @@
   {
     "name": "Enroute Men Leather Black Casual Shoes",
     "description": "Men Footwear Shoes (Black)",
-    "categories": ["CAT_CASUAL_SHOES"],
+    "categories": [
+      "CAT_CASUAL_SHOES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2452,15 +2689,25 @@
   {
     "name": "Highlander Men Solid Blue Trouser",
     "description": "Men Apparel Bottomwear (Blue)",
-    "categories": ["CAT_TROUSERS"],
+    "categories": [
+      "CAT_TROUSERS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue", "Navy Blue"]
+        "values": [
+          "Blue",
+          "Navy Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2520,15 +2767,25 @@
   {
     "name": "Mark Taylor Men Brown Striped Shirt",
     "description": "Men Apparel Topwear (Brown)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Brown", "Purple"]
+        "values": [
+          "Brown",
+          "Purple"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2639,15 +2896,24 @@
   {
     "name": "Locomotive Men Printed White T-shirt",
     "description": "Men Apparel Topwear (White)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2758,15 +3024,24 @@
   {
     "name": "Spykar Women Black Top",
     "description": "Women Apparel Topwear (Black)",
-    "categories": ["CAT_TOPS"],
+    "categories": [
+      "CAT_TOPS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2826,15 +3101,24 @@
   {
     "name": "Basics Men Black Slim Fit Checked Shirt",
     "description": "Men Apparel Topwear (Black)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2911,15 +3195,24 @@
   {
     "name": "Probase Men Printed White Tshirts",
     "description": "Men Apparel Topwear (White)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -2996,15 +3289,24 @@
   {
     "name": "Gini and Jony Girls Printed Blue Top",
     "description": "Girls Apparel Topwear (Blue)",
-    "categories": ["CAT_TOPS"],
+    "categories": [
+      "CAT_TOPS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3064,15 +3366,24 @@
   {
     "name": "Highlander Men Check Red Shirt",
     "description": "Men Apparel Topwear (Red)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Red"]
+        "values": [
+          "Red"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3183,15 +3494,24 @@
   {
     "name": "Arrow Men Black Shoes",
     "description": "Men Footwear Shoes (Black)",
-    "categories": ["CAT_CASUAL_SHOES"],
+    "categories": [
+      "CAT_CASUAL_SHOES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3268,15 +3588,24 @@
   {
     "name": "ALayna Women Red Kurta",
     "description": "Women Apparel Topwear (Red)",
-    "categories": ["CAT_KURTAS"],
+    "categories": [
+      "CAT_KURTAS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Red"]
+        "values": [
+          "Red"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3336,15 +3665,24 @@
   {
     "name": "W Women Solid White Kurtas",
     "description": "Women Apparel Topwear (White)",
-    "categories": ["CAT_KURTAS"],
+    "categories": [
+      "CAT_KURTAS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3404,15 +3742,24 @@
   {
     "name": "Myntra Men Grey T-shirt",
     "description": "Men Apparel Topwear (Grey)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Grey"]
+        "values": [
+          "Grey"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3472,15 +3819,24 @@
   {
     "name": "Park Avenue Men Black Tie",
     "description": "Men Accessories Ties (Black)",
-    "categories": ["CAT_TIES"],
+    "categories": [
+      "CAT_TIES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3557,15 +3913,24 @@
   {
     "name": "Idee Men Steel Sunglasses",
     "description": "Men Accessories Eyewear (Steel)",
-    "categories": ["CAT_SUNGLASSES"],
+    "categories": [
+      "CAT_SUNGLASSES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Steel"]
+        "values": [
+          "Steel"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3676,15 +4041,24 @@
   {
     "name": "ADIDAS Men Navy Blue T-shirt",
     "description": "Men Apparel Topwear (Navy Blue)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Navy Blue"]
+        "values": [
+          "Navy Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3795,15 +4169,24 @@
   {
     "name": "Gini and Jony Boys Polo Black T-Shirt",
     "description": "Boys Apparel Topwear (Black)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3863,15 +4246,24 @@
   {
     "name": "Park Avenue Men Brown Frame Sunglasses",
     "description": "Men Accessories Eyewear (Brown)",
-    "categories": ["CAT_SUNGLASSES"],
+    "categories": [
+      "CAT_SUNGLASSES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Brown"]
+        "values": [
+          "Brown"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -3931,15 +4323,24 @@
   {
     "name": "Maxima Women White Dial Watch",
     "description": "Women Accessories Watches (White)",
-    "categories": ["CAT_WATCHES"],
+    "categories": [
+      "CAT_WATCHES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4050,15 +4451,24 @@
   {
     "name": "Kiara Women Peach Handbag",
     "description": "Women Accessories Bags (Peach)",
-    "categories": ["CAT_HANDBAGS"],
+    "categories": [
+      "CAT_HANDBAGS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Peach"]
+        "values": [
+          "Peach"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4152,15 +4562,24 @@
   {
     "name": "Red Chief Men Brown Shoes",
     "description": "Men Footwear Shoes (Brown)",
-    "categories": ["CAT_CASUAL_SHOES"],
+    "categories": [
+      "CAT_CASUAL_SHOES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Brown"]
+        "values": [
+          "Brown"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4271,15 +4690,24 @@
   {
     "name": "Gini and Jony Girls Printed White Top",
     "description": "Girls Apparel Topwear (White)",
-    "categories": ["CAT_TOPS"],
+    "categories": [
+      "CAT_TOPS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4390,15 +4818,24 @@
   {
     "name": "John Miller Men Solid Blue Shirts",
     "description": "Men Apparel Topwear (Blue)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4458,15 +4895,24 @@
   {
     "name": "United Colors of Benetton Men White T-shirt",
     "description": "Men Apparel Topwear (White)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4543,15 +4989,24 @@
   {
     "name": "French Connection Women Peach Top",
     "description": "Women Apparel Topwear (Peach)",
-    "categories": ["CAT_TOPS"],
+    "categories": [
+      "CAT_TOPS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Peach"]
+        "values": [
+          "Peach"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4611,15 +5066,25 @@
   {
     "name": "Wrangler Men Blue Millard Jeans",
     "description": "Men Apparel Bottomwear (Blue)",
-    "categories": ["CAT_JEANS"],
+    "categories": [
+      "CAT_JEANS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue", "Mixed"]
+        "values": [
+          "Blue",
+          "Mixed"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4696,15 +5161,24 @@
   {
     "name": "Titan Women Raga Mother Of Pearl Dial Watch",
     "description": "Women Accessories Watches (Gold)",
-    "categories": ["CAT_WATCHES"],
+    "categories": [
+      "CAT_WATCHES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Gold"]
+        "values": [
+          "Gold"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4764,15 +5238,24 @@
   {
     "name": "Wildcraft Unisex Blue Backpack",
     "description": "Unisex Accessories Bags (Blue)",
-    "categories": ["CAT_BACKPACKS"],
+    "categories": [
+      "CAT_BACKPACKS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4883,15 +5366,24 @@
   {
     "name": "Puma Unisex Black Flip Flops",
     "description": "Unisex Footwear Flip Flops (Black)",
-    "categories": ["CAT_FLIP_FLOPS"],
+    "categories": [
+      "CAT_FLIP_FLOPS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -4951,15 +5443,24 @@
   {
     "name": "Doodle Kids Boy  Beige Shorts",
     "description": "Men Apparel Bottomwear (Beige)",
-    "categories": ["CAT_SHORTS"],
+    "categories": [
+      "CAT_SHORTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Beige"]
+        "values": [
+          "Beige"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5019,15 +5520,24 @@
   {
     "name": "Timberland Men Casual Brown Casual Shoes",
     "description": "Men Footwear Shoes (Brown)",
-    "categories": ["CAT_CASUAL_SHOES"],
+    "categories": [
+      "CAT_CASUAL_SHOES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Brown"]
+        "values": [
+          "Brown"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5121,15 +5631,24 @@
   {
     "name": "Nike Men Sweet Classic Leather White Shoes",
     "description": "Men Footwear Shoes (White)",
-    "categories": ["CAT_CASUAL_SHOES"],
+    "categories": [
+      "CAT_CASUAL_SHOES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5189,15 +5708,24 @@
   {
     "name": "Playboy Men Casual Blue Slippers",
     "description": "Men Footwear Flip Flops (Blue)",
-    "categories": ["CAT_FLIP_FLOPS"],
+    "categories": [
+      "CAT_FLIP_FLOPS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5257,15 +5785,24 @@
   {
     "name": "Lucera Women Silver Earrings",
     "description": "Women Accessories Jewellery (Silver)",
-    "categories": ["CAT_EARRINGS"],
+    "categories": [
+      "CAT_EARRINGS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Silver"]
+        "values": [
+          "Silver"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5376,15 +5913,24 @@
   {
     "name": "Genesis Men Stripes Blue Shirts",
     "description": "Men Apparel Topwear (Blue)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5444,15 +5990,24 @@
   {
     "name": "French Connection Women Orange Top",
     "description": "Women Apparel Topwear (Orange)",
-    "categories": ["CAT_TOPS"],
+    "categories": [
+      "CAT_TOPS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Orange"]
+        "values": [
+          "Orange"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5512,15 +6067,24 @@
   {
     "name": "Quiksilver Men Red Check Shirt",
     "description": "Men Apparel Topwear (Red)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Red"]
+        "values": [
+          "Red"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5580,15 +6144,24 @@
   {
     "name": "FNF Red Printed Sari",
     "description": "Women Apparel Saree (Red)",
-    "categories": ["CAT_SAREES"],
+    "categories": [
+      "CAT_SAREES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Red"]
+        "values": [
+          "Red"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5682,15 +6255,24 @@
   {
     "name": "Jealous 21 Women Printed White T-shirt",
     "description": "Women Apparel Topwear (White)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5784,15 +6366,24 @@
   {
     "name": "Gini and Jony Boys Surfs Up Grey T-shirt",
     "description": "Boys Apparel Topwear (Grey)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Grey"]
+        "values": [
+          "Grey"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5852,15 +6443,24 @@
   {
     "name": "Gini and Jony Girls Pretty Blossom Blue Top",
     "description": "Girls Apparel Topwear (Blue)",
-    "categories": ["CAT_TOPS"],
+    "categories": [
+      "CAT_TOPS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -5920,15 +6520,25 @@
   {
     "name": "Puma Men Pack of 3 Sports Socks",
     "description": "Men Accessories Socks (White)",
-    "categories": ["CAT_SOCKS"],
+    "categories": [
+      "CAT_SOCKS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black", "White"]
+        "values": [
+          "Black",
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -6039,15 +6649,24 @@
   {
     "name": "Kiara Women Grey Handbag",
     "description": "Women Accessories Bags (Grey)",
-    "categories": ["CAT_HANDBAGS"],
+    "categories": [
+      "CAT_HANDBAGS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Grey"]
+        "values": [
+          "Grey"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -6158,15 +6777,25 @@
   {
     "name": "Fabindia Women Printed Pink Kurta",
     "description": "Women Apparel Topwear (Pink)",
-    "categories": ["CAT_KURTAS"],
+    "categories": [
+      "CAT_KURTAS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Pink", "White"]
+        "values": [
+          "Pink",
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -6243,15 +6872,24 @@
   {
     "name": "United Colors of Benetton Women Solid Black Wallets",
     "description": "Women Accessories Wallets (Black)",
-    "categories": ["CAT_WALLETS"],
+    "categories": [
+      "CAT_WALLETS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -6362,15 +7000,24 @@
   {
     "name": "Adrika White Earrings",
     "description": "Women Accessories Jewellery (White)",
-    "categories": ["CAT_EARRINGS"],
+    "categories": [
+      "CAT_EARRINGS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -6464,15 +7111,24 @@
   {
     "name": "Elle Women Red Top",
     "description": "Women Apparel Topwear (Red)",
-    "categories": ["CAT_TOPS"],
+    "categories": [
+      "CAT_TOPS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Red"]
+        "values": [
+          "Red"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -6549,15 +7205,24 @@
   {
     "name": "Gini and Jony Boys Printed Navy Blue T-shirt",
     "description": "Boys Apparel Topwear (Navy Blue)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Navy Blue"]
+        "values": [
+          "Navy Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -6651,15 +7316,24 @@
   {
     "name": "Park Avenue Men Blue Tie",
     "description": "Men Accessories Ties (Blue)",
-    "categories": ["CAT_TIES"],
+    "categories": [
+      "CAT_TIES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -6770,15 +7444,24 @@
   {
     "name": "Rocia Women Silver Sandals",
     "description": "Women Footwear Shoes (Silver)",
-    "categories": ["CAT_FLATS"],
+    "categories": [
+      "CAT_FLATS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Silver"]
+        "values": [
+          "Silver"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -6855,15 +7538,24 @@
   {
     "name": "Arrow Woman White Shirt",
     "description": "Women Apparel Topwear (White)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -6923,15 +7615,24 @@
   {
     "name": "Fabindia Women Ananya Silver Earrings",
     "description": "Women Accessories Jewellery (Silver)",
-    "categories": ["CAT_EARRINGS"],
+    "categories": [
+      "CAT_EARRINGS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Silver"]
+        "values": [
+          "Silver"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7042,15 +7743,24 @@
   {
     "name": "Nike Men Black Shoes",
     "description": "Men Footwear Shoes (Black)",
-    "categories": ["CAT_CASUAL_SHOES"],
+    "categories": [
+      "CAT_CASUAL_SHOES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7127,15 +7837,24 @@
   {
     "name": "John Miller Men White Shirt",
     "description": "Men Apparel Topwear (White)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7246,15 +7965,24 @@
   {
     "name": "Manchester United Men Printed Red Tshirt",
     "description": "Men Apparel Topwear (Red)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Red"]
+        "values": [
+          "Red"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7348,15 +8076,24 @@
   {
     "name": "W Women Floral Print Off White Kurta",
     "description": "Women Apparel Topwear (Off White)",
-    "categories": ["CAT_KURTAS"],
+    "categories": [
+      "CAT_KURTAS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Off White"]
+        "values": [
+          "Off White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7416,15 +8153,24 @@
   {
     "name": "Catwalk Women Casual White Flats",
     "description": "Women Footwear Shoes (White)",
-    "categories": ["CAT_HEELS"],
+    "categories": [
+      "CAT_HEELS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7501,15 +8247,24 @@
   {
     "name": "Titan Men Chronograph Black Dial Watch",
     "description": "Men Accessories Watches (Black)",
-    "categories": ["CAT_WATCHES"],
+    "categories": [
+      "CAT_WATCHES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7620,15 +8375,24 @@
   {
     "name": "Peter England Men Black Wallet",
     "description": "Men Accessories Wallets (Black)",
-    "categories": ["CAT_WALLETS"],
+    "categories": [
+      "CAT_WALLETS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7739,15 +8503,24 @@
   {
     "name": "Park Avenue Men Black Belt",
     "description": "Men Accessories Belts (Black)",
-    "categories": ["CAT_BELTS"],
+    "categories": [
+      "CAT_BELTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7807,15 +8580,25 @@
   {
     "name": "Rocia Women Brown Flats",
     "description": "Women Footwear Shoes (Brown)",
-    "categories": ["CAT_FLATS"],
+    "categories": [
+      "CAT_FLATS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Brown", "Tan"]
+        "values": [
+          "Brown",
+          "Tan"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7892,15 +8675,24 @@
   {
     "name": "Bata Men Remo Black Formal Shoes",
     "description": "Men Footwear Shoes (Black)",
-    "categories": ["CAT_FORMAL_SHOES"],
+    "categories": [
+      "CAT_FORMAL_SHOES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -7977,15 +8769,24 @@
   {
     "name": "W Women Printed Green Kurtas",
     "description": "Women Apparel Topwear (Green)",
-    "categories": ["CAT_KURTAS"],
+    "categories": [
+      "CAT_KURTAS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Green"]
+        "values": [
+          "Green"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8096,15 +8897,24 @@
   {
     "name": "Carlton London Women Classy Black Sandals",
     "description": "Women Footwear Shoes (Black)",
-    "categories": ["CAT_FLATS"],
+    "categories": [
+      "CAT_FLATS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8198,15 +9008,25 @@
   {
     "name": "FNF Green Printed Evening Wear Sari",
     "description": "Women Apparel Saree (Green)",
-    "categories": ["CAT_SAREES"],
+    "categories": [
+      "CAT_SAREES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Green", "Multi"]
+        "values": [
+          "Green",
+          "Multi"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8266,15 +9086,24 @@
   {
     "name": "Clarks Men Brown Leather Sandals",
     "description": "Men Footwear Sandal (Brown)",
-    "categories": ["CAT_SANDALS"],
+    "categories": [
+      "CAT_SANDALS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Brown"]
+        "values": [
+          "Brown"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8351,15 +9180,24 @@
   {
     "name": "Maxima Men Blue Dial Watch",
     "description": "Men Accessories Watches (Blue)",
-    "categories": ["CAT_WATCHES"],
+    "categories": [
+      "CAT_WATCHES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8470,15 +9308,24 @@
   {
     "name": "Rreverie Silver & Green Earrings",
     "description": "Women Accessories Jewellery (Silver)",
-    "categories": ["CAT_EARRINGS"],
+    "categories": [
+      "CAT_EARRINGS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Silver"]
+        "values": [
+          "Silver"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8538,15 +9385,24 @@
   {
     "name": "Bulchee Women Brown Handbag",
     "description": "Women Accessories Bags (Brown)",
-    "categories": ["CAT_HANDBAGS"],
+    "categories": [
+      "CAT_HANDBAGS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Brown"]
+        "values": [
+          "Brown"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8623,15 +9479,24 @@
   {
     "name": "Alma Women Black Printed Kurta",
     "description": "Women Apparel Topwear (Black)",
-    "categories": ["CAT_KURTAS"],
+    "categories": [
+      "CAT_KURTAS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8725,15 +9590,24 @@
   {
     "name": "Gini and Jony Boys Printed White T-shirt",
     "description": "Boys Apparel Topwear (White)",
-    "categories": ["CAT_TSHIRTS"],
+    "categories": [
+      "CAT_TSHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["White"]
+        "values": [
+          "White"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8844,15 +9718,24 @@
   {
     "name": "Arrow Men Blue Check Shirt",
     "description": "Men Apparel Topwear (Blue)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Blue"]
+        "values": [
+          "Blue"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8912,15 +9795,24 @@
   {
     "name": "Flying Machine Men Check Green Shirts",
     "description": "Men Apparel Topwear (Green)",
-    "categories": ["CAT_SHIRTS"],
+    "categories": [
+      "CAT_SHIRTS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Green"]
+        "values": [
+          "Green"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -8980,15 +9872,24 @@
   {
     "name": "Lino Perros Women Leatherette Beige Handbag",
     "description": "Women Accessories Bags (Beige)",
-    "categories": ["CAT_HANDBAGS"],
+    "categories": [
+      "CAT_HANDBAGS"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Beige"]
+        "values": [
+          "Beige"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [
@@ -9099,15 +10000,24 @@
   {
     "name": "M tv Men My Fab Eyewear Black Sunglasses",
     "description": "Men Accessories Eyewear (Black)",
-    "categories": ["CAT_SUNGLASSES"],
+    "categories": [
+      "CAT_SUNGLASSES"
+    ],
     "options": [
       {
         "option_name": "Color",
-        "values": ["Black"]
+        "values": [
+          "Black"
+        ]
       },
       {
         "option_name": "Size",
-        "values": ["S", "M", "L", "XL"]
+        "values": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
       }
     ],
     "variants": [

@@ -1,23 +1,23 @@
 model Refund {
-  refund_id    String       @id @default(uuid())
-  order_id     String
-  reason       String
-  amount       Decimal      @db.Decimal(12, 2)
-  status       RefundStatus @default(PENDING)
-  created_at   DateTime     @default(now())
-  processed_at DateTime?
-  admin_id     String?
-  note         String?
-  admin        User?        @relation(fields: [admin_id], references: [user_id])
-  order        Order        @relation(fields: [order_id], references: [order_id])
+    refund_id       String          @id @default(uuid())
 
-  @@index([admin_id], map: "Refund_admin_id_fkey")
-  @@index([order_id], map: "Refund_order_id_fkey")
+    order_id        String
+    order           Order           @relation(fields: [order_id], references: [order_id], onDelete: Restrict)
+
+    reason          String
+    amount          Decimal         @db.Decimal(12,2)
+    status          RefundStatus    @default(PENDING)
+
+    created_at      DateTime        @default(now())
+    processed_at    DateTime?
+    admin_id        String?
+    admin           User?           @relation(fields: [admin_id], references: [user_id], onDelete: SetNull)
+    note            String?
 }
 
 enum RefundStatus {
-  PENDING
-  REJECTED
-  APPROVED
-  COMPLETED
+    PENDING
+    REJECTED
+    APPROVED
+    COMPLETED
 }
