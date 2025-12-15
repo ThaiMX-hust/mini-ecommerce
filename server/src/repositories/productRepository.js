@@ -256,6 +256,10 @@ async function createProductOptionsWithValues(client, productId, options) {
     }));
 }
 
+async function getVariantsBySkus(skus) {
+    return await prisma.productVariant.findMany({ where: { sku: { in: skus } } });
+}
+
 async function createProductVariantsWithOptions(client, productId, variants) {
     const createdVariants = await Promise.all(variants.map(async (variant) => {
         const { sku, raw_price, stock_quantity, image_urls, is_disabled, options } = variant;
@@ -397,5 +401,6 @@ module.exports = {
     addReview,
     getReviewsWithUserInfo,
     softDelete,
-    restore
+    restore,
+    getVariantsBySkus
 };

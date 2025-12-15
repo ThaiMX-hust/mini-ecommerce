@@ -80,6 +80,7 @@ const getOrderDetail = async (req, res) => {
 const cancelOrder = async (req, res) => {
     const order_id = req.params.order_id;
     const user_id = req.user.user_id;
+    const role = req.user.role
     let reason = req.body.reason;
 
     if (!reason)
@@ -87,7 +88,7 @@ const cancelOrder = async (req, res) => {
 
     reason = cleanText(reason);
 
-    await orderService.cancelOrder(user_id, order_id, reason);
+    await orderService.cancelOrder(user_id, order_id, reason, role)
     return res.status(200).send("Ok");
 };
 
