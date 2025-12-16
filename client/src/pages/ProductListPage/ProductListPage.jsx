@@ -19,7 +19,7 @@ const ProductListPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState("price-asc");
   
-  // ✅ State cho search query - đọc từ URL params
+  // State cho search query - đọc từ URL params
   const [searchQuery, setSearchQuery] = useState(() => {
     const params = new URLSearchParams(location.search);
     return params.get("search") || "";
@@ -34,7 +34,7 @@ const ProductListPage = () => {
     };
   });
 
-  // ✅ Update searchQuery khi URL thay đổi
+  //  Update searchQuery khi URL thay đổi
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const newSearchQuery = params.get("search") || "";
@@ -63,11 +63,11 @@ const ProductListPage = () => {
     fetchInitialData();
   }, []);
 
-  // ✅ LOGIC LỌC: Thêm search vào useMemo
+  // Thêm search vào useMemo
   const paginatedProducts = useMemo(() => {
     let filtered = [...allProducts];
 
-    // ✅ Lọc theo search query (tên sản phẩm)
+    //  Lọc theo search query (tên sản phẩm)
     if (searchQuery && searchQuery.trim()) {
       const lowerQuery = searchQuery.toLowerCase().trim();
       filtered = filtered.filter((product) =>
@@ -78,8 +78,10 @@ const ProductListPage = () => {
     // Lọc theo category
     if (filters.categories.length > 0) {
       filtered = filtered.filter((product) =>
-        filters.categories.some((catCode) =>
-          product.categories.includes(catCode)
+        filters.categories.some((selectedCatCode) =>
+          product.categories.some(
+            (productCat) => productCat.category_code === selectedCatCode
+        )
         )
       );
     }
@@ -107,7 +109,7 @@ const ProductListPage = () => {
       totalItems: filtered.length,
       totalPages: Math.ceil(filtered.length / ITEMS_PER_PAGE),
     };
-  }, [allProducts, filters, sort, currentPage, searchQuery]); // ✅ Thêm searchQuery vào dependencies
+  }, [allProducts, filters, sort, currentPage, searchQuery]); 
 
   const handleFilterChange = (filterName, value) => {
     setCurrentPage(1);
@@ -127,63 +129,67 @@ const ProductListPage = () => {
   const lastItemIndex = firstItemIndex + paginatedProducts.items.length - 1;
 
   return (
-    <>
-      {/* ✅ Hiển thị thông báo search */}
+    <div className={styles.pageWrapper}>
+      {/* Hiển thị thông báo search */}
       {searchQuery && searchQuery.trim() && (
         <div className={styles.searchInfoWrapper}>
-          <p className={styles.searchInfo}>
-            Showing results for: "<strong>{searchQuery}</strong>"
+          <div className={styles.searchInfo}>
+            🔍 Showing results for: "<strong>{searchQuery}</strong>"
             {paginatedProducts.totalItems === 0 && " - No products found"}
-          </p>
+          </div>
         </div>
       )}
+      
       <div className={styles.container}>
         <SidebarFilters
           filters={filters}
           onFilterChange={handleFilterChange}
           availableCategories={allCategories}
         />
+        
         <main className={styles.mainContent}>
           <div className={styles.header}>
-            <h1 className={styles.title}>
-              {searchQuery ? "Search Results" : "All Products"}
-            </h1>
-            <div className={styles.info}>
+            <div className={styles.titleSection}>
+              <h1 className={styles.title}>
+                {searchQuery ? "Search Results" : "All Products"}
+              </h1>
               {!isLoading && paginatedProducts.totalItems > 0 && (
-                <p>
+                <div className={styles.info}>
                   Showing {firstItemIndex}-{lastItemIndex} of{" "}
                   {paginatedProducts.totalItems} products
-                </p>
+                </div>
               )}
             </div>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className={styles.sortDropdown}
-            >
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-            </select>
+            
+            <div className={styles.headerControls}>
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className={styles.sortDropdown}
+                aria-label="Sort products"
+              >
+                <option value="price-asc">💰 Price: Low to High</option>
+                <option value="price-desc">💎 Price: High to Low</option>
+              </select>
+            </div>
           </div>
 
           {isLoading ? (
-            <p>Loading...</p>
+            <div className={styles.loadingContainer}>
+              <div className={styles.loadingSpinner}></div>
+              <p className={styles.loadingText}>Loading products...</p>
+            </div>
           ) : error ? (
-            <p className={styles.error}>{error}</p>
-          ) : (
+            <div className={styles.errorContainer}>
+              <span className={styles.errorIcon}>⚠️</span>
+              <p className={styles.error}>{error}</p>
+            </div>
+          ) : paginatedProducts.items.length > 0 ? (
             <>
               <div className={styles.productGrid}>
-                {paginatedProducts.items.length > 0 ? (
-                  paginatedProducts.items.map((product) => (
-                    <ProductCard key={product.product_id} product={product} />
-                  ))
-                ) : (
-                  <p className={styles.emptyMessage}>
-                    {searchQuery
-                      ? `No products found for "${searchQuery}"`
-                      : "No products match your filters."}
-                  </p>
-                )}
+                {paginatedProducts.items.map((product) => (
+                  <ProductCard key={product.product_id} product={product} />
+                ))}
               </div>
               <Pagination
                 pageCount={paginatedProducts.totalPages || 0}
@@ -191,10 +197,26 @@ const ProductListPage = () => {
                 currentPage={currentPage}
               />
             </>
+          ) : (
+            <div className={styles.emptyContainer}>
+              <div className={styles.emptyIcon}>
+                {searchQuery ? "🔍" : "📦"}
+              </div>
+              <p className={styles.emptyMessage}>
+                {searchQuery
+                  ? `No products found for "${searchQuery}"`
+                  : "No products match your filters"}
+              </p>
+              <p className={styles.emptyHint}>
+                {searchQuery
+                  ? "Try searching with different keywords"
+                  : "Try adjusting your filters to see more products"}
+              </p>
+            </div>
           )}
         </main>
       </div>
-    </>
+    </div>
   );
 };
 

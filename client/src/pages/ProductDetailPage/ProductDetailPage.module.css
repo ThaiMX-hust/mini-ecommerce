@@ -1,35 +1,64 @@
 .pageContainer {
-  max-width: 1200px;
-  margin: 40px auto;
-  background-color: #fff;
-  
-  /* Thêm khoảng đệm bên trong để nội dung không bị sát viền */
-  padding: 40px; 
-  
-  /* Bo tròn các góc để trông mềm mại hơn */
-  border-radius: 8px; 
-  
-  /* Thêm hiệu ứng đổ bóng nhẹ để tạo chiều sâu */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); 
-  
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
   animation: fadeIn 0.6s ease-in-out;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 30px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.breadcrumb a {
+  color: #667eea;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+  color: #764ba2;
+}
+
+.breadcrumb span {
+  color: #999;
 }
 
 .mainContent {  
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Bố cục 2 cột */
-  gap: 50px; /* Tăng khoảng cách giữa 2 cột */
-  margin-bottom: 50px;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 60px;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
 }
 
 /* === LOADING & ERROR STATES === */
 .loadingContainer, .errorContainer {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 60vh;
   font-size: 18px;
   color: #666;
+  gap: 20px;
+}
+
+.loadingContainer::before {
+  content: '';
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 .errorContainer {
@@ -37,22 +66,205 @@
   font-weight: 500;
 }
 
+.errorContainer::before {
+  content: '⚠️';
+  font-size: 48px;
+}
+
+/* === PRODUCT TABS === */
+.productTabs {
+  margin-top: 60px;
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+}
+
+.tabButtons {
+  display: flex;
+  gap: 20px;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 30px;
+}
+
+.tabButton {
+  padding: 15px 30px;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tabButton::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.tabButton:hover {
+  color: #667eea;
+}
+
+.tabButton.active {
+  color: #667eea;
+}
+
+.tabButton.active::after {
+  width: 100%;
+}
+
+.tabContent {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.description {
+  line-height: 1.8;
+  color: #555;
+  font-size: 1rem;
+}
+
+.description h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.description p {
+  margin-bottom: 15px;
+}
+
+/* === RELATED PRODUCTS === */
+.relatedProducts {
+  margin-top: 80px;
+  padding: 60px 0;
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 16px;
+}
+
+.relatedProducts h2 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #111;
+}
+
+.relatedProducts h2::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin: 20px auto 0;
+  border-radius: 2px;
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  padding: 0 40px;
+}
 
 /* === RESPONSIVE DESIGN === */
+@media (max-width: 1200px) {
+  .mainContent {
+    gap: 40px;
+    padding: 30px;
+  }
+
+  .productGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 992px) {
   .mainContent {
     grid-template-columns: 1fr;
     gap: 30px;
   }
+
+  .productGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .productTabs {
+    padding: 30px 20px;
+  }
+
+  .tabButtons {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .tabButtons::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 20px 15px;
+  }
+
+  .mainContent {
+    padding: 20px;
+  }
+
+  .breadcrumb {
+    font-size: 0.85rem;
+  }
+
+  .relatedProducts h2 {
+    font-size: 1.6rem;
+  }
+
+  .productGrid {
+    grid-template-columns: 1fr;
+    padding: 0 20px;
+  }
 }
 
 @media (max-width: 480px) {
-    .pageContainer {
-        padding: 0 15px;
-    }
+  .mainContent {
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .tabButton {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+
+  .productTabs {
+    padding: 20px 15px;
+    border-radius: 12px;
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

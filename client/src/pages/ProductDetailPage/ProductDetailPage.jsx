@@ -1,29 +1,30 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { getProductById, getProductReviews } from '../../api/productApi'
-import { useAppContext } from '../../contexts/AppContext'; // ✅ Import context
+import { useAppContext } from '../../contexts/AppContext';
 import styles from './ProductDetailPage.module.css';
 
 import ImageGallery from '../../components/ImageGallery/ImageGallery';
 import ProductInfo from '../../components/ProductInfo/ProductInfo';
 import ProductReviews from '../../components/ProductReviews/ProductReviews';
 
-const ProductDetailPage = () =>{
+const ProductDetailPage = () => {
     const { productId } = useParams();
-    const { addToCart, isAuthenticated } = useAppContext(); // ✅ Lấy từ context
+    const { addToCart, isAuthenticated } = useAppContext();
     
     const [productData, setProductData] = useState(null);
     const [selectedOptions, setSelectedOptions] = useState({});
-    const [activeVariant, setActiveVariant] = useState (null);
-    const [quantity, setQuantity] = useState (1);
-    const [loading, setLoading] = useState (true);
+    const [activeVariant, setActiveVariant] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [reviews, setReviews] = useState([]);
-    const [addingToCart, setAddingToCart] = useState(false); // ✅ Trạng thái đang thêm vào giỏ
+    const [addingToCart, setAddingToCart] = useState(false);
+    const [activeTab, setActiveTab] = useState('description'); // Tab state
 
     useEffect(() => {
-        const fetchProductData = async () =>{
-            try{
+        const fetchProductData = async () => {
+            try {
                 setLoading(true);
                 setError(null);
                 const [productResponse, reviewsResponse] = await Promise.all([
@@ -33,7 +34,7 @@ const ProductDetailPage = () =>{
                 const data = productResponse.data;
                 setProductData(data);
                 setReviews(reviewsResponse.data.reviews);
-                if(data.variants && data.variants.length > 0){
+                if (data.variants && data.variants.length > 0) {
                     const initialVariant = data.variants[0];
                     setActiveVariant(initialVariant);
                     const initialSelections = {};
@@ -42,21 +43,18 @@ const ProductDetailPage = () =>{
                     })
                     setSelectedOptions(initialSelections);
                 }
-            }
-            catch(error){
+            } catch (error) {
                 console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
-                setError('Failed to load data product. Please try again later.');
-            }
-            finally{
+                setError('Failed to load product data. Please try again later.');
+            } finally {
                 setLoading(false);
             }
         };
         fetchProductData();
-    },[productId]);
+    }, [productId]);
 
-    // Logic tim variant khi lua chon thay doi
     useEffect(() => {
-        if(!productData || !productData.variants) return;
+        if (!productData || !productData.variants) return;
 
         const newActiveVariant = productData.variants.find(variant => {
             return variant.options.every(variantOption => {
@@ -65,12 +63,10 @@ const ProductDetailPage = () =>{
                 return selectedOptions[optionId] === valueId;
             });
         });
-        setActiveVariant (newActiveVariant || null);
-        setQuantity(1); // reset quantity when variant changes
+        setActiveVariant(newActiveVariant || null);
+        setQuantity(1);
     }, [selectedOptions, productData]);
     
-    // Các hàm xử lý sự kiện
-
     const handleOptionSelect = (optionId, valueId) => {
         setSelectedOptions(prevSelections => ({
             ...prevSelections,
@@ -79,33 +75,28 @@ const ProductDetailPage = () =>{
     };
 
     const handleQuantityChange = (newQuantity) => {
-        if(activeVariant){
+        if (activeVariant) {
             setQuantity(Math.min(newQuantity, activeVariant.stock));
         }
     };
 
-    // ✅ Cập nhật hàm handleAddToCart
     const handleAddToCart = async () => {
-        // Kiểm tra đã đăng nhập chưa
         if (!isAuthenticated) {
             alert('You need to login to add products to cart!');
             window.location.href = '/login';
             return;
         }
 
-        // Kiểm tra đã chọn variant chưa
         if (!activeVariant) {
             alert('Please select all product options!');
             return;
         }
 
-        // Kiểm tra còn hàng không
         if (activeVariant.stock <= 0) {
             alert('This product is currently out of stock!');
             return;
         }
 
-        // Kiểm tra số lượng hợp lệ
         if (quantity <= 0 || quantity > activeVariant.stock) {
             alert(`Quantity must be between 1 and ${activeVariant.stock}!`);
             return;
@@ -113,20 +104,11 @@ const ProductDetailPage = () =>{
 
         try {
             setAddingToCart(true);
-            
-            // Gọi hàm addToCart từ context
             await addToCart(activeVariant.product_variant_id, quantity);
-            
-            // Thông báo thành công
             alert(`Added ${quantity} product(s) to the cart!`);
-            
-            // Reset số lượng về 1
             setQuantity(1);
-            
         } catch (error) {
             console.error('Error adding to cart:', error);
-            
-            // Handle specific error types
             if (error.response?.status === 401) {
                 alert('Your session has expired. Please log in again!');
                 window.location.href = '/login';
@@ -140,18 +122,30 @@ const ProductDetailPage = () =>{
         }
     };
 
-    if(loading){
-        return <div className={styles.loadingContainer}>Đang tải...</div>;
+    if (loading) {
+        return <div className={styles.loadingContainer}>Loading product...</div>;
     }
-    if(error){
+
+    if (error) {
         return <div className={styles.errorContainer}>{error}</div>;
     }
-    if(!productData){
-        return <div className={styles.errorContainer}>Không tìm thấy sản phẩm.</div>;
+
+    if (!productData) {
+        return <div className={styles.errorContainer}>Product not found</div>;
     }
 
     return (
         <div className={styles.pageContainer}>
+            {/* Breadcrumb */}
+            <nav className={styles.breadcrumb}>
+                <Link to="/">Home</Link>
+                <span>/</span>
+                <Link to="/products">Products</Link>
+                <span>/</span>
+                <span>{productData.name}</span>
+            </nav>
+
+            {/* Main Product Info */}
             <div className={styles.mainContent}>
                 <ImageGallery images={activeVariant ? activeVariant.images : []} />
                 <ProductInfo
@@ -162,10 +156,56 @@ const ProductDetailPage = () =>{
                     onOptionSelect={handleOptionSelect}
                     onQuantityChange={handleQuantityChange}
                     onAddToCart={handleAddToCart}
-                    isAddingToCart={addingToCart} // ✅ Truyền trạng thái loading
+                    isAddingToCart={addingToCart}
                 />
             </div>
-            <ProductReviews reviews={reviews} />
+
+            {/* Product Tabs */}
+            <div className={styles.productTabs}>
+                <div className={styles.tabButtons}>
+                    <button 
+                        className={`${styles.tabButton} ${activeTab === 'description' ? styles.active : ''}`}
+                        onClick={() => setActiveTab('description')}
+                    >
+                        Description
+                    </button>
+                    <button 
+                        className={`${styles.tabButton} ${activeTab === 'reviews' ? styles.active : ''}`}
+                        onClick={() => setActiveTab('reviews')}
+                    >
+                        Reviews ({reviews.length})
+                    </button>
+                    <button 
+                        className={`${styles.tabButton} ${activeTab === 'shipping' ? styles.active : ''}`}
+                        onClick={() => setActiveTab('shipping')}
+                    >
+                        Shipping Info
+                    </button>
+                </div>
+
+                <div className={styles.tabContent}>
+                    {activeTab === 'description' && (
+                        <div className={styles.description}>
+                            <h3>Product Description</h3>
+                            <p>{productData.description || 'No description available.'}</p>
+                        </div>
+                    )}
+                    
+                    {activeTab === 'reviews' && (
+                        <ProductReviews reviews={reviews} />
+                    )}
+                    
+                    {activeTab === 'shipping' && (
+                        <div className={styles.description}>
+                            <h3>Shipping Information</h3>
+                            <p>✅ Free shipping for orders over 500,000 VND</p>
+                            <p>🚚 Delivery within 3-5 business days</p>
+                            <p>📦 30-day return policy</p>
+                            <p>💳 Cash on delivery available</p>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };
