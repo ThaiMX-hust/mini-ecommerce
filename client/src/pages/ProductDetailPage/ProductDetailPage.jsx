@@ -1,12 +1,13 @@
 import { useParams, Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { getProductById, getProductReviews } from '../../api/productApi'
+import { getProductById, getProductReviews, getAllProducts } from '../../api/productApi'
 import { useAppContext } from '../../contexts/AppContext';
 import styles from './ProductDetailPage.module.css';
 
 import ImageGallery from '../../components/ImageGallery/ImageGallery';
 import ProductInfo from '../../components/ProductInfo/ProductInfo';
 import ProductReviews from '../../components/ProductReviews/ProductReviews';
+import ProductCard from '../../components/ProductCard/ProductCard'; // ✅ SỬA: ProductCart -> ProductCard
 
 const ProductDetailPage = () => {
     const { productId } = useParams();
@@ -19,8 +20,9 @@ const ProductDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [reviews, setReviews] = useState([]);
+    const [relatedProducts, setRelatedProducts] = useState([]);
     const [addingToCart, setAddingToCart] = useState(false);
-    const [activeTab, setActiveTab] = useState('description'); // Tab state
+    const [activeTab, setActiveTab] = useState('description');
 
     useEffect(() => {
         const fetchProductData = async () => {
@@ -34,6 +36,19 @@ const ProductDetailPage = () => {
                 const data = productResponse.data;
                 setProductData(data);
                 setReviews(reviewsResponse.data.reviews);
+
+                // ✅ Fetch related products
+                if (data.categories && data.categories.length > 0) {
+                    const categoryCode = data.categories[0].category_code;
+                    const relatedResponse = await getAllProducts({
+                        categories: [categoryCode],
+                        limit: 4
+                    });
+                    setRelatedProducts(
+                        relatedResponse.items.filter(p => p.product_id !== productId)
+                    );
+                }
+
                 if (data.variants && data.variants.length > 0) {
                     const initialVariant = data.variants[0];
                     setActiveVariant(initialVariant);
@@ -206,6 +221,18 @@ const ProductDetailPage = () => {
                     )}
                 </div>
             </div>
+
+            {/* ✅ Related Products */}
+            {relatedProducts.length > 0 && (
+                <div className={styles.relatedProducts}>
+                    <h2>You May Also Like</h2>
+                    <div className={styles.productGrid}>
+                        {relatedProducts.map((product) => (
+                            <ProductCard key={product.product_id} product={product} />
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

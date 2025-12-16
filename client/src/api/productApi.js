@@ -2,7 +2,15 @@ import api from "../api";
 
 export const getAllProducts = async (params = {}) => {
   try {
-    const response = await api.get("/products", { params });
+    // ✅ Convert categories array to proper format
+    const queryParams = { ...params };
+    if (params.categories && Array.isArray(params.categories)) {
+      // Backend expects multiple categories as separate params
+      // e.g., ?categories=CAT1&categories=CAT2
+      queryParams.categories = params.categories;
+    }
+    
+    const response = await api.get("/products", { params: queryParams });
     return response.data;
   } catch (error) {
     console.error("Failed to fetch products:", error);

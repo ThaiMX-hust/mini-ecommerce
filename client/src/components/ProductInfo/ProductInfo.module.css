@@ -134,3 +134,110 @@
     line-height: 1.6;
     color: #666;
 }
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.favoriteButton {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.favoriteButton:hover {
+  transform: scale(1.2);
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.addToCartButton {
+  flex: 2;
+  padding: 16px;
+  background-color: #111;
+  color: white;
+  border: 2px solid #111;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.buyNowButton {
+  flex: 1;
+  padding: 16px;
+  background-color: #667eea;
+  color: white;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.buyNowButton:hover:not(:disabled) {
+  background-color: #764ba2;
+  border-color: #764ba2;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Share Section */
+.shareSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.shareSection span {
+  font-weight: 600;
+  color: #666;
+}
+
+.shareButton {
+  padding: 8px 16px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.shareButton:hover {
+  background: #e0e0e0;
+}

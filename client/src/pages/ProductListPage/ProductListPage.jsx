@@ -17,6 +17,7 @@ const ProductListPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [sort, setSort] = useState("price-asc");
   
   // State cho search query - đọc từ URL params
