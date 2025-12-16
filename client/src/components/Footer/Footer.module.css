@@ -1,43 +1,210 @@
 .footer {
-  background-color: #fff;
-  padding: 40px 0;
-  border-top: 1px solid #e0e0e0;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  padding: 60px 0 20px;
+  margin-top: auto;
 }
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 20px;
 }
+
 .footerTop {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 30px;
-  margin-bottom: 30px;
-  border-bottom: 1px solid #e0e0e0;
+  flex-direction: column;
+  gap: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid #333;
 }
+
+.brand {
+  text-align: center;
+}
+
 .logo {
   font-family: "Cormorant Garamond", serif;
   font-size: 2.5rem;
   font-weight: 700;
+  letter-spacing: 3px;
   text-decoration: none;
-  color: #111;
+  color: #fff;
+  display: inline-block;
+  margin-bottom: 10px;
 }
+
+.tagline {
+  color: #999;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.footerContent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+}
+
+.footerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 10px 0;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.sectionTitle::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #666;
+}
+
 .navLinks {
   display: flex;
-  gap: 25px;
+  flex-direction: column;
+  gap: 10px;
 }
+
 .link {
+  color: #b0b0b0;
   text-decoration: none;
-  color: #555;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-.link:hover {
-  color: #111;
-}
-.footerBottom {
-  text-align: center;
-  color: #888;
   font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.link:hover {
+  color: #fff;
+}
+
+.projectInfo {
+  color: #b0b0b0;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.projectInfo strong {
+  color: #fff;
+}
+
+.teamList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #b0b0b0;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.teamList li {
+  padding: 4px 0;
+}
+
+.instructor {
+  color: #b0b0b0;
+  font-size: 0.9rem;
+  margin: 15px 0 0 0;
+  padding-top: 15px;
+  border-top: 1px solid #333;
+}
+
+.instructor strong {
+  color: #fff;
+}
+
+.footerBottom {
+  padding-top: 30px;
+  text-align: center;
+}
+
+.footerBottom p {
+  color: #888;
+  font-size: 0.85rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.githubLink {
+  color: #888;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.3s ease;
+}
+
+.githubLink:hover {
+  color: #fff;
+}
+
+.githubLink svg {
+  vertical-align: middle;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer {
+    padding: 40px 0 20px;
+  }
+
+  .footerTop {
+    gap: 30px;
+  }
+
+  .footerContent {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .logo {
+    font-size: 2rem;
+  }
+
+  .footerSection {
+    text-align: center;
+  }
+
+  .sectionTitle::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .navLinks {
+    align-items: center;
+  }
+
+  .footerBottom p {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 1.75rem;
+  }
+
+  .footerContent {
+    gap: 25px;
+  }
+
+  .teamList {
+    font-size: 0.85rem;
+  }
 }

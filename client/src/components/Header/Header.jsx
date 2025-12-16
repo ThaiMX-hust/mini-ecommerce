@@ -1,10 +1,8 @@
-
-import React ,{ useState }from "react";
-import { NavLink, Link,useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext";
 import styles from "./Header.module.css";
 
-// Đã sửa lại với SVG code đầy đủ
 const CartIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -44,56 +42,81 @@ const Header = () => {
   const { isAuthenticated, user, logout, openCart, cartItemCount } =
     useAppContext();
   const [searchQuery, setSearchQuery] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery(""); // Clear sau khi search
+      setSearchQuery("");
+      setIsMobileMenuOpen(false);
     }
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
   };
 
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        <Link to="/" className={styles.logo}>
+        <Link to="/" className={styles.logo} onClick={closeMobileMenu}>
           FASCO
         </Link>
-        <nav className={styles.nav}>
+
+        {/* Nút menu mobile */}
+        <button
+          className={`${styles.hamburger} ${
+            isMobileMenuOpen ? styles.open : ""
+          }`}
+          onClick={toggleMobileMenu}
+          aria-label="Mở menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        {/* Overlay mobile */}
+        <div
+          className={`${styles.mobileOverlay} ${
+            isMobileMenuOpen ? styles.open : ""
+          }`}
+          onClick={closeMobileMenu}
+        ></div>
+
+        {/* Điều hướng */}
+        <nav className={`${styles.nav} ${isMobileMenuOpen ? styles.open : ""}`}>
           <NavLink
             to="/"
+            onClick={closeMobileMenu}
             className={({ isActive }) =>
               isActive ? styles.activeLink : styles.navLink
             }
           >
-            Home
+            Trang chủ
           </NavLink>
           <NavLink
             to="/products"
+            onClick={closeMobileMenu}
             className={({ isActive }) =>
               isActive ? styles.activeLink : styles.navLink
             }
           >
-            Products
+            Sản phẩm
           </NavLink>
-          {/* {isAuthenticated && (
-            <NavLink
-              to="/checkout"
-              className={({ isActive }) =>
-                isActive ? styles.activeLink : styles.navLink
-              }
-            >
-              Checkout
-            </NavLink>
-          )} */}
         </nav>
 
-    
+        {/* Tìm kiếm */}
         <form onSubmit={handleSearch} className={styles.searchForm}>
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Tìm kiếm sản phẩm..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={styles.searchInput}
@@ -112,17 +135,18 @@ const Header = () => {
                 strokeWidth="2"
                 fill="none"
               />
-          </svg>
+            </svg>
           </button>
         </form>
 
+        {/* Tài khoản & giỏ hàng */}
         <div className={styles.userActions}>
           {isAuthenticated ? (
             <>
               <button
                 onClick={openCart}
                 className={styles.iconLink}
-                aria-label="View your cart"
+                aria-label="Xem giỏ hàng"
               >
                 <CartIcon />
                 {cartItemCount > 0 && (
@@ -132,7 +156,7 @@ const Header = () => {
               <NavLink
                 to="/account"
                 className={styles.iconLink}
-                aria-label="View your account"
+                aria-label="Tài khoản cá nhân"
               >
                 <UserIcon />
               </NavLink>
@@ -140,13 +164,13 @@ const Header = () => {
           ) : (
             <>
               <NavLink to="/login" className={styles.authLink}>
-                Sign In
+                Đăng nhập
               </NavLink>
               <NavLink
                 to="/register"
                 className={`${styles.authLink} ${styles.signUpButton}`}
               >
-                Sign Up
+                Đăng ký
               </NavLink>
             </>
           )}

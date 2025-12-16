@@ -13,9 +13,9 @@ const Newsletter = () => {
     e.preventDefault();
     if (email) {
       console.log("Subscribing email:", email);
-      setMessage(`Cảm ơn bạn đã đăng ký với email: ${email}`);
+      setMessage(`Cảm ơn bạn đã đăng ký nhận tin với email: ${email}`);
       setEmail(""); // Xóa input sau khi submit
-      // Ở đây bạn sẽ gọi API để đăng ký email
+      // TODO: Gọi API đăng ký nhận bản tin
     }
   };
 
@@ -24,37 +24,39 @@ const Newsletter = () => {
       <div className={styles.container}>
         <img
           src={modelLeft}
-          alt="Model in a yellow coat"
+          alt="Người mẫu mặc áo khoác màu vàng"
           className={styles.modelImage}
           id={styles.leftModel}
         />
 
         <div className={styles.content}>
-          <h2 className={styles.title}>Subscribe To Our Newsletter</h2>
+          <h2 className={styles.title}>Đăng ký nhận bản tin</h2>
           <p className={styles.description}>
-            Get 10% off your first order.
-            Be the first to know about new arrivals and exclusive offers.
-
+            Nhận ưu đãi <strong>giảm 10%</strong> cho đơn hàng đầu tiên.
+            <br />
+            Cập nhật sớm nhất các sản phẩm mới và chương trình khuyến mãi độc quyền.
           </p>
+
           <form className={styles.subscribeForm} onSubmit={handleSubmit}>
             <input
               type="email"
-              placeholder="michael@ymail.com"
+              placeholder="Nhập email của bạn"
               className={styles.emailInput}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
             <button type="submit" className={styles.subscribeButton}>
-              Subscribe Now
+              Đăng ký ngay
             </button>
           </form>
+
           {message && <p className={styles.successMessage}>{message}</p>}
         </div>
 
         <img
           src={modelRight}
-          alt="Model in a grey coat"
+          alt="Người mẫu mặc áo khoác màu xám"
           className={styles.modelImage}
           id={styles.rightModel}
         />
