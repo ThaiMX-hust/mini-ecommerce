@@ -11,16 +11,16 @@ const Hero = () => {
   return (
     <section className={styles.heroSection}>
       <div className={styles.container}>
-        {/* Left Column */}
+        {/* Cột trái */}
         <div className={styles.heroImageContainer} id={styles.left}>
           <img
             src={heroLeft}
-            alt="Fashion model in modern outfit"
+            alt="Người mẫu thời trang với trang phục hiện đại"
             className={styles.heroImage}
           />
         </div>
 
-        {/* Center Column */}
+        {/* Cột giữa */}
         <div className={styles.heroCenter}>
           <div
             className={`${styles.heroImageContainer} ${styles.smallImage}`}
@@ -28,17 +28,19 @@ const Hero = () => {
           >
             <img
               src={heroTop}
-              alt="Fashion collection preview"
+              alt="Bộ sưu tập thời trang mới"
               className={styles.heroImage}
             />
           </div>
 
           <div className={styles.saleContent}>
             <h1 className={styles.mainHeading}>ULTIMATE</h1>
-            <h1 className={`${styles.mainHeading} ${styles.outline}`}>SALE</h1>
-            <p className={styles.subHeading}>NEW COLLECTION</p>
+            <h1 className={`${styles.mainHeading} ${styles.outline}`}>
+              SALE
+            </h1>
+            <p className={styles.subHeading}>BỘ SƯU TẬP MỚI</p>
             <Link to="/products" className={styles.shopButton}>
-              <span>SHOP NOW</span>
+              <span>MUA NGAY</span>
             </Link>
           </div>
 
@@ -48,17 +50,17 @@ const Hero = () => {
           >
             <img
               src={heroBottom}
-              alt="Fashion models collection"
+              alt="Bộ sưu tập người mẫu thời trang"
               className={styles.heroImage}
             />
           </div>
         </div>
 
-        {/* Right Column */}
+        {/* Cột phải */}
         <div className={styles.heroImageContainer} id={styles.right}>
           <img
             src={heroRight}
-            alt="Model in turtleneck sweater"
+            alt="Người mẫu mặc áo cổ lọ"
             className={styles.heroImage}
           />
         </div>

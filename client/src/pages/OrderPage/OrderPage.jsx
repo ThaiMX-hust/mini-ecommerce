@@ -24,7 +24,7 @@ const OrderPage = () => {
                 const response = await api.get('/orders');
                 setOrders(response.data.orders || response.data);
                 
-                // ✅ Hiển thị thông báo nếu vừa tạo đơn hàng mới
+                //  Hiển thị thông báo nếu vừa tạo đơn hàng mới
                 if (location.state?.message) {
                     alert(location.state.message);
                 }
@@ -76,7 +76,7 @@ const OrderPage = () => {
         });
     };
 
-    // ✅ Hàm lấy màu cho status badge
+    // Hàm lấy màu cho status badge
     const getStatusColor = (statusName) => {
         const statusColors = {
             'Chờ xác nhận': '#ffc107',
@@ -96,7 +96,7 @@ const OrderPage = () => {
 
     return (
         <div className={styles.container}>
-            {/* ✅ Đổi tiêu đề */}
+            {/*  Đổi tiêu đề */}
             <h1 className={styles.pageTitle}>My Orders</h1>
             
             {orders.length === 0 ? (
@@ -147,7 +147,7 @@ const OrderPage = () => {
                                         </div>
                                     </div>
 
-                                    {/* ✅ Nút thanh toán cho đơn hàng pending */}
+                                    {/* Nút thanh toán cho đơn hàng pending */}
                                     {isPending && (
                                         <button
                                             onClick={() => handlePayNow(order)}

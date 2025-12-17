@@ -30,9 +30,20 @@ const HomePage = () => {
           getAllCategories(),
         ]);
         setAllProducts(productsData.items || []);
-        setCategories(cats || []);
+        const categoriesWithProducts = cats
+          .map(cat => ({
+            ...cat,
+            productCount: productsData.items.filter(product => 
+              product.categories.some(pCat => pCat.category_code === cat.code)
+            ).length
+          }))
+          .filter(cat => cat.productCount > 0)
+          .sort((a, b) => b.productCount - a.productCount)
+          .slice(0, 6);
+
+        setCategories(categoriesWithProducts || []);
       } catch (err) {
-        setError("Failed to load data.");
+        setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -61,13 +72,17 @@ const HomePage = () => {
     if (!activeCategory) return allProducts.slice(0, 6);
 
     return allProducts
-      .filter((p) => p.categories.includes(activeCategory.code))
+      .filter((p) =>
+        p.categories.some(
+          (cat) => cat.category_code === activeCategory.code
+        )
+      )
       .slice(0, 6);
   }, [activeCategory, allProducts]);
 
   /* ================= HANDLERS ================= */
   const handleCategoryClick = (index) => {
-    setIsAuto(false);      // ⛔ tắt auto
+    setIsAuto(false); // Tắt tự động chuyển
     setActiveIndex(index);
   };
 
@@ -81,11 +96,17 @@ const HomePage = () => {
 
   /* ================= RENDER GRID ================= */
   const renderProductGrid = () => {
-    if (isLoading) return <p className={styles.loading}>Loading...</p>;
+    if (isLoading)
+      return <p className={styles.loading}>Đang tải sản phẩm...</p>;
+
     if (error) return <p className={styles.error}>{error}</p>;
 
     if (filteredProducts.length === 0) {
-      return <p className={styles.emptyMessage}>No products found.</p>;
+      return (
+        <p className={styles.emptyMessage}>
+          Không tìm thấy sản phẩm phù hợp.
+        </p>
+      );
     }
 
     return (
@@ -111,11 +132,13 @@ const HomePage = () => {
 
         <section className={styles.newArrivals}>
           <div className={styles.container}>
-            <h2 className={styles.sectionTitle}>New Arrivals</h2>
+            <h2 className={styles.sectionTitle}>Sản phẩm mới</h2>
             <p className={styles.sectionDescription}>
-              Explore the latest trends and styles from our new collection.
+              Khám phá những xu hướng và phong cách mới nhất trong bộ sưu tập
+              của chúng tôi.
             </p>
 
+          {categories.length > 0 && (
             <div className={styles.categoryTabs}>
               {categories.map((cat, index) => (
                 <button
@@ -129,6 +152,7 @@ const HomePage = () => {
                 </button>
               ))}
             </div>
+          )}
 
             {renderProductGrid()}
 
@@ -138,7 +162,7 @@ const HomePage = () => {
                   className={styles.viewMoreButton}
                   onClick={handleViewMore}
                 >
-                  View More
+                  Xem thêm
                 </button>
               </div>
             )}

@@ -11,6 +11,7 @@
   align-items: center;
   gap: 20px;
   position: relative;
+  padding: 0 20px;
 }
 .content {
   background-color: white;
@@ -56,6 +57,15 @@
 .subscribeButton {
   position: relative;
   overflow: hidden;
+  padding: 15px 40px;
+  background-color: #111;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .subscribeButton::after {
@@ -70,11 +80,16 @@
 .subscribeButton:hover::after {
   transform: translateX(0);
 }
+
+.subscribeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
 .modelImage {
   max-width: 300px;
   height: auto;
-  align-self: flex-end; 
-  max-width: 300px;
+  align-self: flex-end;
   transition: transform 0.6s ease;
 }
 .container:hover .modelImage {
@@ -88,6 +103,133 @@
   border-radius: 6px;
   font-size: 0.9rem;
 }
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+  .newsletterSection {
+    padding: 60px 0;
+  }
+  
+  .container {
+    gap: 30px;
+    padding: 0 30px;
+  }
+  
+  .content {
+    padding: 50px 40px;
+  }
+  
+  .modelImage {
+    max-width: 250px;
+  }
+  
+  .title {
+    font-size: 2.2rem;
+  }
+}
+
+/* Mobile Landscape (max-width: 768px) */
+@media (max-width: 768px) {
+  .newsletterSection {
+    padding: 50px 0;
+  }
+  
+  .container {
+    flex-direction: column;
+    gap: 40px;
+    padding: 0 20px;
+  }
+  
+  .content {
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .description {
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+  }
+  
+  .modelImage {
+    max-width: 220px;
+    align-self: center;
+  }
+  
+  .subscribeButton {
+    width: 100%;
+    padding: 14px 30px;
+  }
+}
+
+/* Mobile Portrait (max-width: 576px) */
+@media (max-width: 576px) {
+  .newsletterSection {
+    padding: 40px 0;
+  }
+  
+  .container {
+    gap: 30px;
+    padding: 0 15px;
+  }
+  
+  .content {
+    padding: 30px 20px;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+    line-height: 1.2;
+  }
+  
+  .description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  
+  .emailInput {
+    padding: 12px 8px;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+  
+  .subscribeButton {
+    padding: 12px 25px;
+    font-size: 0.95rem;
+  }
+  
+  .modelImage {
+    max-width: 180px;
+  }
+  
+  .successMessage {
+    font-size: 0.85rem;
+    padding: 10px 15px;
+  }
+}
+
+/* Extra Small Devices (max-width: 480px) */
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .modelImage {
+    max-width: 150px;
+  }
+  
+  .content {
+    padding: 25px 15px;
+  }
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
