@@ -1,43 +1,187 @@
 .galleryContainer {
     display: flex;
-    gap: 16px;
-    /* Dính lại khi cuộn trang */
-    position: sticky;
-    top: 20px;
-    height: fit-content;
+    gap: 15px;
+    height: 600px;
 }
 
 .thumbnails {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
 }
 
-.thumbnailImage {
-    width: 65px;
-    height: 85px;
-    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+.thumbnails::-webkit-scrollbar {
+    width: 6px;
+}
+
+.thumbnails::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.thumbnails::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+}
+
+.thumbnail {
+    width: 80px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
     cursor: pointer;
     border: 2px solid transparent;
-    border-radius: 4px;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
-.thumbnailImage:hover {
-    border-color: #ccc;
+.thumbnail:hover {
+    border-color: #667eea;
+    transform: scale(1.05);
 }
 
-.thumbnailImage.active {
-    border-color: #111; /* Màu đen cho ảnh đang được chọn */
+.thumbnail.active {
+    border-color: #667eea;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
 }
 
 .mainImageContainer {
-    flex-grow: 1; /* Chiếm hết không gian còn lại */
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #f5f5f5;
+    cursor: zoom-in;
 }
 
 .mainImage {
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: cover;
-    border-radius: 4px;
+    transition: transform 0.3s ease;
+}
+
+.mainImageContainer:hover .mainImage {
+    transform: scale(1.05);
+}
+
+.zoomIndicator {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 10;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === RESPONSIVE DESIGN === */
+
+/* Tablet (768px - 992px) */
+@media (max-width: 992px) {
+    .galleryContainer {
+        height: 500px;
+        gap: 12px;
+    }
+
+    .thumbnail {
+        width: 70px;
+        height: 88px;
+    }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 768px) {
+    .galleryContainer {
+        flex-direction: column-reverse;
+        height: auto;
+        gap: 15px;
+    }
+
+    .thumbnails {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        max-height: none;
+        padding-right: 0;
+        padding-bottom: 8px;
+        gap: 8px;
+    }
+
+    .thumbnail {
+        width: 60px;
+        height: 75px;
+        flex-shrink: 0;
+    }
+
+    .mainImageContainer {
+        height: 400px;
+        margin-bottom: 0;
+        cursor: default;
+    }
+
+    .mainImage {
+        cursor: default;
+    }
+
+    .mainImageContainer:hover .mainImage {
+        transform: none;
+    }
+
+    .zoomIndicator {
+        display: none;
+    }
+}
+
+/* Small Mobile (< 576px) */
+@media (max-width: 576px) {
+    .galleryContainer {
+        gap: 10px;
+    }
+
+    .thumbnails {
+        gap: 6px;
+        padding-bottom: 6px;
+    }
+
+    .thumbnail {
+        width: 50px;
+        height: 63px;
+        border-radius: 6px;
+    }
+
+    .mainImageContainer {
+        height: 350px;
+        border-radius: 10px;
+    }
+}
+
+/* Extra Small Mobile (< 400px) */
+@media (max-width: 400px) {
+    .mainImageContainer {
+        height: 300px;
+    }
+
+    .thumbnail {
+        width: 45px;
+        height: 56px;
+    }
 }

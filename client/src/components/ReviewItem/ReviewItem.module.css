@@ -37,7 +37,7 @@
 }
 
 .starRating {
-  color: #fadb14; /* Màu vàng của sao */
+  color: #fadb14;
   font-size: 16px;
   margin-bottom: 10px;
 }
@@ -47,4 +47,72 @@
   line-height: 1.6;
   color: #555;
   margin: 0;
+}
+
+/* === RESPONSIVE DESIGN === */
+
+/* Mobile (< 768px) */
+@media (max-width: 768px) {
+  .reviewItem {
+    padding: 16px 0;
+  }
+
+  .userInfo {
+    gap: 10px;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .userName {
+    font-size: 14px;
+  }
+
+  .reviewDate {
+    font-size: 12px;
+  }
+
+  .starRating {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .comment {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+/* Small Mobile (< 576px) */
+@media (max-width: 576px) {
+  .reviewItem {
+    padding: 14px 0;
+  }
+
+  .userInfo {
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .userName {
+    font-size: 13px;
+  }
+
+  .reviewDate {
+    font-size: 11px;
+  }
+
+  .starRating {
+    font-size: 14px;
+  }
+
+  .comment {
+    font-size: 13px;
+  }
 }
