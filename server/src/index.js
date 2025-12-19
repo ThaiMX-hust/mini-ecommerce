@@ -36,7 +36,6 @@ app.use(errorHandler);
 
 (async () => {
     await redisClient();
-    await mongooseClient();
 
     app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
