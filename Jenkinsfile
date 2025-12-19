@@ -19,19 +19,30 @@ pipeline {
       }
     }
 
-    stage('Build API container') {
+    stage('Build & Restart API') {
+      when {
+        anyOf {
+          changeset "server/**"
+        }
+      }
       steps {
         sh '''
           docker compose build api
+          docker compose up -d api
         '''
       }
     }
 
-
-    stage('Restart API container') {
+    stage('Build & Restart FE') {
+      when {
+        anyOf {
+          changeset "client/**"
+        }
+      }
       steps {
         sh '''
-          docker compose up -d api
+          docker build -t mini-ecommerce-client .
+          docker run mini-ecommerce-client
         '''
       }
     }
