@@ -1,6 +1,5 @@
 import api from "../api";
 
-
 const CATEGORY_MAP_VI = {
   CAT_SANDALS: "Dép / Sandal",
   CAT_SUNGLASSES: "Kính mát",
@@ -29,8 +28,6 @@ const CATEGORY_MAP_VI = {
   CAT_TSHIRTS: "Áo thun",
 };
 
-
-
 /**
  * Lấy danh sách tất cả categories từ API
  * @returns {Promise<Array<object>>} Mảng các object { code, name, category_id, category_description }
@@ -41,16 +38,55 @@ export const getAllCategories = async () => {
     console.log("Categories API Response:", response.data);
     // API trả về mảng categories với structure:
     // [{ category_id, category_name, category_code, category_description }]
-    return response.data.map(cat => ({
+    return response.data.map((cat) => ({
       code: cat.category_code,
       name: CATEGORY_MAP_VI[cat.category_code] || cat.category_name,
       category_id: cat.category_id,
-      description: cat.category_description
+      description: cat.category_description,
     }));
   } catch (error) {
     console.error("Failed to fetch categories:", error);
     return [];
   }
+};
+
+/**
+ * Fetches all categories.
+ * Note: The API might need a dedicated endpoint like GET /api/categories.
+ * We'll assume one exists for this admin page.
+ * @returns {Promise<object>}
+ */
+export const getAllCategoriesAdmin = () => {
+  // Assuming the backend provides a GET /categories endpoint. If not, this needs adjustment.
+  return api.get("/categories");
+};
+
+/**
+ * Creates one or more new categories.
+ * @param {Array<object>} categoriesData - Array of category objects to create.
+ * @returns {Promise<object>}
+ */
+export const createCategories = (categoriesData) => {
+  return api.post("/categories", { categories: categoriesData });
+};
+
+/**
+ * Updates a specific category.
+ * @param {string} categoryId - The ID of the category to update.
+ * @param {object} categoryData - The new data for the category.
+ * @returns {Promise<object>}
+ */
+export const updateCategory = (categoryId, categoryData) => {
+  return api.patch(`/categories/${categoryId}`, categoryData);
+};
+
+/**
+ * Deletes a specific category.
+ * @param {string} categoryId - The ID of the category to delete.
+ * @returns {Promise<object>}
+ */
+export const deleteCategory = (categoryId) => {
+  return api.delete(`/categories/${categoryId}`);
 };
 
 // Hàm này có thể hữu ích cho trang danh sách sản phẩm

@@ -1,0 +1,26 @@
+.badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.dangvanchuyen {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+.choxacnhan {
+  background-color: #fffbe6;
+  color: #faad14;
+}
+.dagiao {
+  background-color: #f6ffed;
+  color: #52c41a;
+}
+.dahuy {
+  background-color: #fff1f0;
+  color: #f5222d;
+}
+.default {
+  background-color: #fafafa;
+  color: #595959;
+}

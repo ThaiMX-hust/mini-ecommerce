@@ -1,0 +1,175 @@
+.container {
+  padding: 30px;
+  background-color: #f9fafb; /* Nền xám rất nhạt cho toàn trang */
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Căn chỉnh title và button */
+  margin-bottom: 25px;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #3b82f6; /* Màu xanh dương hiện đại */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.addButton:hover {
+  background-color: #2563eb;
+}
+
+.controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.searchInput {
+  flex-grow: 1;
+  padding: 12px 15px 12px 40px; /* Thêm padding trái cho icon */
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.filterButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.filterButton:hover {
+  background-color: #f9fafb;
+}
+
+.tableContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Giúp bo góc cho table */
+}
+
+.productTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.productTable th,
+.productTable td {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.productTable th {
+  background-color: #f9fafb;
+  color: #6b7280;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.productTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.productTable tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.productInfo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.productImage {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+}
+
+.actionIcons {
+  display: flex;
+  gap: 10px;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: #6b7280;
+  transition: color 0.2s;
+}
+
+.iconButton:hover {
+  color: #3b82f6;
+}
+
+.deleteButton:hover {
+  color: #ef4444; /* Màu đỏ cho nút xóa khi hover */
+}
+
+.loading,
+.noResults {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  padding: 0 10px;
+  color: #6b7280;
+}
