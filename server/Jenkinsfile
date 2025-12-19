@@ -1,0 +1,49 @@
+pipeline {
+  agent { label 'hust-projects' }
+
+  triggers {
+    pollSCM('H/2 * * * *')
+  }
+
+  environment {
+    COMPOSE_PROJECT_NAME = "mini-ecommerce"
+  }
+
+  stages {
+
+    stage('Checkout source') {
+      steps {
+        git branch: 'develop',
+            credentialsId: 'github-https',
+            url: 'https://github.com/ThaiMX-hust/mini-ecommerce'
+      }
+    }
+
+    stage('Build API container') {
+      steps {
+        sh '''
+          docker compose build api
+        '''
+      }
+    }
+
+
+    stage('Restart API container') {
+      steps {
+        sh '''
+          docker compose up -d api
+        '''
+      }
+    }
+  }
+
+
+  post {
+    success {
+      echo 'Build api successfully'
+    }
+    failure {
+      echo 'Build api failed'
+    }
+  }
+}

@@ -126,19 +126,11 @@ const handleVnpayIpn = async (vnp_Params) => {
                         note: `Payment successful via VNPay. Transaction: ${transactionNo}`
                     }
                 });
-<<<<<<< Updated upstream
 
                 const order = await orderRepository.getDetail(orderId);
                 const userEmail = await userRepository.getUserById(order.user_id, prisma);
 
                 await emailService.sendPurchaseSuccessfullyEmail(userEmail, order);
-=======
-                
-                const orderDetail = await orderRepository.getDetail(orderId)
-                const userEmail = await userRepository.getUserById(order.user_id, prisma)
-
-                await emailService.sendPurchaseSuccessfullyEmail(userEmail, orderDetail)
->>>>>>> Stashed changes
 
                 console.log(`Payment for order ${orderId} is successfull`);
                 return { RspCode: '00', Message: 'Success' };

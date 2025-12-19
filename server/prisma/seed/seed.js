@@ -54,7 +54,6 @@ async function main() {
     });
 
     await createCategories()
-    await createProducts()
     await createStatus()
 }
 
