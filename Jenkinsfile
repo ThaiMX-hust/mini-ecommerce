@@ -27,8 +27,8 @@ pipeline {
       }
       steps {
         sh '''
-          docker compose build api
-          docker compose up -d api
+          docker compose -f server/docker-compose.yml build api
+          docker compose -f server/docker-compose.yml up -d api
         '''
       }
     }
@@ -41,8 +41,11 @@ pipeline {
       }
       steps {
         sh '''
-          docker build -t mini-ecommerce-client .
-          docker run mini-ecommerce-client
+          docker build -t mini-ecommerce-client ./client
+          docker run -d \
+            --name mini-ecommerce-client \
+            -p 8080:80 \
+            mini-ecommerce-client
         '''
       }
     }
