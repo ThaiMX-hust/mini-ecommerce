@@ -1,0 +1,235 @@
+.reviewForm {
+  background: #f9f9f9;
+  padding: 30px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border: 1px solid #e0e0e0;
+}
+
+.formTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #111;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.starSelector {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.starButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.starButton:hover {
+  transform: scale(1.2);
+}
+
+.starFilled {
+  color: #fadb14;
+  font-size: 28px;
+}
+
+.starEmpty {
+  color: #d9d9d9;
+  font-size: 28px;
+}
+
+.ratingText {
+  margin-left: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.formGroup textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.formGroup textarea:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.formActions {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+}
+
+.resetButton,
+.submitButton {
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.resetButton {
+  background: white;
+  color: #666;
+  border: 1px solid #d9d9d9;
+}
+
+.resetButton:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.submitButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.resetButton:disabled,
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* === RESPONSIVE DESIGN === */
+
+/* Tablet (< 992px) */
+@media (max-width: 992px) {
+  .reviewForm {
+    padding: 25px;
+  }
+
+  .formTitle {
+    font-size: 1.2rem;
+  }
+
+  .starFilled,
+  .starEmpty {
+    font-size: 26px;
+  }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 768px) {
+  .reviewForm {
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .formTitle {
+    font-size: 1.1rem;
+    margin-bottom: 18px;
+  }
+
+  .formGroup {
+    margin-bottom: 18px;
+  }
+
+  .formGroup label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .starFilled,
+  .starEmpty {
+    font-size: 24px;
+  }
+
+  .ratingText {
+    font-size: 13px;
+  }
+
+  .formGroup textarea {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .formActions {
+    gap: 12px;
+  }
+
+  .resetButton,
+  .submitButton {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile (< 576px) */
+@media (max-width: 576px) {
+  .reviewForm {
+    padding: 18px;
+    margin-bottom: 25px;
+  }
+
+  .formTitle {
+    font-size: 1rem;
+    margin-bottom: 16px;
+  }
+
+  .starSelector {
+    gap: 3px;
+  }
+
+  .starFilled,
+  .starEmpty {
+    font-size: 22px;
+  }
+
+  .ratingText {
+    font-size: 12px;
+    margin-left: 8px;
+  }
+
+  .formGroup textarea {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .formActions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .resetButton,
+  .submitButton {
+    width: 100%;
+    padding: 11px 20px;
+    font-size: 13px;
+  }
+}

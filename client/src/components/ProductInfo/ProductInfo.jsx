@@ -11,7 +11,9 @@ const ProductInfo = ({
     onOptionSelect, 
     onQuantityChange, 
     onAddToCart,
-    isAddingToCart 
+    isAddingToCart,
+    averageRating =0,
+    reviewCount =0 
 }) => {
     const [isFavorite, setIsFavorite] = useState(false);
 
@@ -37,6 +39,20 @@ const ProductInfo = ({
         }
     };
 
+    const renderStars = (rating) => {
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+        
+        return (
+            <>
+                {'★'.repeat(fullStars)}
+                {hasHalfStar && '⯨'}
+                {'☆'.repeat(emptyStars)}
+            </>
+        );
+    };
+
     if (!productData || !productData.options) {
         return <div className={styles.loading}>Loading product information...</div>;
     }
@@ -50,16 +66,23 @@ const ProductInfo = ({
                     onClick={handleToggleFavorite}
                     aria-label="Add to wishlist"
                 >
-                    {isFavorite ? '❤️' : '🤍'}
+                    
                 </button>
             </div>
             
             <h1 className={styles.title}>{productData.name}</h1>
             
             <div className={styles.rating}>
-                <span>★★★★☆</span>
-                <span>(3)</span>
+                <span className={styles.stars}>
+                    {renderStars(averageRating)}
+                </span>
+                <span className={styles.ratingText}>
+                    {averageRating > 0 
+                        ? `${averageRating.toFixed(1)} (${reviewCount} ${reviewCount === 1 ? 'review' : 'reviews'})` 
+                        : 'No reviews yet'}
+                </span>
             </div>
+
 
             {activeVariant ? (
                 <>
@@ -110,13 +133,6 @@ const ProductInfo = ({
                     ) : (
                         !activeVariant || activeVariant.stock === 0 ? 'Out of Stock' : 'Add to Cart'
                     )}
-                </button>
-                
-                <button 
-                    className={styles.buyNowButton}
-                    disabled={!activeVariant || activeVariant.stock === 0}
-                >
-                    Buy Now
                 </button>
             </div>
 

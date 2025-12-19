@@ -1,13 +1,13 @@
 import { useParams, Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { getProductById, getProductReviews, getAllProducts } from '../../api/productApi'
+import { getProductById, getProductReviews, getAllProducts, addProductReview } from '../../api/productApi'
 import { useAppContext } from '../../contexts/AppContext';
 import styles from './ProductDetailPage.module.css';
 
 import ImageGallery from '../../components/ImageGallery/ImageGallery';
 import ProductInfo from '../../components/ProductInfo/ProductInfo';
 import ProductReviews from '../../components/ProductReviews/ProductReviews';
-import ProductCard from '../../components/ProductCard/ProductCard'; // ✅ SỬA: ProductCart -> ProductCard
+import ProductCard from '../../components/ProductCard/ProductCard'; 
 
 const ProductDetailPage = () => {
     const { productId } = useParams();
@@ -23,6 +23,9 @@ const ProductDetailPage = () => {
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [addingToCart, setAddingToCart] = useState(false);
     const [activeTab, setActiveTab] = useState('description');
+    const [submittingReview, setSubmittingReview] = useState(false);
+    const [notification, setNotification] = useState({show: false, message:'', type:''});
+    const [averageRating, setAverageRating]= useState(0);
 
     useEffect(() => {
         const fetchProductData = async () => {
@@ -37,7 +40,16 @@ const ProductDetailPage = () => {
                 setProductData(data);
                 setReviews(reviewsResponse.data.reviews);
 
-                // ✅ Fetch related products
+                const reviewsList = reviewsResponse.data.reviews;
+                if(reviewsList && reviewsList.length >0){
+                    const totalRating = reviewsList.reduce((sum, review) => sum + review.rating,0);
+                    setAverageRating(totalRating / reviewsList.length);
+                }
+                else{
+                    setAverageRating(0);
+                }
+
+                //  Fetch related products
                 if (data.categories && data.categories.length > 0) {
                     const categoryCode = data.categories[0].category_code;
                     const relatedResponse = await getAllProducts({
@@ -101,6 +113,8 @@ const ProductDetailPage = () => {
             window.location.href = '/login';
             return;
         }
+    
+    
 
         if (!activeVariant) {
             alert('Please select all product options!');
@@ -137,6 +151,56 @@ const ProductDetailPage = () => {
         }
     };
 
+    const handleAddReview = async (reviewData) => {
+        try {   
+            setSubmittingReview(true);
+            const response = await addProductReview(productId, reviewData);
+
+            setReviews(prevReviews =>{
+
+            
+                const newReviews= [response.data, ...prevReviews];
+                const totalRating = newReviews.reduce((sum, review) => sum + review.rating, 0);
+                setAverageRating(totalRating / newReviews.length);
+                
+                return newReviews;
+        });
+            setNotification({
+                show: true,
+                message: 'Cảm ơn bạn đã đánh giá sản phẩm!',
+                type: 'success'
+            });
+            
+
+            setTimeout(() => {
+                setNotification({ show: false, message: '', type: '' });
+            }, 2000);
+        }
+        catch(error){
+            console.error('Lỗi thêm sản phẩm:', error);
+             setNotification({
+                show: true,
+                message: error.response?.status === 401 
+                    ? 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!' 
+                    : error.response?.data?.error || 'Không thể gửi đánh giá. Vui lòng thử lại!',
+                type: 'error'
+            });
+            
+            setTimeout(() => {
+                setNotification({ show: false, message: '', type: '' });
+            }, 3000);
+            
+            if (error.response?.status === 401) {
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+            }
+        }
+        finally {
+            setSubmittingReview(false);
+        }
+    };
+
     if (loading) {
         return <div className={styles.loadingContainer}>Loading product...</div>;
     }
@@ -151,6 +215,11 @@ const ProductDetailPage = () => {
 
     return (
         <div className={styles.pageContainer}>
+            {notification.show && (
+                <div className={`${styles.notification} ${styles[notification.type]}`}>
+                    {notification.message}
+                </div>
+            )}
             {/* Breadcrumb */}
             <nav className={styles.breadcrumb}>
                 <Link to="/">Home</Link>
@@ -172,6 +241,8 @@ const ProductDetailPage = () => {
                     onQuantityChange={handleQuantityChange}
                     onAddToCart={handleAddToCart}
                     isAddingToCart={addingToCart}
+                    averageRating={averageRating} 
+                    reviewCount={reviews.length} 
                 />
             </div>
 
@@ -207,22 +278,27 @@ const ProductDetailPage = () => {
                     )}
                     
                     {activeTab === 'reviews' && (
-                        <ProductReviews reviews={reviews} />
+                        <ProductReviews 
+                        reviews={reviews}
+                        isAuthenticated={isAuthenticated}
+                        onAddReview={handleAddReview}
+                        isSubmitting={submittingReview}
+                         />
                     )}
                     
                     {activeTab === 'shipping' && (
                         <div className={styles.description}>
                             <h3>Shipping Information</h3>
-                            <p>✅ Free shipping for orders over 500,000 VND</p>
-                            <p>🚚 Delivery within 3-5 business days</p>
-                            <p>📦 30-day return policy</p>
-                            <p>💳 Cash on delivery available</p>
+                            <p>Free shipping for orders over 500,000 VND</p>
+                            <p> Delivery within 3-5 business days</p>
+                            <p> 30-day return policy</p>
+                            <p> Cash on delivery available</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* ✅ Related Products */}
+            {/*  Related Products */}
             {relatedProducts.length > 0 && (
                 <div className={styles.relatedProducts}>
                     <h2>You May Also Like</h2>

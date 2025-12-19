@@ -26,6 +26,11 @@ export const getProductReviews = (productId) => {
   return api.get(`/products/${productId}/reviews`);
 };
 
+export const addProductReview = (productId, reviewData) => {
+  return api.post(`/products/${productId}/reviews`, reviewData);
+};
+
+
 /**
  * Thực hiện soft-delete một sản phẩm.
  * @param {string} productId - ID của sản phẩm cần xóa mềm.
