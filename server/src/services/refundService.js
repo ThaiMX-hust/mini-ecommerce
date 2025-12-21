@@ -85,11 +85,17 @@ async function approveRefund(refund_id, admin_id, note) {
     if (refund.status !== 'PENDING')
         throw new BadRequestError("Invalid operation");
 
+    const order = await orderRepository.getWithStatus(refund.order_id);
+    if (!order)
+        throw new NotFoundError("Order not found");
+
     refund.status = 'APPROVED';
     refund.processed_at = new Date();
     refund.admin_id = admin_id;
     refund.note = note;
     await refundRepository.update(refund_id, refund);
+    await orderRepository.createNewStatusToHistory(
+        orderRepository.getPrismaClientInstance(), order.order_id, "REFUNDED", admin_id, note);
 
     return {
         refund_id: refund.refund_id,
