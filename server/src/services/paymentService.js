@@ -34,7 +34,17 @@ const createPaymentUrl = async ({ orderId, ipAddr }) => {
     // LẤY THÔNG TIN ĐơN HÀNG TỪ DATABASE
     const prisma = orderRepository.getPrismaClientInstance();
     const order = await prisma.order.findUnique({
-        where: { order_id: orderId }
+        where: { order_id: orderId },
+        include: {
+            history: {
+                include: {
+                    status: true
+                },
+                orderBy: {
+                    created_at: 'desc'
+                }
+            }
+        }
     });
 
     if (!order) {
