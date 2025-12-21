@@ -2,14 +2,11 @@
 
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-// 1. Import CSS Modules và các tài nguyên
 import styles from "./RegisterPage.module.css";
 import { register } from "../../api/authApi";
 import registerHeroImage from "../../assets/images/login-hero-image.jpg";
 
 const RegisterPage = () => {
-  // 2. State quản lý form, file, và trạng thái UI
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -17,13 +14,12 @@ const RegisterPage = () => {
     password: "",
     confirmPassword: "",
   });
-  const [avatar, setAvatar] = useState(null); // State riêng cho file
+  const [avatar, setAvatar] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 3. Các hàm xử lý input không đổi
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -31,13 +27,11 @@ const RegisterPage = () => {
     setAvatar(e.target.files[0]);
   };
 
-  // 4. Hàm submit được nâng cấp
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    // Client-side validation
     if (formData.password !== formData.confirmPassword) {
       setError("Mật khẩu và xác nhận mật khẩu không khớp.");
       return;
@@ -55,16 +49,14 @@ const RegisterPage = () => {
     }
 
     try {
-      // Gọi API đăng ký
       const response = await register(dataToSubmit);
       console.log("Đăng ký thành công:", response.data);
       setSuccess("Đăng ký thành công! Đang chuyển đến trang đăng nhập...");
 
-      // Chuyển hướng sau 2 giây
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       if (err.response && err.response.data.error) {
-        setError(err.response.data.error); // Hiển thị lỗi từ server
+        setError(err.response.data.error);
       } else {
         setError("Không thể kết nối đến server. Vui lòng thử lại.");
       }
@@ -74,7 +66,6 @@ const RegisterPage = () => {
     }
   };
 
-  // 5. JSX kết hợp giao diện cũ và logic mới
   return (
     <div className={styles.registerPageContainer}>
       <div className={styles.leftPanel}>
@@ -84,7 +75,7 @@ const RegisterPage = () => {
       <div className={styles.rightPanel}>
         <div className={styles.registerFormWrapper}>
           <h1 className={styles.logo}>FASCO</h1>
-          <h2 className={styles.title}>Create Account</h2>
+          <h2 className={styles.title}>Tạo Tài Khoản</h2>
 
           <form onSubmit={handleSubmit}>
             {error && <p className={styles.errorMessage}>{error}</p>}
@@ -92,7 +83,7 @@ const RegisterPage = () => {
 
             <div className={styles.formRow}>
               <div className={styles.inputGroup}>
-                <label htmlFor="firstName">First Name</label>
+                <label htmlFor="firstName">Họ</label>
                 <input
                   id="firstName"
                   name="firstName"
@@ -102,7 +93,7 @@ const RegisterPage = () => {
                 />
               </div>
               <div className={styles.inputGroup}>
-                <label htmlFor="lastName">Last Name</label>
+                <label htmlFor="lastName">Tên</label>
                 <input
                   id="lastName"
                   name="lastName"
@@ -114,7 +105,7 @@ const RegisterPage = () => {
             </div>
 
             <div className={styles.inputGroup}>
-              <label htmlFor="email">Email Address</label>
+              <label htmlFor="email">Địa Chỉ Email</label>
               <input
                 type="email"
                 id="email"
@@ -127,7 +118,7 @@ const RegisterPage = () => {
 
             <div className={styles.formRow}>
               <div className={styles.inputGroup}>
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">Mật Khẩu</label>
                 <input
                   type="password"
                   id="password"
@@ -138,7 +129,7 @@ const RegisterPage = () => {
                 />
               </div>
               <div className={styles.inputGroup}>
-                <label htmlFor="confirmPassword">Confirm Password</label>
+                <label htmlFor="confirmPassword">Xác Nhận Mật Khẩu</label>
                 <input
                   type="password"
                   id="confirmPassword"
@@ -154,7 +145,7 @@ const RegisterPage = () => {
               <label htmlFor="avatar" className={styles.fileInputLabel}>
                 {avatar
                   ? `Đã chọn: ${avatar.name}`
-                  : "Chọn ảnh đại diện (Tùy chọn)"}
+                  : "Chọn ảnh đại diện (Options)"}
               </label>
               <input
                 type="file"
@@ -170,15 +161,15 @@ const RegisterPage = () => {
               className={styles.btnCreateAccount}
               disabled={isLoading}
             >
-              {isLoading ? "Đang xử lý..." : "Create Account"}
+              {isLoading ? "Đang xử lý..." : "Tạo Tài Khoản"}
             </button>
           </form>
 
           <p className={styles.extraLink}>
-            Already have an account? <Link to="/login">Login</Link>
+            Đã có tài khoản? <Link to="/login">Đăng Nhập</Link>
           </p>
 
-          <p className={styles.terms}>FASCO Terms & Conditions</p>
+          <p className={styles.terms}>Điều Khoản & Điều Kiện FASCO</p>
         </div>
       </div>
     </div>

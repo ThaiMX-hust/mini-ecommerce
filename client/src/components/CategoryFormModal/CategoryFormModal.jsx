@@ -23,7 +23,6 @@ const CategoryFormModal = ({
         category_description: category.category_description || "",
       });
     } else {
-      // Reset for create mode
       setFormData({
         category_name: "",
         category_code: "",
@@ -49,7 +48,7 @@ const CategoryFormModal = ({
       <div className={styles.modal}>
         <div className={styles.header}>
           <h2 className={styles.title}>
-            {isEditMode ? "Edit Category" : "Add New Category"}
+            {isEditMode ? "Chỉnh Sửa Danh Mục" : "Thêm Danh Mục Mới"}
           </h2>
           <button onClick={onClose} className={styles.closeButton}>
             ×
@@ -58,7 +57,7 @@ const CategoryFormModal = ({
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="category_name">
-              Category Name <span className={styles.required}>*</span>
+              Tên Danh Mục <span className={styles.required}>*</span>
             </label>
             <input
               type="text"
@@ -66,13 +65,13 @@ const CategoryFormModal = ({
               name="category_name"
               value={formData.category_name}
               onChange={handleInputChange}
-              placeholder="Enter category name"
+              placeholder="Nhập tên danh mục"
               required
             />
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="category_code">
-              Category Code <span className={styles.required}>*</span>
+              Mã Danh Mục <span className={styles.required}>*</span>
             </label>
             <input
               type="text"
@@ -80,18 +79,18 @@ const CategoryFormModal = ({
               name="category_code"
               value={formData.category_code}
               onChange={handleInputChange}
-              placeholder="E.g., FASHION"
+              placeholder="VD: FASHION"
               required
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="category_description">Description</label>
+            <label htmlFor="category_description">Mô Tả</label>
             <textarea
               id="category_description"
               name="category_description"
               value={formData.category_description}
               onChange={handleInputChange}
-              placeholder="Enter category description"
+              placeholder="Nhập mô tả danh mục"
               rows="4"
             />
           </div>
@@ -101,14 +100,14 @@ const CategoryFormModal = ({
               onClick={onClose}
               className={styles.btnSecondary}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
               className={styles.btnPrimary}
               disabled={isLoading}
             >
-              {isLoading ? "Saving..." : isEditMode ? "Update" : "Create"}
+              {isLoading ? "Đang lưu..." : isEditMode ? "Cập Nhật" : "Tạo Mới"}
             </button>
           </div>
         </form>

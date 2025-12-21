@@ -14,9 +14,7 @@ const CartPanel = () => {
     removeCartItem,
   } = useAppContext();
 
-  // Helper function để format giá VNĐ
   const formatPrice = (price) => {
-    // price có thể là string hoặc number từ API
     const numPrice = typeof price === "string" ? parseFloat(price) : price;
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -26,11 +24,13 @@ const CartPanel = () => {
 
   const renderCartItems = () => {
     if (cartLoading && !cart) {
-      return <p className={styles.loadingMessage}>Loading cart...</p>;
+      return <p className={styles.loadingMessage}>Đang tải giỏ hàng...</p>;
     }
 
     if (!cart || cart.items.length === 0) {
-      return <p className={styles.emptyMessage}>Your cart is empty.</p>;
+      return (
+        <p className={styles.emptyMessage}>Giỏ hàng của bạn đang trống.</p>
+      );
     }
 
     return cart.items.map((item) => (
@@ -43,7 +43,6 @@ const CartPanel = () => {
         <div className={styles.itemDetails}>
           <p className={styles.itemName}>{item.product.name}</p>
 
-
           <p className={styles.itemOptions}>
             {item.variant.options
               .map((opt) => `${opt.option_name}: ${opt.value}`)
@@ -55,7 +54,7 @@ const CartPanel = () => {
               {formatPrice(item.variant.final_price)} x {item.quantity}
             </p>
             <p className={styles.itemSubtotal}>
-              Subtotal: {formatPrice(item.subtotal_after_discount)}
+              Tạm tính: {formatPrice(item.subtotal_after_discount)}
             </p>
           </div>
 
@@ -93,7 +92,7 @@ const CartPanel = () => {
         aria-label="Shopping cart"
       >
         <div className={styles.header}>
-          <h2 className={styles.title}>Shopping Cart</h2>
+          <h2 className={styles.title}>Giỏ Hàng</h2>
           <button
             onClick={closeCart}
             className={styles.closeButton}
@@ -108,7 +107,7 @@ const CartPanel = () => {
         {cart && cart.items.length > 0 && (
           <div className={styles.footer}>
             <div className={styles.subtotal}>
-              <span>Subtotal:</span>
+              <span>Tạm tính:</span>
               <span className={styles.subtotalAmount}>
                 {formatPrice(cart.total_price_after_discount)}
               </span>
@@ -119,7 +118,7 @@ const CartPanel = () => {
               onClick={closeCart}
               className={styles.checkoutButton}
             >
-              Proceed to Checkout
+              Tiến Hành Thanh Toán
             </Link>
           </div>
         )}

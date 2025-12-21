@@ -1,7 +1,6 @@
 import React from 'react';
 import styles from './ReviewItem.module.css';
 
-// Hàm tiện ích để hiển thị các ngôi sao
 const StarRating = ({ rating }) => {
   return (
     <div className={styles.starRating}>
@@ -11,7 +10,6 @@ const StarRating = ({ rating }) => {
 };
 
 const ReviewItem = ({ review }) => {
-  // Format lại ngày tháng cho dễ đọc
   const reviewDate = new Date(review.created_at).toLocaleDateString('vi-VN');
 
   return (

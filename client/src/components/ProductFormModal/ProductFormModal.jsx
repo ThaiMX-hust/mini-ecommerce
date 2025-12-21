@@ -11,7 +11,6 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Form state
   const [product, setProduct] = useState({
     name: "",
     description: "",
@@ -21,11 +20,9 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
     variants: [],
   });
 
-  // Temporary input states
   const [categoryInput, setCategoryInput] = useState("");
-  const [optionValueInputs, setOptionValueInputs] = useState({}); // { optionIndex: "input" }
+  const [optionValueInputs, setOptionValueInputs] = useState({});
 
-  // Fetch product data if in 'edit' mode
   useEffect(() => {
     if (mode === "edit" && productId) {
       const fetchInitialData = async () => {
@@ -55,7 +52,7 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
             })),
           });
         } catch (err) {
-          setError("Failed to load product data.");
+          setError("Không thể tải dữ liệu sản phẩm.");
         } finally {
           setIsLoading(false);
         }
@@ -130,11 +127,10 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
       (opt) => opt.name && opt.values.length > 0
     );
     if (validOptions.length === 0) {
-      alert("Please add at least one option with values.");
+      alert("Vui lòng thêm ít nhất một Options với giá trị.");
       return;
     }
 
-    // Generate all combinations
     const combinations = validOptions.reduce(
       (acc, option) => {
         const newCombos = [];
@@ -206,7 +202,6 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
 
   // ==================== SUBMIT HANDLER ====================
   const handleSubmit = async () => {
-    // Validation
     if (!product.name || !product.description) {
       setError("Tên sản phẩm và mô tả là bắt buộc.");
       return;
@@ -433,7 +428,7 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
   const renderStep3 = () => (
     <div className={styles.formStep}>
       <div className={styles.sectionHeader}>
-        <p>Quản lý các biến thể sản phẩm</p>
+        <p>Quản lý các Variants sản phẩm</p>
         <button type="button" className={styles.addButton} onClick={addVariant}>
           + Thêm variant
         </button>
@@ -560,7 +555,7 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h2>
-            {mode === "create" ? "Thêm sản phẩm mới" : "Chỉnh sửa sản phẩm"}
+            {mode === "create" ? "Thêm Sản Phẩm Mới" : "Chỉnh Sửa Sản Phẩm"}
           </h2>
           <button onClick={onClose} className={styles.closeButton}>
             ×
@@ -590,7 +585,7 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
 
         <div className={styles.body}>
           {error && <div className={styles.error}>{error}</div>}
-          {isLoading ? <p>Loading...</p> : renderCurrentStep()}
+          {isLoading ? <p>Đang tải...</p> : renderCurrentStep()}
         </div>
 
         <div className={styles.footer}>

@@ -2,19 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-// 1. Import CSS Modules. React sẽ xử lý `styles` như một object JavaScript.
 import styles from "./LoginPage.module.css";
-
-// 2. Import hàm API đã được tách biệt rõ ràng.
 import { login as apiLogin } from "../../api/authApi";
 import { useAppContext } from "../../contexts/AppContext";
-
-// 3. Import hình ảnh (đảm bảo đường dẫn chính xác).
 import loginHeroImage from "../../assets/images/login-hero-image.jpg";
 
 const LoginPage = () => {
-  // 4. Quản lý state của form bằng một object duy nhất, dễ mở rộng.
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -22,22 +15,19 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login,user } = useAppContext(); // Lấy hàm login từ AuthContext
+  const { login, user } = useAppContext();
 
-  // Hàm xử lý chung cho các input, giúp code gọn hơn.
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCredentials({ ...credentials, [name]: value });
   };
 
-  // Hàm xử lý khi submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
     try {
-      // 5. Gọi hàm API `login` với dữ liệu từ state.
       const response = await apiLogin(credentials);
 
       const { token, user } = response.data;
@@ -45,12 +35,9 @@ const LoginPage = () => {
       console.log("User:", user);
       console.log("User role:", user?.role);
 
-      // Gọi hàm login từ AuthContext để Context tự lưu token và cập nhật user
       login(token);
       navigate("/");
-      // Chuyển hướng người dùng về trang chủ sau khi đăng nhập thành công
     } catch (err) {
-      // 8. Xử lý lỗi từ API và hiển thị thông báo thân thiện.
       if (
         err.response &&
         (err.response.status === 401 || err.response.status === 404)
@@ -61,15 +48,15 @@ const LoginPage = () => {
       }
       console.error("Lỗi đăng nhập:", err);
     } finally {
-      setIsLoading(false); // Dừng loading dù thành công hay thất bại
+      setIsLoading(false);
     }
   };
   useEffect(() => {
     if (user) {
       console.log("User từ context:", user);
       console.log("User role:", user.role);
-      
-      if (user.role === 'ADMIN') {
+
+      if (user.role === "ADMIN") {
         console.log("Redirect to admin dashboard");
         navigate("/admin");
       } else {
@@ -80,8 +67,6 @@ const LoginPage = () => {
   }, [user, navigate]);
 
   return (
-    // 9. Sử dụng className từ object `styles` đã import.
-    // Ví dụ: className="login-page-container" -> className={styles.loginPageContainer}
     <div className={styles.loginPageContainer}>
       <div className={styles.leftPanel}>
         <img src={loginHeroImage} alt="Fashion model" />
@@ -90,7 +75,7 @@ const LoginPage = () => {
       <div className={styles.rightPanel}>
         <div className={styles.loginFormWrapper}>
           <h1 className={styles.logo}>FASCO</h1>
-          <h2 className={styles.title}>Sign In To FASCO</h2>
+          <h2 className={styles.title}>Đăng Nhập FASCO</h2>
 
           {/* Form đăng nhập chính */}
           <form onSubmit={handleSubmit}>
@@ -102,18 +87,18 @@ const LoginPage = () => {
               <input
                 type="email"
                 id="email"
-                name="email" // Quan trọng: `name` phải khớp với key trong state `credentials`
+                name="email"
                 value={credentials.email}
                 onChange={handleInputChange}
                 required
               />
             </div>
             <div className={styles.inputGroup}>
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">Mật Khẩu</label>
               <input
                 type="password"
                 id="password"
-                name="password" // Quan trọng: `name` phải khớp với key trong state `credentials`
+                name="password"
                 value={credentials.password}
                 onChange={handleInputChange}
                 required
@@ -125,7 +110,7 @@ const LoginPage = () => {
               className={styles.btnSignin}
               disabled={isLoading}
             >
-              {isLoading ? "Đang đăng nhập..." : "Sign In"}
+              {isLoading ? "Đang đăng nhập..." : "Đăng Nhập"}
             </button>
           </form>
 
@@ -134,14 +119,14 @@ const LoginPage = () => {
             className={styles.btnRegister}
             style={{ textDecoration: "none" }}
           >
-            Register Now
+            Đăng Ký Ngay
           </Link>
 
           <Link to="/forgot-password" className={styles.forgotPasswordLink}>
-            Forgot Password?
+            Quên Mật Khẩu?
           </Link>
 
-          <p className={styles.terms}>FASCO Terms & Conditions</p>
+          <p className={styles.terms}>Điều Khoản & Điều Kiện FASCO</p>
         </div>
       </div>
     </div>

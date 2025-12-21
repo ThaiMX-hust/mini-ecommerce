@@ -7,8 +7,8 @@ const ConfirmationModal = ({
   onConfirm,
   title,
   message,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
+  confirmText = "Xác Nhận",
+  cancelText = "Hủy",
   isLoading = false,
 }) => {
   if (!isOpen) return null;
@@ -31,7 +31,7 @@ const ConfirmationModal = ({
             className={`${styles.button} ${styles.confirmButton}`}
             disabled={isLoading}
           >
-            {isLoading ? "Processing..." : confirmText}
+            {isLoading ? "Đang xử lý..." : confirmText}
           </button>
         </div>
       </div>

@@ -7,7 +7,6 @@ import { getUserProfile } from "../../api/authApi";
 import { getOrderHistory } from "../../api/orderApi";
 import styles from "./AccountPage.module.css";
 
-// Component con cho từng card trên dashboard
 const DashboardCard = ({ title, description, icon, children }) => (
   <div className={styles.card}>
     <div className={styles.cardHeader}>
@@ -38,7 +37,6 @@ const AccountPage = () => {
       if (!user?.user_id) return;
       setIsLoading(true);
       try {
-        // Gọi đồng thời 2 API để tăng tốc
         const [profileRes, ordersRes] = await Promise.all([
           getUserProfile(user.user_id),
           getOrderHistory(),
@@ -46,10 +44,8 @@ const AccountPage = () => {
 
         setProfile(profileRes.data);
 
-        // Xử lý và tính toán thống kê đơn hàng
         const orders = ordersRes.data.orders;
         const total = orders.length;
-        // Giả sử trạng thái cuối cùng trong history là trạng thái hiện tại
         const pending = orders.filter(
           (o) =>
             o.status_history[o.status_history.length - 1]?.status_name ===
@@ -77,71 +73,71 @@ const AccountPage = () => {
   };
 
   if (isLoading) {
-    return <div className={styles.loading}>Loading your account...</div>;
+    return <div className={styles.loading}>Đang tải tài khoản của bạn...</div>;
   }
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.pageTitle}>My Account</h1>
+      <h1 className={styles.pageTitle}>Tài Khoản Của Tôi</h1>
       <div className={styles.dashboardGrid}>
         {/* Card 1: Profile Information */}
         <DashboardCard
-          title="Profile Information"
-          description="View your profile details"
+          title="Thông Tin Cá Nhân"
+          description="Xem thông tin hồ sơ của bạn"
           icon={<i className="fas fa-user-circle"></i>} // Sử dụng Font Awesome icon
         >
           {profile ? (
             <div className={styles.profileInfo}>
               <p>
-                <span>First Name:</span> {profile.first_name}
+                <span>Họ:</span> {profile.first_name}
               </p>
               <p>
-                <span>Last Name:</span> {profile.last_name}
+                <span>Tên:</span> {profile.last_name}
               </p>
               <p>
                 <span>Email:</span> {profile.email}
               </p>
             </div>
           ) : (
-            <p>Could not load profile.</p>
+            <p>Không thể tải hồ sơ.</p>
           )}
           <button
             onClick={() => navigate("/account/edit-profile")}
             className={styles.cardButton}
           >
-            Edit Profile
+            Chỉnh Sửa Hồ Sơ
           </button>
         </DashboardCard>
 
         {/* Card 2: Order History */}
         <DashboardCard
-          title="My order"
-          description="Track your orders"
+          title="Đơn Hàng Của Tôi"
+          description="Theo dõi đơn hàng của bạn"
           icon={<i className="fas fa-box-open"></i>}
         >
           <div className={styles.orderStats}>
             <p>
-              <span>Total Orders:</span> {orderStats.total}
+              <span>Tổng Đơn Hàng:</span> {orderStats.total}
             </p>
             <p>
-              <span>Pending:</span> {orderStats.pending}
+              <span>Chờ Xử Lý:</span> {orderStats.pending}
             </p>
             <p>
-              <span>Completed:</span> {orderStats.completed}
+              <span>Hoàn Thành:</span> {orderStats.completed}
             </p>
           </div>
           <button
             onClick={() => navigate("/orders")}
             className={styles.cardButton}
           >
-            View All Orders  
+            Xem Tất Cả Đơn Hàng
           </button>
         </DashboardCard>
 
         {/* Card 3: Settings */}
         <DashboardCard
-          title="Settings"
-          description="Manage your preferences"
+          title="Cài Đặt"
+          description="Quản lý Options của bạn"
           icon={<i className="fas fa-cog"></i>}
         >
           <div className={styles.settingsActions}>
@@ -149,14 +145,14 @@ const AccountPage = () => {
               onClick={() => navigate("/account/change-password")}
               className={styles.settingButton}
             >
-              Change Password
+              Đổi Mật Khẩu
             </button>
-            <button className={styles.settingButton}>Contact Support</button>
+            <button className={styles.settingButton}>Liên Hệ Hỗ Trợ</button>
             <button
               onClick={handleLogout}
               className={`${styles.settingButton} ${styles.logoutButton}`}
             >
-              <i className="fas fa-sign-out-alt"></i> Logout
+              <i className="fas fa-sign-out-alt"></i> Đăng Xuất
             </button>
           </div>
         </DashboardCard>

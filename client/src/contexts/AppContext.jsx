@@ -6,12 +6,11 @@ import React, {
   useCallback,
 } from "react";
 import { jwtDecode } from "jwt-decode";
-import * as cartApi from "../api/cartApi"; // Import API giỏ hàng
+import * as cartApi from "../api/cartApi";
 
 const AppContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
-  // --- PHẦN AUTHENTICATION (GIỮ NGUYÊN) ---
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
 
@@ -46,53 +45,47 @@ export const AppProvider = ({ children }) => {
 
   // --- PHẦN CART MỚI ---
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cart, setCart] = useState(null); // Sẽ chứa { items: [], total_price: ... }
+  const [cart, setCart] = useState(null);
   const [cartLoading, setCartLoading] = useState(false);
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
-  // Hàm để fetch giỏ hàng từ server
   const fetchCart = useCallback(async () => {
-    if (!token) return; // Chỉ fetch khi đã đăng nhập
+    if (!token) return;
     setCartLoading(true);
     try {
       const response = await cartApi.getCart();
       setCart(response.data);
     } catch (error) {
       console.error("Failed to fetch cart:", error);
-      // Có thể xử lý lỗi, ví dụ clear giỏ hàng local
       setCart(null);
     } finally {
       setCartLoading(false);
     }
   }, [token]);
 
-  // Tự động fetch giỏ hàng khi người dùng đăng nhập
   useEffect(() => {
     if (user) {
       fetchCart();
     } else {
-      setCart(null); // Clear giỏ hàng khi logout
+      setCart(null);
     }
   }, [user, fetchCart]);
 
-  // Hàm thêm sản phẩm vào giỏ
   const addToCart = async (variantId, quantity) => {
     setCartLoading(true);
     try {
       await cartApi.addItemToCart({ product_variant_id: variantId, quantity });
-      await fetchCart(); // Fetch lại toàn bộ giỏ hàng để cập nhật
-      openCart(); // Mở giỏ hàng sau khi thêm thành công
+      await fetchCart();
+      openCart();
     } catch (error) {
       console.error("Failed to add to cart:", error);
-      // Xử lý lỗi hiển thị cho user
     } finally {
       setCartLoading(false);
     }
   };
 
-  // Hàm cập nhật số lượng
   const updateCartItemQuantity = async (itemId, quantity) => {
     setCartLoading(true);
     try {
@@ -105,7 +98,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Hàm xóa sản phẩm
   const removeCartItem = async (itemId) => {
     setCartLoading(true);
     try {

@@ -24,12 +24,12 @@ const ChangePasswordPage = () => {
     setSuccess("");
 
     if (passwords.new_password !== passwords.confirm_password) {
-      setError("New password and confirm password do not match.");
+      setError("Mật khẩu mới và xác nhận mật khẩu không khớp.");
       return;
     }
     if (passwords.new_password.length < 6) {
       // Thêm validation cơ bản
-      setError("New password must be at least 6 characters long.");
+      setError("Mật khẩu mới phải có ít nhất 6 ký tự.");
       return;
     }
 
@@ -41,7 +41,7 @@ const ChangePasswordPage = () => {
       };
       const response = await changePassword(dataToSend);
       setSuccess(
-        response.data.message || "Password changed successfully! Redirecting..."
+        response.data.message || "Đổi mật khẩu thành công! Đang chuyển hướng..."
       );
 
       // Reset form
@@ -55,10 +55,8 @@ const ChangePasswordPage = () => {
         navigate("/account"); // Chuyển về trang account sau 2 giây
       }, 2000);
     } catch (err) {
-      setError(
-        err.response?.data?.error || "An error occurred. Please try again."
-      );
-      console.error("Change password error:", err);
+      setError(err.response?.data?.error || "Đã xảy ra lỗi. Vui lòng thử lại.");
+      console.error("Đổi mật khẩu lỗi:", err);
     } finally {
       setIsLoading(false);
     }
@@ -67,9 +65,9 @@ const ChangePasswordPage = () => {
   return (
     <div className={styles.container}>
       <div className={styles.formWrapper}>
-        <h1 className={styles.title}>Change Password</h1>
+        <h1 className={styles.title}>Đổi Mật Khẩu</h1>
         <p className={styles.subtitle}>
-          Update your password for better security.
+          Cập nhật mật khẩu của bạn để bảo mật hơn.
         </p>
 
         {error && <p className={styles.errorMessage}>{error}</p>}
@@ -122,7 +120,7 @@ const ChangePasswordPage = () => {
               className={`${styles.button} ${styles.saveButton}`}
               disabled={isLoading}
             >
-              {isLoading ? "Updating..." : "Update Password"}
+              {isLoading ? "Đang cập nhật..." : "Cập Nhật Mật Khẩu"}
             </button>
           </div>
         </form>

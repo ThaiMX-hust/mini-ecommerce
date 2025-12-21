@@ -3,7 +3,7 @@ import ReactPaginate from "react-paginate";
 import styles from "./Pagination.module.css";
 
 const Pagination = ({ pageCount, onPageChange, currentPage }) => {
-  if (pageCount <= 1) return null; // Ẩn nếu chỉ có 1 trang
+  if (pageCount <= 1) return null;
 
   return (
     <ReactPaginate
@@ -24,7 +24,7 @@ const Pagination = ({ pageCount, onPageChange, currentPage }) => {
       breakClassName={styles.pageItem}
       breakLinkClassName={styles.pageLink}
       activeClassName={styles.active}
-      forcePage={currentPage - 1} // react-paginate dùng index (0, 1, 2...), state của ta dùng số trang (1, 2, 3...)
+      forcePage={currentPage - 1}
     />
   );
 };

@@ -2,10 +2,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext";
 import { getUserProfile, updateUserProfile } from "../../api/authApi";
-import styles from "./EditProfilePage.module.css"; // Dùng CSS riêng
+import styles from "./EditProfilePage.module.css";
 
 const EditProfilePage = () => {
-  const { user, login } = useAppContext(); // login có thể cần để cập nhật token mới
+  const { user, login } = useAppContext();
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState(null);
@@ -30,7 +30,7 @@ const EditProfilePage = () => {
         });
         setAvatarPreview(response.data.avatar_url);
       } catch (err) {
-        setError("Could not fetch profile data.");
+        setError("Không thể lấy dữ liệu hồ sơ.");
       } finally {
         setIsLoading(false);
       }
@@ -65,23 +65,21 @@ const EditProfilePage = () => {
 
     try {
       const response = await updateUserProfile(user.user_id, formData);
-      setSuccess("Profile updated successfully! Redirecting...");
-      // Nếu backend trả về token mới chứa tên mới, hãy cập nhật nó
-      // login(new_token_from_response);
+      setSuccess("Cập nhật hồ sơ thành công! Đang chuyển hướng...");
       setTimeout(() => navigate("/account"), 2000);
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to update profile.");
+      setError(err.response?.data?.error || "Không thể cập nhật hồ sơ.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isLoading && !profile) return <div>Loading...</div>;
+  if (isLoading && !profile) return <div>Đang tải...</div>;
 
   return (
     <div className={styles.container}>
       <div className={styles.formWrapper}>
-        <h1 className={styles.title}>Edit Profile</h1>
+        <h1 className={styles.title}>Chỉnh Sửa Hồ Sơ</h1>
 
         {error && <p className={styles.errorMessage}>{error}</p>}
         {success && <p className={styles.successMessage}>{success}</p>}
@@ -107,7 +105,7 @@ const EditProfilePage = () => {
           </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="first_name">First Name</label>
+            <label htmlFor="first_name">Họ</label>
             <input
               type="text"
               id="first_name"
@@ -117,7 +115,7 @@ const EditProfilePage = () => {
             />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="last_name">Last Name</label>
+            <label htmlFor="last_name">Tên</label>
             <input
               type="text"
               id="last_name"
@@ -136,14 +134,14 @@ const EditProfilePage = () => {
               onClick={() => navigate("/account")}
               className={`${styles.button} ${styles.cancelButton}`}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
               className={`${styles.button} ${styles.saveButton}`}
               disabled={isLoading}
             >
-              {isLoading ? "Saving..." : "Save Changes"}
+              {isLoading ? "Đang lưu..." : "Lưu Thay Đổi"}
             </button>
           </div>
         </form>

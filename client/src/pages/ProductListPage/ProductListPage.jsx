@@ -18,8 +18,7 @@ const ProductListPage = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState("price-asc");
-  
-  // ✅ State cho search query - đọc từ URL params
+
   const [searchQuery, setSearchQuery] = useState(() => {
     const params = new URLSearchParams(location.search);
     return params.get("search") || "";
@@ -34,12 +33,11 @@ const ProductListPage = () => {
     };
   });
 
-  // ✅ Update searchQuery khi URL thay đổi
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const newSearchQuery = params.get("search") || "";
     setSearchQuery(newSearchQuery);
-    setCurrentPage(1); // Reset về trang 1 khi search mới
+    setCurrentPage(1);
   }, [location.search]);
 
   useEffect(() => {
@@ -54,7 +52,7 @@ const ProductListPage = () => {
         setAllProducts(productsData.items || []);
         setAllCategories(catsData || []);
       } catch (err) {
-        setError("Failed to load products.");
+        setError("Lỗi khi tải sản phẩm. Vui lòng thử lại sau.");
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -63,11 +61,10 @@ const ProductListPage = () => {
     fetchInitialData();
   }, []);
 
-  // ✅ LOGIC LỌC: Thêm search vào useMemo
   const paginatedProducts = useMemo(() => {
     let filtered = [...allProducts];
 
-    // ✅ Lọc theo search query (tên sản phẩm)
+    // Lọc theo search query
     if (searchQuery && searchQuery.trim()) {
       const lowerQuery = searchQuery.toLowerCase().trim();
       filtered = filtered.filter((product) =>
@@ -107,7 +104,7 @@ const ProductListPage = () => {
       totalItems: filtered.length,
       totalPages: Math.ceil(filtered.length / ITEMS_PER_PAGE),
     };
-  }, [allProducts, filters, sort, currentPage, searchQuery]); // ✅ Thêm searchQuery vào dependencies
+  }, [allProducts, filters, sort, currentPage, searchQuery]);
 
   const handleFilterChange = (filterName, value) => {
     setCurrentPage(1);
@@ -133,7 +130,8 @@ const ProductListPage = () => {
         <div className={styles.searchInfoWrapper}>
           <p className={styles.searchInfo}>
             Showing results for: "<strong>{searchQuery}</strong>"
-            {paginatedProducts.totalItems === 0 && " - No products found"}
+            {paginatedProducts.totalItems === 0 &&
+              " - Không tìm thấy sản phẩm nào"}
           </p>
         </div>
       )}
@@ -146,13 +144,13 @@ const ProductListPage = () => {
         <main className={styles.mainContent}>
           <div className={styles.header}>
             <h1 className={styles.title}>
-              {searchQuery ? "Search Results" : "All Products"}
+              {searchQuery ? "Kết quả tìm kiếm" : "Tất cả sản phẩm"}
             </h1>
             <div className={styles.info}>
               {!isLoading && paginatedProducts.totalItems > 0 && (
                 <p>
-                  Showing {firstItemIndex}-{lastItemIndex} of{" "}
-                  {paginatedProducts.totalItems} products
+                  Hiển thị {firstItemIndex}-{lastItemIndex} trong tổng số{" "}
+                  {paginatedProducts.totalItems} sản phẩm
                 </p>
               )}
             </div>
@@ -161,8 +159,8 @@ const ProductListPage = () => {
               onChange={(e) => setSort(e.target.value)}
               className={styles.sortDropdown}
             >
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
+              <option value="price-asc">Giá: Thấp đến Cao</option>
+              <option value="price-desc">Giá: Cao đến Thấp</option>
             </select>
           </div>
 
@@ -180,8 +178,8 @@ const ProductListPage = () => {
                 ) : (
                   <p className={styles.emptyMessage}>
                     {searchQuery
-                      ? `No products found for "${searchQuery}"`
-                      : "No products match your filters."}
+                      ? `Không tìm thấy sản phẩm cho "${searchQuery}"`
+                      : "Không có sản phẩm nào phù hợp với bộ lọc của bạn."}
                   </p>
                 )}
               </div>

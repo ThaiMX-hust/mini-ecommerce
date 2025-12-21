@@ -124,29 +124,29 @@ const ProductManagement = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Product Management</h1>
+          <h1 className={styles.title}>Quản Lý Sản Phẩm</h1>
           <p className={styles.subtitle}>
-            Manage product information, variants, and options
+            Quản lý thông tin sản phẩm, Variants và Options
           </p>
         </div>
         <button
           onClick={() => openFormModal("create")}
           className={styles.addButton}
         >
-          + Add Product
+          + Thêm Sản Phẩm
         </button>
       </div>
 
       <div className={styles.controls}>
         <input
           type="text"
-          placeholder="Search products by name..."
+          placeholder="Tìm kiếm sản phẩm theo tên..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className={styles.searchInput}
         />
         <button className={styles.filterButton}>
-          <i className="fas fa-filter"></i> Filter
+          <i className="fas fa-filter"></i> Lọc
         </button>
       </div>
 
@@ -154,17 +154,17 @@ const ProductManagement = () => {
         <table className={styles.productTable}>
           <thead>
             <tr>
-              <th>Product</th>
-              <th>Price</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>Sản Phẩm</th>
+              <th>Giá</th>
+              <th>Trạng Thái</th>
+              <th>Hành Động</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
                 <td colSpan="4" className={styles.loading}>
-                  Loading products...
+                  Đang tải sản phẩm...
                 </td>
               </tr>
             ) : products.length > 0 ? (
@@ -218,7 +218,7 @@ const ProductManagement = () => {
             ) : (
               <tr>
                 <td colSpan="4" className={styles.noResults}>
-                  No products found.
+                  Không tìm thấy sản phẩm.
                 </td>
               </tr>
             )}
@@ -229,7 +229,7 @@ const ProductManagement = () => {
       <div className={styles.paginationContainer}>
         {!isLoading && pagination.totalItems > 0 && (
           <p>
-            Showing {products.length} of {pagination.totalItems} products
+            Hiển thị {products.length} trong số {pagination.totalItems} sản phẩm
           </p>
         )}
         <Pagination
@@ -244,9 +244,9 @@ const ProductManagement = () => {
         onClose={closeDeleteModal}
         onConfirm={handleDeleteConfirm}
         isLoading={modalState.isLoading}
-        title="Confirm Deletion"
-        message={`Are you sure you want to delete the product "${modalState.productToDelete?.name}"? This action is reversible (soft delete).`}
-        confirmText="Yes, Delete"
+        title="Xác Nhận Xóa"
+        message={`Bạn có chắc chắn muốn xóa sản phẩm "${modalState.productToDelete?.name}"? Hành động này có thể hoàn tác (xóa mềm).`}
+        confirmText="Xóa"
       />
 
       {detailModal.isOpen && (

@@ -95,18 +95,18 @@ const CategoryManagement = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Category Management</h1>
-          <p className={styles.subtitle}>Manage all product categories</p>
+          <h1 className={styles.title}>Quản Lý Danh Mục</h1>
+          <p className={styles.subtitle}>Quản lý tất cả danh mục sản phẩm</p>
         </div>
         <button
           onClick={() => handleOpenFormModal("create")}
           className={styles.addButton}
         >
-          + Add Category
+          + Thêm Danh Mục
         </button>
       </div>
 
-      {isLoading && <p>Loading categories...</p>}
+      {isLoading && <p>Đang tải danh mục...</p>}
       {error && <p className={styles.error}>{error}</p>}
 
       {!isLoading && !error && (
@@ -152,9 +152,9 @@ const CategoryManagement = () => {
         onClose={handleCloseDeleteModal}
         onConfirm={handleDeleteConfirm}
         isLoading={deleteModal.isLoading}
-        title="Confirm Deletion"
-        message={`Are you sure you want to delete the category "${deleteModal.category?.category_name}"?`}
-        confirmText="Yes, Delete"
+        title="Xác Nhận Xóa"
+        message={`Bạn có chắc chắn muốn xóa danh mục "${deleteModal.category?.category_name}"?`}
+        confirmText="Xóa"
       />
     </div>
   );

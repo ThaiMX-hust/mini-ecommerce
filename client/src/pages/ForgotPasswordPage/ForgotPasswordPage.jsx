@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { requestPasswordReset, resetPassword } from "../../api/authApi";
 
-// Tái sử dụng CSS từ trang Login để có giao diện đồng bộ
 import styles from "../LoginPage/LoginPage.module.css";
 
-// Tái sử dụng ảnh từ trang Login
 import loginHeroImage from "../../assets/images/login-hero-image.jpg";
 
 const ForgotPasswordPage = () => {
@@ -38,14 +36,12 @@ const ForgotPasswordPage = () => {
       const response = await requestPasswordReset(email);
       setSuccess(
         response.data.message ||
-          "If an account with that email exists, a password reset link has been sent."
+          "Nếu tài khoản với email đó tồn tại, một liên kết đặt lại mật khẩu đã được gửi."
       );
-      setEmail(""); // Xóa email sau khi gửi
+      setEmail("");
     } catch (err) {
-      // Ngay cả khi lỗi, ta cũng nên hiển thị thông báo thành công để bảo mật
-      // Tránh việc kẻ xấu dò xem email nào đã tồn tại trong hệ thống
       setSuccess(
-        "If an account with that email exists, a password reset link has been sent."
+        "Nếu tài khoản với email đó tồn tại, một liên kết đặt lại mật khẩu đã được gửi."
       );
       console.error(err);
     } finally {
@@ -56,7 +52,7 @@ const ForgotPasswordPage = () => {
   const handlePasswordResetSubmit = async (e) => {
     e.preventDefault();
     if (passwords.new_password !== passwords.confirm_password) {
-      setError("Passwords do not match.");
+      setError("Mật khẩu không khớp.");
       return;
     }
     setIsLoading(true);
@@ -64,28 +60,29 @@ const ForgotPasswordPage = () => {
     setSuccess("");
     try {
       const response = await resetPassword(token, passwords.new_password);
-      setSuccess(response.data.message + " Redirecting to login page...");
+      setSuccess(
+        response.data.message + " Đang chuyển hướng đến trang đăng nhập..."
+      );
       setTimeout(() => {
         navigate("/login");
       }, 3000);
     } catch (err) {
       setError(
         err.response?.data?.error ||
-          "Invalid or expired token. Please request a new link."
+          "Token không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu liên kết mới."
       );
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Render Giai đoạn 2: Đặt lại mật khẩu (nếu có token trên URL) (http://localhost:5173/forgot-password?token=abc123)
   const renderResetPasswordForm = () => (
     <>
-      <h2 className={styles.title}>Reset Your Password</h2>
-      <p className={styles.subtitle}>Enter your new password below.</p>
+      <h2 className={styles.title}>Đặt Lại Mật Khẩu</h2>
+      <p className={styles.subtitle}>Nhập mật khẩu mới của bạn bên dưới.</p>
       <form onSubmit={handlePasswordResetSubmit}>
         <div className={styles.inputGroup}>
-          <label htmlFor="new_password">New Password</label>
+          <label htmlFor="new_password">Mật Khẩu Mới</label>
           <input
             type="password"
             id="new_password"
@@ -98,7 +95,7 @@ const ForgotPasswordPage = () => {
           />
         </div>
         <div className={styles.inputGroup}>
-          <label htmlFor="confirm_password">Confirm New Password</label>
+          <label htmlFor="confirm_password">Xác Nhận Mật Khẩu Mới</label>
           <input
             type="password"
             id="confirm_password"
@@ -111,23 +108,22 @@ const ForgotPasswordPage = () => {
           />
         </div>
         <button type="submit" className={styles.btnSignin} disabled={isLoading}>
-          {isLoading ? "Resetting..." : "Reset Password"}
+          {isLoading ? "Đang đặt lại..." : "Đặt Lại Mật Khẩu"}
         </button>
       </form>
     </>
   );
 
-  // Render Giai đoạn 1: Yêu cầu link (nếu không có token)
   const renderRequestLinkForm = () => (
     <>
-      <h2 className={styles.title}>Forgot Password</h2>
+      <h2 className={styles.title}>Quên Mật Khẩu</h2>
       <p className={styles.subtitle}>
-        Enter your email address and we'll send you a link to reset your
-        password.
+        Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn liên kết để đặt
+        lại mật khẩu.
       </p>
       <form onSubmit={handleEmailSubmit}>
         <div className={styles.inputGroup}>
-          <label htmlFor="email">Email Address</label>
+          <label htmlFor="email">Địa Chỉ Email</label>
           <input
             type="email"
             id="email"
@@ -137,7 +133,7 @@ const ForgotPasswordPage = () => {
           />
         </div>
         <button type="submit" className={styles.btnSignin} disabled={isLoading}>
-          {isLoading ? "Sending..." : "Send Reset Link"}
+          {isLoading ? "Đang gửi..." : "Gửi Liên Kết Đặt Lại"}
         </button>
       </form>
     </>
@@ -163,7 +159,7 @@ const ForgotPasswordPage = () => {
             className={styles.forgotPasswordLink}
             style={{ marginTop: "20px" }}
           >
-            Back to Login
+            Quay Lại Đăng Nhập
           </Link>
         </div>
       </div>

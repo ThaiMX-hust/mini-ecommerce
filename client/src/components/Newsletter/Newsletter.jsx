@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styles from "./Newsletter.module.css";
 
-// Import hình ảnh
 import modelLeft from "../../assets/images/newsletter-left.jpg";
 import modelRight from "../../assets/images/newsletter-right.jpg";
 
@@ -12,10 +11,9 @@ const Newsletter = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email) {
-      console.log("Subscribing email:", email);
+      console.log("Đăng ký email:", email);
       setMessage(`Cảm ơn bạn đã đăng ký nhận tin với email: ${email}`);
-      setEmail(""); // Xóa input sau khi submit
-      // TODO: Gọi API đăng ký nhận bản tin
+      setEmail("");
     }
   };
 
@@ -34,7 +32,8 @@ const Newsletter = () => {
           <p className={styles.description}>
             Nhận ưu đãi <strong>giảm 10%</strong> cho đơn hàng đầu tiên.
             <br />
-            Cập nhật sớm nhất các sản phẩm mới và chương trình khuyến mãi độc quyền.
+            Cập nhật sớm nhất các sản phẩm mới và chương trình khuyến mãi độc
+            quyền.
           </p>
 
           <form className={styles.subscribeForm} onSubmit={handleSubmit}>

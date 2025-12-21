@@ -1,43 +1,44 @@
 import React from "react";
 import styles from "./OrderFilterBar.module.css";
 
-// Tạm thời hardcode danh sách trạng thái.
-// Lý tưởng nhất là gọi API GET /order-statuses để lấy danh sách này.
 const ORDER_STATUSES = [
-  { code: "CREATED", name: "Pending Confirmation" },
-  { code: "CONFIRMED", name: "Confirmed" },
-  { code: "SHIPPING", name: "Shipping" },
-  { code: "COMPLETED", name: "Completed" },
-  { code: "CANCELLED", name: "Cancelled" },
+  { code: "CREATED", name: "Chờ xác nhận" },
+  { code: "CONFIRMED", name: "Đã xác nhận" },
+  { code: "PREPARING", name: "Chuẩn bị hàng" },
+  { code: "SHIPPING", name: "Đang vận chuyển" },
+  { code: "DELIVERED", name: "Đã giao hàng" },
+  { code: "COMPLETED", name: "Hoàn thành" },
+  { code: "CANCELLED", name: "Đã hủy" },
+  { code: "REFUNDED", name: "Đã hoàn tiền" },
 ];
 
 const SORT_OPTIONS = [
-  { value: "created_at", label: "Date Created" },
-  { value: "final_total_price", label: "Total Price" },
+  { value: "created_at", label: "Ngày Tạo" },
+  { value: "final_total_price", label: "Tổng Giá" },
 ];
 
 const SORT_ORDER = [
-  { value: "desc", label: "Descending" },
-  { value: "asc", label: "Ascending" },
+  { value: "desc", label: "Giảm Dần" },
+  { value: "asc", label: "Tăng Dần" },
 ];
 
 const OrderFilterBar = ({ filters, onFilterChange }) => {
   return (
     <div className={styles.filterBar}>
       <h3 className={styles.title}>
-        <i className="fas fa-filter"></i> Filters
+        <i className="fas fa-filter"></i> Bộ Lọc
       </h3>
       <div className={styles.controlsGrid}>
         {/* Status Filter */}
         <div className={styles.controlGroup}>
-          <label htmlFor="status_code">Status</label>
+          <label htmlFor="status_code">Trạng Thái</label>
           <select
             id="status_code"
             name="status_code"
             value={filters.status_code}
             onChange={onFilterChange}
           >
-            <option value="">All Statuses</option>
+            <option value="">Tất Cả Trạng Thái</option>
             {ORDER_STATUSES.map((status) => (
               <option key={status.code} value={status.code}>
                 {status.name}
@@ -48,7 +49,7 @@ const OrderFilterBar = ({ filters, onFilterChange }) => {
 
         {/* Sort By Filter */}
         <div className={styles.controlGroup}>
-          <label htmlFor="sort_by">Sort By</label>
+          <label htmlFor="sort_by">Sắp Xếp Theo</label>
           <select
             id="sort_by"
             name="sort_by"
@@ -65,7 +66,7 @@ const OrderFilterBar = ({ filters, onFilterChange }) => {
 
         {/* Sort Order Filter */}
         <div className={styles.controlGroup}>
-          <label htmlFor="sort_order">Order</label>
+          <label htmlFor="sort_order">Thứ Tự</label>
           <select
             id="sort_order"
             name="sort_order"
@@ -82,14 +83,14 @@ const OrderFilterBar = ({ filters, onFilterChange }) => {
 
         {/* Search Filter */}
         <div className={styles.controlGroup}>
-          <label htmlFor="search">Search</label>
+          <label htmlFor="search">Tìm Kiếm</label>
           <input
             type="text"
             id="search"
             name="search"
             value={filters.search}
             onChange={onFilterChange}
-            placeholder="Order ID, Customer Name..."
+            placeholder="Mã đơn hàng, Tên khách hàng..."
           />
         </div>
       </div>

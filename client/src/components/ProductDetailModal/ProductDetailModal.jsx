@@ -21,15 +21,14 @@ const ProductDetailModal = ({ productId, onClose }) => {
         const response = await getProductById(productId);
         const data = response.data;
         setProductData(data);
-        // Mặc định chọn và hiển thị thông tin của variant đầu tiên
         if (data.variants && data.variants.length > 0) {
           const firstVariant = data.variants[0];
           setSelectedImage(firstVariant.images?.[0] || "/placeholder.png");
           setSelectedVariantId(firstVariant.product_variant_id);
         }
       } catch (err) {
-        console.error("Failed to fetch product details:", err);
-        setError("Could not load product details.");
+        console.error("Không thể tải chi tiết sản phẩm:", err);
+        setError("Không thể tải chi tiết sản phẩm.");
       } finally {
         setIsLoading(false);
       }
@@ -50,7 +49,7 @@ const ProductDetailModal = ({ productId, onClose }) => {
 
   const renderContent = () => {
     if (isLoading)
-      return <div className={styles.loading}>Loading details...</div>;
+      return <div className={styles.loading}>Đang tải chi tiết...</div>;
     if (error) return <div className={styles.error}>{error}</div>;
     if (!productData) return null;
 
@@ -73,7 +72,7 @@ const ProductDetailModal = ({ productId, onClose }) => {
           <p className={styles.description}>{productData.description}</p>
 
           <div className={styles.infoGroup}>
-            <span className={styles.infoLabel}>Categories:</span>
+            <span className={styles.infoLabel}>Danh Mục:</span>
             <div className={styles.tagGroup}>
               {productData.categories.map((cat) => (
                 <span key={cat.category_id} className={styles.tag}>
@@ -84,7 +83,7 @@ const ProductDetailModal = ({ productId, onClose }) => {
           </div>
 
           <div className={styles.infoGroup}>
-            <span className={styles.infoLabel}>Status:</span>
+            <span className={styles.infoLabel}>Trạng Thái:</span>
             <StatusBadge isActive={!productData.is_disabled} />
           </div>
 
@@ -109,8 +108,8 @@ const ProductDetailModal = ({ productId, onClose }) => {
                   <tr>
                     <th>SKU</th>
                     <th>Options</th>
-                    <th>Price</th>
-                    <th>Stock</th>
+                    <th>Giá</th>
+                    <th>Tồn Kho</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -147,7 +146,7 @@ const ProductDetailModal = ({ productId, onClose }) => {
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h1 className={styles.modalTitle}>Product Details</h1>
+          <h1 className={styles.modalTitle}>Chi Tiết Sản Phẩm</h1>
           <button onClick={onClose} className={styles.closeButton}>
             ×
           </button>

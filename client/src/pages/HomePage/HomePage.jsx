@@ -16,7 +16,6 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // AUTO MOTION STATE
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAuto, setIsAuto] = useState(true);
 
@@ -31,13 +30,13 @@ const HomePage = () => {
         ]);
         setAllProducts(productsData.items || []);
         const categoriesWithProducts = cats
-          .map(cat => ({
+          .map((cat) => ({
             ...cat,
-            productCount: productsData.items.filter(product => 
-              product.categories.some(pCat => pCat.category_code === cat.code)
-            ).length
+            productCount: productsData.items.filter((product) =>
+              product.categories.some((pCat) => pCat.category_code === cat.code)
+            ).length,
           }))
-          .filter(cat => cat.productCount > 0)
+          .filter((cat) => cat.productCount > 0)
           .sort((a, b) => b.productCount - a.productCount)
           .slice(0, 6);
 
@@ -73,9 +72,7 @@ const HomePage = () => {
 
     return allProducts
       .filter((p) =>
-        p.categories.some(
-          (cat) => cat.category_code === activeCategory.code
-        )
+        p.categories.some((cat) => cat.category_code === activeCategory.code)
       )
       .slice(0, 6);
   }, [activeCategory, allProducts]);
@@ -103,9 +100,7 @@ const HomePage = () => {
 
     if (filteredProducts.length === 0) {
       return (
-        <p className={styles.emptyMessage}>
-          Không tìm thấy sản phẩm phù hợp.
-        </p>
+        <p className={styles.emptyMessage}>Không tìm thấy sản phẩm phù hợp.</p>
       );
     }
 
@@ -138,21 +133,21 @@ const HomePage = () => {
               của chúng tôi.
             </p>
 
-          {categories.length > 0 && (
-            <div className={styles.categoryTabs}>
-              {categories.map((cat, index) => (
-                <button
-                  key={cat.code}
-                  className={`${styles.tab} ${
-                    activeIndex === index ? styles.active : ""
-                  }`}
-                  onClick={() => handleCategoryClick(index)}
-                >
-                  <span>{cat.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
+            {categories.length > 0 && (
+              <div className={styles.categoryTabs}>
+                {categories.map((cat, index) => (
+                  <button
+                    key={cat.code}
+                    className={`${styles.tab} ${
+                      activeIndex === index ? styles.active : ""
+                    }`}
+                    onClick={() => handleCategoryClick(index)}
+                  >
+                    <span>{cat.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
 
             {renderProductGrid()}
 

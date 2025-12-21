@@ -121,15 +121,15 @@ const OrderManagement = () => {
       {/* Header */}
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Order Management</h1>
+          <h1 className={styles.title}>Quản Lý Đơn Hàng</h1>
           <p className={styles.subtitle}>
-            Review and track all customer orders
+            Xem và theo dõi tất cả đơn hàng của khách hàng
           </p>
         </div>
         <div className={styles.totalCount}>
           <i className="fas fa-receipt"></i>
           <span>
-            Total Orders: <strong>{pagination.totalItems || 0}</strong>
+            Tổng Đơn Hàng: <strong>{pagination.totalItems || 0}</strong>
           </span>
         </div>
       </div>
@@ -142,18 +142,18 @@ const OrderManagement = () => {
         <table className={styles.orderTable}>
           <thead>
             <tr>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Total</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>Mã Đơn Hàng</th>
+              <th>Khách Hàng</th>
+              <th>Tổng Tiền</th>
+              <th>Ngày</th>
+              <th>Trạng Thái</th>
+              <th>Hành Động</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan="6">Loading...</td>
+                <td colSpan="6">Đang tải...</td>
               </tr>
             ) : orders && orders.length > 0 ? (
               orders.map((order) => (
@@ -192,7 +192,7 @@ const OrderManagement = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="6">No orders found.</td>
+                <td colSpan="6">Không tìm thấy đơn hàng.</td>
               </tr>
             )}
           </tbody>

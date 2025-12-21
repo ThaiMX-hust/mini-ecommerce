@@ -8,7 +8,7 @@ const StatusBadge = ({ isActive }) => {
         isActive ? styles.active : styles.disabled
       }`}
     >
-      {isActive ? "Active" : "Disabled"}
+      {isActive ? "Hoạt Động" : "Tắt"}
     </span>
   );
 };

@@ -37,51 +37,51 @@ const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Order Details</h2>
+          <h2 className={styles.title}>Chi Tiết Đơn Hàng</h2>
           <button onClick={onClose} className={styles.closeButton}>
             ×
           </button>
         </div>
         <div className={styles.body}>
           {loading ? (
-            <p>Loading details...</p>
+            <p>Đang tải chi tiết...</p>
           ) : !detail ? (
-            <p>Could not load details.</p>
+            <p>Không thể tải thông tin.</p>
           ) : (
             <>
-              <p className={styles.orderId}>Order ID: {detail.order_id}</p>
+              <p className={styles.orderId}>Mã Đơn Hàng: {detail.order_id}</p>
 
               <div className={styles.section}>
-                <h3 className={styles.sectionTitle}>Customer Information</h3>
+                <h3 className={styles.sectionTitle}>Thông Tin Khách Hàng</h3>
                 <div className={styles.infoGrid}>
                   <div>
-                    <span>Receiver:</span> {detail.receiver_name}
+                    <span>Người nhận:</span> {detail.receiver_name}
                   </div>
                   <div>
-                    <span>Phone:</span> {detail.phone}
+                    <span>Điện thoại:</span> {detail.phone}
                   </div>
                 </div>
                 <div className={styles.fullWidth}>
-                  <span>Address:</span> {detail.address}
+                  <span>Địa chỉ:</span> {detail.address}
                 </div>
               </div>
 
               <div className={styles.section}>
-                <h3 className={styles.sectionTitle}>Pricing</h3>
+                <h3 className={styles.sectionTitle}>Giá</h3>
                 <div className={styles.infoGrid}>
                   <div>
-                    <span>Subtotal:</span>{" "}
+                    <span>Tạm tính:</span>{" "}
                     {formatCurrency(detail.raw_total_price)}
                   </div>
                   <div>
-                    <span>Grand Total:</span>{" "}
+                    <span>Tổng cộng:</span>{" "}
                     {formatCurrency(detail.final_total_price)}
                   </div>
                 </div>
               </div>
 
               <div className={styles.section}>
-                <h3 className={styles.sectionTitle}>Status History</h3>
+                <h3 className={styles.sectionTitle}>Lịch Sử Trạng Thái</h3>
                 <div className={styles.statusTimeline}>
                   {detail.status_history.map((history) => (
                     <div
@@ -106,7 +106,7 @@ const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
               </div>
 
               <div className={styles.section}>
-                <h3 className={styles.sectionTitle}>Products</h3>
+                <h3 className={styles.sectionTitle}>Sản Phẩm</h3>
                 {detail.items.map((item) => (
                   <div key={item.sku} className={styles.productItem}>
                     <img
@@ -115,7 +115,7 @@ const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
                     />
                     <div className={styles.productInfo}>
                       <h4>{item.name}</h4>
-                      <p>SKU: {item.sku}</p>
+                      <p>Mã SKU: {item.sku}</p>
                       <p>
                         Options:{" "}
                         {item.options
