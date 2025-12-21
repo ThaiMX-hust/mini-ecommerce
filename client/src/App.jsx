@@ -36,6 +36,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/products" element={<ProductListPage />} />
           <Route path="/products/:productId" element={<ProductDetailPage />} />
+          <Route path="/payment-result" element={<PaymentResultPage />} />
           {/* 3. Các route được bảo vệ */}
           <Route element={<ProtectedRoute />}>
             <Route path="/account" element={<AccountPage />} />
@@ -47,7 +48,7 @@ function App() {
             <Route path="/cart" element={<div>Cart Page</div>} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/orders" element={<OrderPage />} />
-            <Route path="/payment-result" element={<PaymentResultPage />} />
+            
           </Route>
         </Route>
 

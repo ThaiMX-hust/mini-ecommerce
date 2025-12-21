@@ -99,6 +99,9 @@ const createPaymentUrl = async ({ orderId, ipAddr }) => {
     return vnpUrl;
 };
 
+
+
+
 const handleVnpayIpn = async (vnp_Params) => {
     // Encode lại các giá trị nhận được từ URL (vì express thường tự decode)
     // Logic xác thực chữ ký
@@ -110,7 +113,7 @@ const handleVnpayIpn = async (vnp_Params) => {
     delete vnp_Params['vnp_SecureHashType'];
 
     // Sắp xếp lại params
-    vnp_Params = sortObject(vnp_Params);
+    vnp_Params = sortObjectForVerify(vnp_Params);
 
     const secretKey = process.env.VNP_HASHSECRET;
     const signData = qs.stringify(vnp_Params, { encode: false });
@@ -222,12 +225,31 @@ const handleVnpayIpn = async (vnp_Params) => {
     }
 };
 
+function sortObjectForVerify(obj) {
+    let sorted = {};
+    let str = [];
+    let key;
+    for (key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            str.push(key);
+        }
+    }
+    str.sort();
+    for (key = 0; key < str.length; key++) {
+        //  Encode giống như VNPay: encodeURIComponent và thay space thành +
+        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+    }
+    return sorted;
+}
+
+
+
 const handleVnpayReturn = async (vnp_Params) => {
     let vnp_SecureHash = vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
 
-    vnp_Params = sortObject(vnp_Params);
+    vnp_Params = sortObjectForVerify(vnp_Params);
 
     const secretKey = process.env.VNP_HASHSECRET;
     const signData = qs.stringify(vnp_Params, { encode: false });
@@ -235,11 +257,21 @@ const handleVnpayReturn = async (vnp_Params) => {
     const hmac = crypto.createHmac("sha512", secretKey);
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
 
+    const orderId = vnp_Params['vnp_TxnRef'];
+
+
+    console.log('VNPay Return - Signature Verification:', {
+        orderId,
+        receivedHash: vnp_SecureHash,
+        calculatedHash: signed,
+        isValid: vnp_SecureHash === signed
+    });
+
     if (vnp_SecureHash === signed) {
-        const orderId = vnp_Params['vnp_TxnRef'];
+    
         if (vnp_Params['vnp_ResponseCode'] === '00') {
 
-            return { isSuccess: true, message: 'Payment successful' };
+            return { isSuccess: true, message: 'Payment successful', orderId };
         } else {
             return { isSuccess: false, message: 'Payment failed',orderId };
         }

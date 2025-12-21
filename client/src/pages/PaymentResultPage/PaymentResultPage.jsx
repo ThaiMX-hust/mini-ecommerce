@@ -20,7 +20,7 @@ const PaymentResultPage = () => {
                             <p className={styles.orderId}>Order ID: {orderId}</p>
                         )}
                         <div className={styles.actions}>
-                            <Link to="/order-history" className={styles.btnPrimary}>
+                            <Link to="/orders" className={styles.btnPrimary}>
                                 View Order History
                             </Link>
                             <Link to="/" className={styles.btnSecondary}>

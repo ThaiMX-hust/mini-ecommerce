@@ -37,15 +37,23 @@ const vnpayIpn = async (req, res) => {
 };
 
 const vnpayReturn = async (req, res) => {
-    const result = await paymentService.handleVnpayReturn(req.query);
+    try{
+        const result = await paymentService.handleVnpayReturn(req.query);
 
-    // Redirect user về frontend với kết quả thanh toán
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const redirectUrl =
-        `${frontendUrl}/payment-result?success=${result.isSuccess}&message=${encodeURIComponent(result.message)}&orderId=${result.orderId}`;
-
-    // Redirect thay vì trả JSON
-    res.redirect(redirectUrl);
+        // Redirect user về frontend với kết quả thanh toán
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const redirectUrl =
+            `${frontendUrl}/payment-result?success=${result.isSuccess}&message=${encodeURIComponent(result.message)}&orderId=${result.orderId}`;
+        console.log('Redirecting to:', redirectUrl);
+        // Redirect thay vì trả JSON
+        res.redirect(redirectUrl);
+    }
+    catch(error){
+        console.error('Error in vnpayReturn:', error);
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        res.redirect(`${frontendUrl}/payment-result?success=false&message=${encodeURIComponent('System error')}`);
+    }
+    
 };
 
 module.exports = {
