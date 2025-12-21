@@ -87,16 +87,27 @@ async function getRevenue(from, to) {
     };
 }
 
+// for admin only
 async function getAll(query, sort) {
     const { offset, limit, status_code } = query;
-    /**
-     * TODO: Implement filtering by status_code: choose 1:
-     * Denormalize: add order current status to Order table
-     * Filter after db query (affect pagination)
-     * Raw SQL
-     */
 
     const where = { AND: [] };
+
+    if (status_code) {
+        const matchingOrders = await prisma.$queryRaw`
+            SELECT o.order_id
+            FROM \`Order\` o
+            JOIN \`OrderStatusHistory\` osh ON o.order_id = osh.order_id
+            JOIN \`OrderStatus\` os ON osh.order_status_id = os.order_status_id
+            WHERE os.order_status_code = ${status_code}
+            AND osh.changed_at = (
+                SELECT MAX(changed_at) FROM \`OrderStatusHistory\` sub WHERE sub.order_id = o.order_id
+            )
+        `;
+
+        const orderIds = matchingOrders.map(o => o.order_id);
+        where.AND.push({ order_id: { in: orderIds } });
+    }
 
     const [count, orders] = await Promise.all([
         prisma.order.count({ where }),
