@@ -246,6 +246,8 @@ async function addProduct(productData) {
                 created_at: variant.created_at
             }));
 
+            await CacheManager.clearByPrefix("products:list:");
+
             return {
                 product_id: createdProduct.product_id,
                 name: createdProduct.name,

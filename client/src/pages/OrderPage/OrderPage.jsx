@@ -41,25 +41,23 @@ const OrderPage = () => {
 
     // ✅ Hàm thanh toán đơn hàng
     const handlePayNow = async (order) => {
-        try {
-            setPayingOrderId(order.order_id);
-            
-            const paymentRes = await api.post("/payments/vnpay", {
-                orderInfo: `Thanh toán đơn hàng ${order.order_id}`,
-                orderId: order.order_id,
-                amount: order.total_price_after_discount,
-            });
+    try {
+        setPayingOrderId(order.order_id);
+        
+        const paymentRes = await api.post("/payments/vnpay", {
+            orderId: order.order_id, 
+        });
 
-            if (paymentRes.data.url) {
-                window.location.href = paymentRes.data.url;
-            }
-        } catch (err) {
-            console.error("Error creating payment:", err);
-            alert(err.response?.data?.message || "Failed to create payment. Please try again.");
-        } finally {
-            setPayingOrderId(null);
+        if (paymentRes.data.url) {
+            window.location.href = paymentRes.data.url;
         }
-    };
+    } catch (err) {
+        console.error("Error creating payment:", err);
+        alert(err.response?.data?.message || "Failed to create payment. Please try again.");
+    } finally {
+        setPayingOrderId(null);
+    }
+};
 
     const formatCurrency = (amount) => {
         return Number(amount).toLocaleString('vi-VN', { 
