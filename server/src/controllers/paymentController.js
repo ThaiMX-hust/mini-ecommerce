@@ -1,7 +1,7 @@
 const paymentService = require('../services/paymentService');
 
 const createPayment = async (req, res) => {
-    const { amount, orderInfo, orderId } = req.body;
+    const { orderId } = req.body;
 
     let ipAddr = req.headers['x-forwarded-for'] ||
         req.connection.remoteAddress ||
@@ -19,8 +19,6 @@ const createPayment = async (req, res) => {
     }
 
     const paymentUrl = await paymentService.createPayment({
-        amount,
-        orderInfo,
         orderId,
         ipAddr
     });
