@@ -59,6 +59,7 @@ async function changePassword(user_id, old_password, new_password) {
     if (!isPasswordValid)
         throw new BadRequestError("Wrong password");
 
+    userService.validatePassword(new_password);
     password_hash = await hashPassword(new_password);
     await userService.updatePassword(user_id, password_hash);
 }
@@ -82,6 +83,7 @@ async function resetPassword(token, new_password) {
         throw new BadRequestError("Invalid or expired token");
     }
 
+    userService.validatePassword(new_password);
     const password_hash = await hashPassword(new_password);
     await userService.updatePassword(user_id, password_hash);
 }
