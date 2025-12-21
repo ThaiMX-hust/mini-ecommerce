@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../../api'
 import styles from './OrderPage.module.css'
+import CancelOrderModal from '../../components/CancelOrderModal/CancelOrderModal'
+import {cancelOrder} from '../../api/orderApi'
 
 const OrderPage = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [payingOrderId, setPayingOrderId] = useState(null);
+    const [cancelOrderId, setCancelOrderId] = useState(null);
+    const [cancelModal, setCancelModal] = useState({ isOpen: false, order: null, isLoading: false });
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -39,7 +43,7 @@ const OrderPage = () => {
         fetchOrderHistory();
     }, [navigate, location.state]);
 
-    // ✅ Hàm thanh toán đơn hàng
+    // Hàm thanh toán đơn hàng
     const handlePayNow = async (order) => {
     try {
         setPayingOrderId(order.order_id);
@@ -58,6 +62,32 @@ const OrderPage = () => {
         setPayingOrderId(null);
     }
 };
+
+    const handleCancelOrder = async (reason) => {
+        setCancelModal(prev => ({ ...prev, isLoading: true }));
+        try {
+            await cancelOrder(cancelModal.order.order_id, reason);
+            
+            // Refresh danh sách đơn hàng
+            const response = await api.get('/orders');
+            setOrders(response.data.orders || response.data);
+            
+            // Đóng modal
+            setCancelModal({ isOpen: false, order: null, isLoading: false });
+            
+            alert('Order cancelled successfully!');
+        } catch (err) {
+            console.error("Error cancelling order:", err);
+            alert(err.response?.data?.error || "Failed to cancel order. Please try again.");
+            setCancelModal(prev => ({ ...prev, isLoading: false }));
+        }
+    };
+
+    // Kiểm tra đơn hàng có thể hủy không (chỉ hủy được khi ở trạng thái "Chờ xác nhận")
+    const canCancelOrder = (order) => {
+        const currentStatus = order.status_history?.[0]?.status_name || "";
+        return currentStatus === "Chờ xác nhận";
+    }; 
 
     const formatCurrency = (amount) => {
         return Number(amount).toLocaleString('vi-VN', { 
@@ -89,109 +119,143 @@ const OrderPage = () => {
         return statusColors[statusName] || '#6c757d';
     };
 
-    if (loading) return <p className={styles.loading}>Loading your orders...</p>
-    if (error) return <p className={styles.error}>{error}</p>
+    if (loading) return <p className={styles.loading}>Đang tải danh sách đơn hàng...</p>
+if (error) return <p className={styles.error}>{error}</p>
 
-    return (
-        <div className={styles.container}>
-            {/*  Đổi tiêu đề */}
-            <h1 className={styles.pageTitle}>My Orders</h1>
-            
-            {orders.length === 0 ? (
-                <div className={styles.emptyState}>
-                    <p>You haven't placed any orders yet.</p>
-                    <Link to="/products" className={styles.shopButton}>
-                        Start Shopping
-                    </Link>
-                </div>
-            ) : (
-                <div className={styles.orderList}>
-                    {orders.map((order) => {
-                        const currentStatus = order.status_history?.[0]?.status_name || "Processing";
-                        const isPending = currentStatus === "Chờ xác nhận";
-                        
-                        return (
-                            <div key={order.order_id} className={styles.orderCard}>
-                                <div className={styles.orderHeader}>
-                                    <div className={styles.orderId}>
-                                        <strong>Order ID:</strong> 
-                                        <span>{order.order_id}</span>
-                                    </div>
-                                    <div className={styles.orderDate}>
-                                        {formatDate(order.created_at)}
-                                    </div>
-                                </div>
-                                
-                                <div className={styles.orderBody}>
-                                    <div className={styles.deliveryInfo}>
-                                        <p><strong>Receiver:</strong> {order.receiver_name}</p>
-                                        <p><strong>Phone:</strong> {order.phone}</p>
-                                        <p><strong>Address:</strong> {order.address}</p>
-                                    </div>
+return (
+  <>
+    <div className={styles.container}>
+      <h1 className={styles.pageTitle}>Đơn hàng của tôi</h1>
 
-                                    <div className={styles.orderSummary}>
-                                        <div className={styles.totalPrice}>
-                                            <span>Total:</span>
-                                            <strong>{formatCurrency(order.total_price_after_discount)}</strong>
-                                        </div>
-                                        <div className={styles.statusContainer}>
-                                            <span>Status:</span>
-                                            <span 
-                                                className={styles.statusBadge}
-                                                style={{ backgroundColor: getStatusColor(currentStatus) }}
-                                            >
-                                                {currentStatus}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* Nút thanh toán cho đơn hàng pending */}
-                                    {isPending && (
-                                        <button
-                                            onClick={() => handlePayNow(order)}
-                                            disabled={payingOrderId === order.order_id}
-                                            className={styles.payNowButton}
-                                        >
-                                            {payingOrderId === order.order_id ? "Processing..." : "💳 Pay Now"}
-                                        </button>
-                                    )}
-                                </div>
-                                
-                                <hr className={styles.divider} />
-
-                                <div className={styles.itemList}>
-                                    <h4 className={styles.itemsTitle}>Order Items ({order.items.length})</h4>
-                                    {order.items.map((item) => (
-                                        <div key={item.order_item_id} className={styles.item}>
-                                            <img
-                                                src={item.variant?.image_urls?.[0] || 'https://via.placeholder.com/80'}
-                                                alt={item.product?.name}
-                                                className={styles.itemImage}
-                                            />
-                                            <div className={styles.itemInfo}>
-                                                <p className={styles.itemName}>{item.product?.name}</p>
-                                                {item.variant?.options && (
-                                                    <p className={styles.itemVariant}>
-                                                        {item.variant.options.map(opt => 
-                                                            `${opt.option_name}: ${opt.value}`
-                                                        ).join(' • ')}
-                                                    </p>
-                                                )}
-                                                <p className={styles.itemQuantity}>Qty: {item.quantity}</p>
-                                            </div>
-                                            <div className={styles.itemPrice}>
-                                                {formatCurrency(item.subtotal_after_discount)}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+      {orders.length === 0 ? (
+        <div className={styles.emptyState}>
+          <p>Bạn chưa có đơn hàng nào.</p>
+          <Link to="/products" className={styles.shopButton}>
+            Mua sắm ngay
+          </Link>
         </div>
-    );
+      ) : (
+        <div className={styles.orderList}>
+          {orders.map((order) => {
+            const currentStatus =
+              order.status_history?.[0]?.status_name || "Đang xử lý";
+            const isPending = currentStatus === "Chờ xác nhận";
+
+            return (
+              <div key={order.order_id} className={styles.orderCard}>
+                <div className={styles.orderHeader}>
+                  <div className={styles.orderId}>
+                    <strong>Mã đơn hàng:</strong>
+                    <span>{order.order_id}</span>
+                  </div>
+                  <div className={styles.orderDate}>
+                    {formatDate(order.created_at)}
+                  </div>
+                </div>
+
+                <div className={styles.orderBody}>
+                  <div className={styles.deliveryInfo}>
+                    <p><strong>Người nhận:</strong> {order.receiver_name}</p>
+                    <p><strong>Số điện thoại:</strong> {order.phone}</p>
+                    <p><strong>Địa chỉ:</strong> {order.address}</p>
+                  </div>
+
+                  <div className={styles.orderSummary}>
+                    <div className={styles.totalPrice}>
+                      <span>Tổng tiền:</span>
+                      <strong>{formatCurrency(order.total_price_after_discount)}</strong>
+                    </div>
+                    <div className={styles.statusContainer}>
+                      <span>Trạng thái:</span>
+                      <span
+                        className={styles.statusBadge}
+                        style={{ backgroundColor: getStatusColor(currentStatus) }}
+                      >
+                        {currentStatus}
+                      </span>
+                    </div>
+                  </div>
+
+                  {isPending && (
+                    <button
+                      onClick={() => handlePayNow(order)}
+                      disabled={payingOrderId === order.order_id}
+                      className={styles.payNowButton}
+                    >
+                      {payingOrderId === order.order_id
+                        ? "Đang xử lý..."
+                        : "Thanh toán ngay"}
+                    </button>
+                  )}
+
+                  {canCancelOrder(order) && (
+                    <button
+                      onClick={() =>
+                        setCancelModal({
+                          isOpen: true,
+                          order: order,
+                          isLoading: false
+                        })
+                      }
+                      className={styles.cancelButton}
+                    >
+                      Huỷ đơn hàng
+                    </button>
+                  )}
+                </div>
+
+                <hr className={styles.divider} />
+
+                <div className={styles.itemList}>
+                  <h4 className={styles.itemsTitle}>
+                    Sản phẩm đã đặt ({order.items.length})
+                  </h4>
+
+                  {order.items.map((item) => (
+                    <div key={item.order_item_id} className={styles.item}>
+                      <img
+                        src={item.variant?.image_urls?.[0] || "https://via.placeholder.com/80"}
+                        alt={item.product?.name}
+                        className={styles.itemImage}
+                      />
+                      <div className={styles.itemInfo}>
+                        <p className={styles.itemName}>{item.product?.name}</p>
+                        {item.variant?.options && (
+                          <p className={styles.itemVariant}>
+                            {item.variant.options
+                              .map(opt => `${opt.option_name}: ${opt.value}`)
+                              .join(" • ")}
+                          </p>
+                        )}
+                        <p className={styles.itemQuantity}>
+                          Số lượng: {item.quantity}
+                        </p>
+                      </div>
+                      <div className={styles.itemPrice}>
+                        {formatCurrency(item.subtotal_after_discount)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+
+    <CancelOrderModal
+      isOpen={cancelModal.isOpen}
+      onClose={() =>
+        setCancelModal({ isOpen: false, order: null, isLoading: false })
+      }
+      onConfirm={handleCancelOrder}
+      order={cancelModal.order}
+      isLoading={cancelModal.isLoading}
+    />
+  </>
+);
+
 };
 
 export default OrderPage;
