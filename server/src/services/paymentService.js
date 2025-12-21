@@ -41,7 +41,7 @@ const createPaymentUrl = async ({ orderId, ipAddr }) => {
                     status: true
                 },
                 orderBy: {
-                    created_at: 'desc'
+                    changed_at: 'desc'
                 }
             }
         }
