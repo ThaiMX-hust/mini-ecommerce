@@ -67,7 +67,7 @@ async function changePassword(user_id, old_password, new_password) {
 async function requestPasswordReset(email) {
     const user = await userService.getUserByEmail(email);
     if (!user)
-        throw new NotFoundError("User not found");
+        return;
 
     const user_id = user.user_id;
     const token = jwt.sign({ user_id }, process.env.JWT_SECRET, { expiresIn: '15m' });
