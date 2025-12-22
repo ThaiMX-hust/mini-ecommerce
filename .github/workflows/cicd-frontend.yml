@@ -1,16 +1,16 @@
-name: Deploy mini-ecommerce web
+name: Deploy mini-ecommerce frontend
 
 on:
   push:
     branches: [main, develop]
     paths:
-      - "server/**"
+      - "client/**"
 
   pull_request:
     branches: [main, develop]
     types: [closed]
     paths:
-      - "server/**"
+      - "client/**"
 
 jobs:
   deploy:
@@ -34,12 +34,12 @@ jobs:
       - name: Build & push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./server
-          file: ./server/Dockerfile
+          context: ./client
+          file: ./client/Dockerfile
           push: true
           tags: |
-            taihb2005/mini-ecommerce:latest
-            taihb2005/mini-ecommerce:${{ github.sha }}
+            taihb2005/mini-ecommerce-client:latest
+            taihb2005/mini-ecommerce-client:${{ github.sha }}
 
       - name: Redeploy
         run: |
@@ -49,7 +49,7 @@ jobs:
             -d '{
               "query": "mutation serviceInstanceRedeploy($environmentId: String!, $serviceId: String!) { serviceInstanceRedeploy(environmentId: $environmentId, serviceId: $serviceId) }",
               "variables": {
-                "environmentId": "${{ secrets.RAILWAY_ENV_ID }}",
-                "serviceId": "${{ secrets.RAILWAY_SERVICE_ID }}"
+                "environmentId": "${{ secrets.RAILWAY_CLIENT_ENV_ID }}",
+                "serviceId": "${{ secrets.RAILWAY_CLIENT_SERVICE_ID }}"
               }
             }'
