@@ -58,7 +58,8 @@ const createPaymentUrl = async ({ orderId, ipAddr }) => {
 
     // LẤY AMOUNT VÀ ORDER INFO TỪ DATABASE
     const amount = Math.round(Number(order.final_total_price) * 100);
-    const orderInfo = `Thanh toan don hang ${orderId}`;
+    const cleanUuid = orderId.replace(/-/g, "");
+    const orderInfo = `Thanh toan don hang ${cleanUuid}`;
 
     process.env.TZ = 'Asia/Ho_Chi_Minh';
 
@@ -68,6 +69,7 @@ const createPaymentUrl = async ({ orderId, ipAddr }) => {
     const returnUrl = process.env.VNP_RETURNURL;
     let date = new Date();
     let createDate = moment(date).format('YYYYMMDDHHmmss');
+    let expireDate = moment(date).add(15, 'minutes').format('YYYYMMDDHHmmss');
 
     // Đảm bảo IP hợp lệ (nếu chạy localhost ::1 có thể gây lỗi bên VNPay, nên fallback về 127.0.0.1)
     const finalIp = ipAddr === '::1' ? '127.0.0.1' : ipAddr;
@@ -85,6 +87,7 @@ const createPaymentUrl = async ({ orderId, ipAddr }) => {
     vnpParams['vnp_ReturnUrl'] = returnUrl;
     vnpParams['vnp_IpAddr'] = finalIp;
     vnpParams['vnp_CreateDate'] = createDate;
+    vnpParams['vnp_ExpireDate'] = expireDate;
 
     vnpParams = sortObject(vnpParams);
 
