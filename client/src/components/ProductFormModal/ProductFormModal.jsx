@@ -22,6 +22,8 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
 
   const [categoryInput, setCategoryInput] = useState("");
   const [optionValueInputs, setOptionValueInputs] = useState({});
+  const [variantImages, setVariantImages] = useState([]); // Mảng chứa các file ảnh
+  const [imagePreviewUrls, setImagePreviewUrls] = useState([]); // Mảng URL preview
 
   useEffect(() => {
     if (mode === "edit" && productId) {
@@ -33,7 +35,7 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
           setProduct({
             name: data.name,
             description: data.description,
-            categories: data.categories.map((c) => c.category_name),
+            categories: data.categories.map((c) => c.category_code),
             is_disabled: data.is_disabled,
             options: data.options.map((o) => ({
               name: o.option_name,
@@ -48,7 +50,8 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
                 acc[opt.option_name] = opt.value.value;
                 return acc;
               }, {}),
-              imageUrl: v.images?.[0] || "",
+              image_indexes: [], // Sẽ chứa index của ảnh trong mảng variantImages
+              existingImageUrls: v.images || [], // Giữ ảnh cũ để hiển thị
             })),
           });
         } catch (err) {
@@ -150,7 +153,8 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
       stock: 0,
       is_disabled: false,
       options: combo,
-      imageUrl: "",
+      image_indexes: [],
+      existingImageUrls: [],
     }));
 
     setProduct({ ...product, variants: newVariants });
@@ -187,17 +191,52 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
           stock: 0,
           is_disabled: false,
           options: emptyOptions,
-          imageUrl: "",
+          image_indexes: [],
+          existingImageUrls: [],
         },
       ],
     });
   };
 
-  const removeVariant = (index) => {
-    setProduct({
-      ...product,
-      variants: product.variants.filter((_, i) => i !== index),
+  // Handler cho việc upload ảnh variant
+  const handleVariantImageUpload = (variantIndex, e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    // Thêm files vào mảng variantImages global
+    const newVariantImages = [...variantImages];
+    const newImagePreviewUrls = [...imagePreviewUrls];
+    const newImageIndexes = [];
+
+    files.forEach((file) => {
+      const startIndex = newVariantImages.length;
+      newVariantImages.push(file);
+      newImageIndexes.push(startIndex);
+
+      // Tạo preview URL
+      const previewUrl = URL.createObjectURL(file);
+      newImagePreviewUrls.push(previewUrl);
     });
+
+    setVariantImages(newVariantImages);
+    setImagePreviewUrls(newImagePreviewUrls);
+
+    // Cập nhật image_indexes của variant
+    const newVariants = [...product.variants];
+    newVariants[variantIndex].image_indexes = [
+      ...newVariants[variantIndex].image_indexes,
+      ...newImageIndexes,
+    ];
+    setProduct({ ...product, variants: newVariants });
+  };
+
+  // Xóa ảnh khỏi variant
+  const removeVariantImage = (variantIndex, imageIndex) => {
+    const newVariants = [...product.variants];
+    newVariants[variantIndex].image_indexes = newVariants[
+      variantIndex
+    ].image_indexes.filter((idx) => idx !== imageIndex);
+    setProduct({ ...product, variants: newVariants });
   };
 
   // ==================== SUBMIT HANDLER ====================
@@ -222,12 +261,16 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
 
     try {
       if (mode === "create") {
-        // CREATE MODE - Use FormData with metadata
+        // CREATE MODE - Append trực tiếp các field vào FormData
         const formData = new FormData();
+
+        // Append các field cơ bản
         formData.append("name", product.name);
         formData.append("description", product.description);
         formData.append("categories", JSON.stringify(product.categories));
-        formData.append("is_disabled", String(product.is_disabled));
+        formData.append("is_disabled", product.is_disabled);
+
+        // Append options
         formData.append(
           "options",
           JSON.stringify(
@@ -236,14 +279,16 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
               .map((o) => ({ option_name: o.name, values: o.values }))
           )
         );
+
+        // Append variants
         formData.append(
           "variants",
           JSON.stringify(
             product.variants.map((v) => ({
               sku: v.sku,
               raw_price: String(v.price),
-              stock_quantity: String(v.stock_quantity || v.stock || 0),
-              is_disabled: String(v.is_disabled || false),
+              stock_quantity: Number(v.stock || 0),
+              is_disabled: v.is_disabled || false,
               image_indexes: v.image_indexes || [],
               options: Object.entries(v.options).map(([key, value]) => ({
                 option_name: key,
@@ -252,6 +297,11 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
             }))
           )
         );
+
+        // Append variant images
+        // variantImages.forEach((file, index) => {
+        //   formData.append(`variant_images[${index}]`, file);
+        // });
 
         await createProduct(formData);
       } else {
@@ -321,13 +371,13 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
       </div>
 
       <div className={styles.formGroup}>
-        <label>Danh mục (nhập và nhấn Enter)</label>
+        <label>Mã danh mục (nhập và nhấn Enter)</label>
         <input
           type="text"
           value={categoryInput}
           onChange={(e) => setCategoryInput(e.target.value)}
           onKeyDown={handleCategoryKeyDown}
-          placeholder="Nhập danh mục và nhấn Enter"
+          placeholder="Nhập mã danh mục và nhấn Enter"
         />
         <div className={styles.tagContainer}>
           {product.categories.map((cat) => (
@@ -509,20 +559,89 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
           })}
 
           <div className={styles.formGroup}>
-            <label>URL hình ảnh (nhập và nhấn Enter)</label>
+            <label>Hình ảnh variant</label>
             <input
-              type="text"
-              value={variant.imageUrl}
-              onChange={(e) => updateVariant(index, "imageUrl", e.target.value)}
-              placeholder="https://example.com/image.jpg"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => handleVariantImageUpload(index, e)}
+              style={{ marginBottom: "10px" }}
             />
-            {variant.imageUrl && (
-              <img
-                src={variant.imageUrl}
-                alt="Preview"
-                className={styles.imagePreview}
-              />
+
+            {/* Hiển thị ảnh đang upload */}
+            {variant.image_indexes && variant.image_indexes.length > 0 && (
+              <div className={styles.imagePreviewContainer}>
+                <p style={{ fontSize: "12px", marginBottom: "5px" }}>
+                  Ảnh mới:
+                </p>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  {variant.image_indexes.map((imgIdx) => (
+                    <div key={imgIdx} style={{ position: "relative" }}>
+                      <img
+                        src={imagePreviewUrls[imgIdx]}
+                        alt="Preview"
+                        className={styles.imagePreview}
+                        style={{
+                          width: "80px",
+                          height: "80px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeVariantImage(index, imgIdx)}
+                        style={{
+                          position: "absolute",
+                          top: "-5px",
+                          right: "-5px",
+                          background: "red",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "50%",
+                          width: "20px",
+                          height: "20px",
+                          cursor: "pointer",
+                          fontSize: "12px",
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
+
+            {/* Hiển thị ảnh cũ (khi edit) */}
+            {mode === "edit" &&
+              variant.existingImageUrls &&
+              variant.existingImageUrls.length > 0 && (
+                <div
+                  className={styles.imagePreviewContainer}
+                  style={{ marginTop: "10px" }}
+                >
+                  <p style={{ fontSize: "12px", marginBottom: "5px" }}>
+                    Ảnh hiện tại:
+                  </p>
+                  <div
+                    style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}
+                  >
+                    {variant.existingImageUrls.map((url, idx) => (
+                      <img
+                        key={idx}
+                        src={url}
+                        alt="Existing"
+                        className={styles.imagePreview}
+                        style={{
+                          width: "80px",
+                          height: "80px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
           </div>
         </div>
       ))}
