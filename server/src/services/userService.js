@@ -197,5 +197,6 @@ module.exports = {
     updatePassword,
     updateUser,
     getUserList,
-    updateLockedState
+    updateLockedState,
+    validatePassword
 };
