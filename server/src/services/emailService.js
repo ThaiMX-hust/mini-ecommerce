@@ -23,6 +23,9 @@ async function loadTemplate(template_dir, token) {
 }
 
 async function sendMail(from, to, subject, html) {
+    await transporter.verify();
+    console.log("SMTP connection OK");
+
     const mailOptions = { from: from, to: to, subject: subject, html: html }
     return await transporter.sendMail(mailOptions);
 }
