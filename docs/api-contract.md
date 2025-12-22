@@ -1114,17 +1114,17 @@ Các API chính: Tài khoản, Danh mục, Sản phẩm, Giỏ hàng, Thanh toá
 - Request body:
   ```json
   {
-    "order_id": "string",
-    "return_url": "string" // URL để VNPay chuyển hướng sau khi thanh toán
+    "orderId": "string"
   }
   ```
 - Response:
   - 200 OK:
     ```json
     {
-      "payment_url": "string" // URL để chuyển hướng người dùng đến VNPay thanh toán
+      "url": "string"
     }
     ```
+  - 400 Bad Request: { "error": "Missing or invalid fields" }
   - 401 Unauthorized: { "error": "Unauthorized" }
   - 404 Not Found: { "error": "Order not found" }
 

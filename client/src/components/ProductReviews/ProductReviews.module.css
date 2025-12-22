@@ -7,8 +7,33 @@
 .title {
   font-size: 1.75rem;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   color: #111;
+}
+
+.loginPrompt {
+  background: #f0f7ff;
+  border: 1px solid #b3d9ff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.loginPrompt p {
+  margin: 0;
+  color: #333;
+  font-size: 15px;
+}
+
+.loginPrompt a {
+  color: #667eea;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.loginPrompt a:hover {
+  text-decoration: underline;
 }
 
 .reviewList {
@@ -21,4 +46,73 @@
   padding: 40px;
   color: #888;
   font-style: italic;
+}
+
+/* === RESPONSIVE DESIGN === */
+
+/* Tablet (< 992px) */
+@media (max-width: 992px) {
+  .reviewsContainer {
+    margin-top: 50px;
+    padding-top: 30px;
+  }
+
+  .title {
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+  }
+
+  .loginPrompt {
+    padding: 18px;
+  }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 768px) {
+  .reviewsContainer {
+    margin-top: 40px;
+    padding-top: 25px;
+  }
+
+  .title {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+
+  .loginPrompt {
+    padding: 16px;
+    font-size: 14px;
+  }
+
+  .loginPrompt p {
+    font-size: 14px;
+  }
+
+  .noReviews {
+    padding: 30px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile (< 576px) */
+@media (max-width: 576px) {
+  .reviewsContainer {
+    margin-top: 30px;
+    padding-top: 20px;
+  }
+
+  .title {
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+  }
+
+  .loginPrompt {
+    padding: 14px;
+    border-radius: 6px;
+  }
+
+  .noReviews {
+    padding: 25px 15px;
+    font-size: 13px;
+  }
 }

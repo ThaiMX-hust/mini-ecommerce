@@ -1,46 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import styles from "./CheckoutPage.module.css";
 
 const CheckoutPage = () => {
+  const navigate = useNavigate();
+
+  /* ===== STATE ===== */
   const [formData, setFormData] = useState({
     receiver_name: "",
     phone: "",
     address: "",
   });
+
   const [cart, setCart] = useState({
     items: [],
     total_price_after_discount: 0,
   });
+
+  const [paymentMethod, setPaymentMethod] = useState("vnpay");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("vnpay");
-  const navigate = useNavigate();
 
+  /* ===== FETCH CART ===== */
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/login");
-          return;
-        }
         const res = await api.get("/cart");
         setCart(res.data);
       } catch (err) {
-        console.error("Lỗi khi tải giỏ hàng:", err);
+        console.error(err);
         setError("Không thể tải giỏ hàng. Vui lòng thử lại.");
       }
     };
-    fetchCart();
-  }, [navigate]);
 
+    fetchCart();
+  }, []);
+
+  /* ===== HANDLERS ===== */
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -49,54 +51,57 @@ const CheckoutPage = () => {
     setLoading(true);
 
     try {
-      const orderRes = await api.post("/orders", formData);
-      const { order_id, total_price_after_discount } = orderRes.data;
+        /* === 1. TẠO ĐƠN HÀNG === */
+        const orderRes = await api.post("/orders", {
+        receiver_name: formData.receiver_name,
+        phone: formData.phone,
+        address: formData.address,
+        });
 
-      if (paymentMethod === "vnpay") {
+        const { order_id } = orderRes.data;
+
+        /* === 2. THANH TOÁN === */
+        if (paymentMethod === "vnpay") {
         const paymentRes = await api.post("/payments/vnpay", {
-          orderInfo: `Thanh toán đơn hàng ${order_id}`,
-          orderId: order_id,
-          amount: total_price_after_discount,
+            orderId: order_id, 
         });
 
-        if (paymentRes.data.url) {
-          window.location.href = paymentRes.data.url;
+        if (paymentRes.data?.url) {
+            window.location.href = paymentRes.data.url;
+        } else {
+            throw new Error("Không lấy được link thanh toán VNPay");
         }
-      } else {
-        navigate(`/orders?new_order=${order_id}`, {
-          state: {
+        } else {
+        // Thanh toán sau
+        navigate("/orders", {
+            state: {
             message:
-              "Đơn hàng đã được tạo thành công! Bạn có thể thanh toán bất kỳ lúc nào từ Lịch Sử Đơn Hàng.",
-          },
+                "Đơn hàng đã được tạo. Vui lòng thanh toán để đơn hàng được xử lý.",
+            },
         });
-      }
+        }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message ||
-        "Đã xảy ra lỗi trong quá trình xử lý đơn hàng.";
-      setError(errorMessage);
-      console.error("Lỗi khi tạo đơn hàng:", err);
+        console.error(err);
+        setError(
+        err.response?.data?.error ||
+            "Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại."
+        );
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
+  /* ===== RENDER ===== */
   return (
     <div className={styles.container}>
       <div className={styles.layout}>
-        {/* Checkout Form */}
+        {/* ===== FORM ===== */}
         <div className={styles.formSection}>
-          <h2>Thanh Toán</h2>
-          <form onSubmit={handleSubmit}>
-            <h3>Thông Tin Liên Hệ</h3>
-            <input
-              name="email"
-              placeholder="Địa chỉ email"
-              type="email"
-              required
-            />
+          <h2>Thanh toán</h2>
 
-            <h3>Địa Chỉ Giao Hàng</h3>
+          <form onSubmit={handleSubmit}>
+            <h3>Địa chỉ giao hàng</h3>
+
             <input
               name="receiver_name"
               placeholder="Tên người nhận"
@@ -104,6 +109,7 @@ const CheckoutPage = () => {
               onChange={handleInputChange}
               required
             />
+
             <input
               name="phone"
               placeholder="Số điện thoại"
@@ -111,48 +117,48 @@ const CheckoutPage = () => {
               onChange={handleInputChange}
               required
             />
+
             <input
               name="address"
-              placeholder="Địa chỉ"
+              placeholder="Địa chỉ giao hàng"
               value={formData.address}
               onChange={handleInputChange}
               required
             />
 
-            {/* THÊM LỰA CHỌN PHƯƠNG THỨC THANH TOÁN */}
-            <h3>Phương Thức Thanh Toán</h3>
+            <h3>Phương thức thanh toán</h3>
+
             <div className={styles.paymentMethodGroup}>
               <label className={styles.paymentMethodOption}>
                 <input
                   type="radio"
-                  name="paymentMethod"
                   value="vnpay"
                   checked={paymentMethod === "vnpay"}
                   onChange={(e) => setPaymentMethod(e.target.value)}
                 />
                 <div className={styles.radioLabel}>
-                  <strong>💳 Thanh Toán Ngay bằng VNPay</strong>
-                  <p>Chuyển hướng đến VNPay để thanh toán ngay</p>
+                  <strong>💳 Thanh toán ngay qua VNPay</strong>
+                  <p>Chuyển hướng sang VNPay để thanh toán an toàn</p>
                 </div>
               </label>
 
               <label className={styles.paymentMethodOption}>
                 <input
                   type="radio"
-                  name="paymentMethod"
                   value="later"
                   checked={paymentMethod === "later"}
                   onChange={(e) => setPaymentMethod(e.target.value)}
                 />
                 <div className={styles.radioLabel}>
-                  <strong>🕐 Thanh Toán Sau</strong>
-                  <p>
-                    Tạo đơn hàng và thanh toán bất kỳ lúc nào từ Lịch Sử Đơn
-                    Hàng
-                  </p>
+                  <strong>🕐 Thanh toán sau</strong>
+                  <p>Đơn hàng chỉ được xử lý sau khi thanh toán</p>
                 </div>
               </label>
             </div>
+
+            <p style={{ fontSize: "0.85rem", color: "#666", textAlign: "center" }}>
+              🔒 Thanh toán an toàn – Chúng tôi không lưu thông tin thẻ của bạn
+            </p>
 
             {error && <p className={styles.error}>{error}</p>}
 
@@ -164,17 +170,18 @@ const CheckoutPage = () => {
               {loading
                 ? "Đang xử lý..."
                 : paymentMethod === "vnpay"
-                ? "Tiến Hành Đến VNPay"
-                : "Đặt Hàng"}
+                ? "Thanh toán qua VNPay"
+                : "Đặt hàng"}
             </button>
           </form>
         </div>
 
-        {/* Order Summary */}
+        {/* ===== ORDER SUMMARY ===== */}
         <div className={styles.summarySection}>
-          <h3>Tóm Tắt Đơn Hàng</h3>
+          <h3>Tóm tắt đơn hàng</h3>
+
           {cart.items.length === 0 ? (
-            <p>Giỏ hàng của bạn đang trống</p>
+            <p>Giỏ hàng trống</p>
           ) : (
             <>
               {cart.items.map((item) => (
@@ -191,25 +198,27 @@ const CheckoutPage = () => {
                       <p>
                         <strong>{item.product?.name}</strong>
                       </p>
-                      <p>Qty: {item.quantity}</p>
+                      <p>Số lượng: {item.quantity}</p>
                     </div>
                   </div>
-                  <span className={styles.price}>
-                    {Number(item.subtotal_after_discount).toLocaleString(
-                      "vi-VN"
-                    )}{" "}
-                    VND
+                  <span>
+                    {Number(
+                      item.subtotal_after_discount
+                    ).toLocaleString("vi-VN")}{" "}
+                    ₫
                   </span>
                 </div>
               ))}
+
               <hr />
+
               <div className={styles.total}>
-                <strong>Tổng Cộng</strong>
-                <strong className={styles.totalPrice}>
+                <strong>Tổng cộng</strong>
+                <strong>
                   {Number(cart.total_price_after_discount).toLocaleString(
                     "vi-VN"
                   )}{" "}
-                  VND
+                  ₫
                 </strong>
               </div>
             </>

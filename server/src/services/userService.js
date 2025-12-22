@@ -6,13 +6,34 @@ const { PrismaClient } = require('@prisma/client');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { ForbiddenError } = require('../errors/ForbiddenError');
 const { ConflictError } = require("../errors/ConflictError");
+const { BadRequestError } = require("../errors/BadRequestError");
 
 const prisma = new PrismaClient();
+
+function validatePassword(password) {
+    const minLength = 8;
+    const hasNumber = /\d/;
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
+    const hasUppercase = /[A-Z]/;
+
+    if (password.length < minLength)
+        throw new BadRequestError("Password must be at least 8 characters long");
+
+    if (!hasUppercase.test(password))
+        throw new BadRequestError("Password must contain at least one uppercase letter");
+
+    if (!hasNumber.test(password))
+        throw new BadRequestError("Password must contain at least one number");
+
+    if (!hasSpecialChar.test(password))
+        throw new BadRequestError("Password must contain at least one special character");
+}
 
 async function registerUser(userData) {
     if (await userRepository.getUserByEmail(userData.email))
         throw new ConflictError("Email already exists");
 
+    validatePassword(userData.password);
     const password_hash = await hashPassword(userData.password);
 
     const avatarFile = userData.avatarFile;
@@ -63,6 +84,7 @@ async function registerAdmin(userData) {
     if (await userRepository.getUserByEmail(userData.email))
         throw new ConflictError("Email already exists");
 
+    validatePassword(userData.password);
     const password_hash = await hashPassword(userData.password);
     const avatarFile = userData.avatarFile;
 
@@ -175,5 +197,6 @@ module.exports = {
     updatePassword,
     updateUser,
     getUserList,
-    updateLockedState
+    updateLockedState,
+    validatePassword
 };

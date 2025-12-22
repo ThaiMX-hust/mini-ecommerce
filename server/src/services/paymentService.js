@@ -26,10 +26,40 @@ function sortObject(obj) {
     return sorted;
 }
 
-const createPaymentUrl = async ({ amount, orderInfo, orderId, ipAddr }) => {
+const createPaymentUrl = async ({ orderId, ipAddr }) => {
     if (!process.env.VNP_TMNCODE || !process.env.VNP_HASHSECRET) {
         throw new Error('VNPay configuration is missing in environment variables');
     }
+    
+    // LẤY THÔNG TIN ĐơN HÀNG TỪ DATABASE
+    const prisma = orderRepository.getPrismaClientInstance();
+    const order = await prisma.order.findUnique({
+        where: { order_id: orderId },
+        include: {
+            history: {
+                include: {
+                    status: true
+                },
+                orderBy: {
+                    changed_at: 'desc'
+                }
+            }
+        }
+    });
+
+    if (!order) {
+        throw new Error('Order not found');
+    }
+    //kiểm tra order status
+    const currentStatus = order.history[0]?.status.order_status_code;
+    if (currentStatus !== 'CREATED') {
+        throw new Error('Order has already been paid or cancelled');
+    }
+
+    // LẤY AMOUNT VÀ ORDER INFO TỪ DATABASE
+    const amount = Number(order.final_total_price);
+    const orderInfo = `Thanh toán đơn hàng ${orderId}`;
+
     process.env.TZ = 'Asia/Ho_Chi_Minh';
 
     const tmnCode = process.env.VNP_TMNCODE;
@@ -68,6 +98,9 @@ const createPaymentUrl = async ({ amount, orderInfo, orderId, ipAddr }) => {
 
     return vnpUrl;
 };
+
+
+
 
 const handleVnpayIpn = async (vnp_Params) => {
     // Encode lại các giá trị nhận được từ URL (vì express thường tự decode)
@@ -117,6 +150,7 @@ const handleVnpayIpn = async (vnp_Params) => {
                     console.error("CONFIRM status not found in database");
                     return { RspCode: '99', Message: 'System error' };
                 }
+
                 console.log(confirmedStatus);
                 await prisma.orderStatusHistory.create({
                     data: {
@@ -126,6 +160,11 @@ const handleVnpayIpn = async (vnp_Params) => {
                         note: `Payment successful via VNPay. Transaction: ${transactionNo}`
                     }
                 });
+                await prisma.order.update({
+                    where: { order_id: orderId },
+                    data: { updated_at: new Date() }
+                });
+
 
                 const order = await orderRepository.getDetail(orderId);
                 const userEmail = await userRepository.getUserById(order.user_id, prisma);
@@ -150,6 +189,28 @@ const handleVnpayIpn = async (vnp_Params) => {
                         note: `Payment failed via VNPay. Response code: ${rspCode}`
                     }
                 });
+
+                // Hoàn lại stock
+                const orderWithItems = await prisma.order.findUnique({
+                    where: { order_id: orderId },
+                    include: { items: true }
+                });
+
+                for (const item of orderWithItems.items) {
+                    await prisma.productVariant.updateMany({
+                        where: { product_variant_id: item.product_variant_id },
+                        data: {
+                            stock_quantity: { increment: item.quantity },
+                            version: { increment: 1 }
+                        }
+                    });
+                }
+
+                await prisma.order.update({
+                    where: { order_id: orderId },
+                    data: { updated_at: new Date() }
+                });
+
                 console.log(`Payment for order ${orderId} failed with code ${rspCode}`);
                 return { RspCode: '00', Message: 'Success' };
             }
@@ -164,6 +225,10 @@ const handleVnpayIpn = async (vnp_Params) => {
     }
 };
 
+
+
+
+
 const handleVnpayReturn = async (vnp_Params) => {
     let vnp_SecureHash = vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHash'];
@@ -177,14 +242,26 @@ const handleVnpayReturn = async (vnp_Params) => {
     const hmac = crypto.createHmac("sha512", secretKey);
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
 
+    const orderId = vnp_Params['vnp_TxnRef'];
+
+
+    console.log('VNPay Return - Signature Verification:', {
+        orderId,
+        receivedHash: vnp_SecureHash,
+        calculatedHash: signed,
+        isValid: vnp_SecureHash === signed
+    });
+
     if (vnp_SecureHash === signed) {
+    
         if (vnp_Params['vnp_ResponseCode'] === '00') {
-            return { isSuccess: true, message: 'Payment successful' };
+
+            return { isSuccess: true, message: 'Payment successful', orderId };
         } else {
-            return { isSuccess: false, message: 'Payment failed' };
+            return { isSuccess: false, message: 'Payment failed',orderId };
         }
     } else {
-        return { isSuccess: false, message: 'Invalid signature' };
+        return { isSuccess: false, message: 'Invalid signature', orderId };
     }
 };
 

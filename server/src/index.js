@@ -1,4 +1,6 @@
-require('dotenv').config();
+if(process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 const express = require('express');
 const cors = require('cors');
 const errorHandler = require('./errors/errorHandler');
@@ -36,7 +38,6 @@ app.use(errorHandler);
 
 (async () => {
     await redisClient();
-    await mongooseClient();
 
     app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
