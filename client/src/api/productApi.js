@@ -1,7 +1,7 @@
 import api from "../api";
 
 export const getAllProducts = async (params = {}) => {
-  try {
+  try { 
     //  Convert categories array to proper format
     const queryParams = { ...params };
     if (params.categories && Array.isArray(params.categories)) {
