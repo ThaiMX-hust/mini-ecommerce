@@ -251,6 +251,7 @@ const handleVnpayReturn = async (vnp_Params) => {
     vnp_Params = sortObject(vnp_Params);
 
     const secretKey = process.env.VNP_HASHSECRET;
+    const tmnCode = process.env.VNP_TMNCODE;
     const signData = qs.stringify(vnp_Params, { encode: false });
 
     const hmac = crypto.createHmac("sha512", secretKey);
