@@ -93,6 +93,23 @@ const OrderPage = () => {
     };
 
 
+    const getCurrentStatus = (statusHistory = []) => {
+      if (!Array.isArray(statusHistory) || statusHistory.length === 0) {
+        return {
+          status_code: "",
+          status_name: "Đang xử lý"
+        };
+      }
+
+      return statusHistory.reduce((latest, current) => {
+        const latestTime = new Date(latest.changed_at).getTime();
+        const currentTime = new Date(current.changed_at).getTime();
+
+        return currentTime > latestTime ? current : latest;
+      });
+    };
+
+
     const formatCurrency = (amount) => {
         return Number(amount).toLocaleString('vi-VN', { 
             style: 'currency', 
@@ -142,11 +159,10 @@ return (
         <div className={styles.orderList}>
           {orders.map((order) => {
             // Lấy phần tử CUỐI CÙNG (trạng thái mới nhất)
-            const latestStatusIndex = order.status_history?.length - 1 || 0;
-            const currentStatus =
-              order.status_history?.[latestStatusIndex]?.status_name || "Đang xử lý";
-            const currentStatusCode = 
-              order.status_history?.[latestStatusIndex]?.status_code || "";
+            const currentStatusObj = getCurrentStatus(order.status_history);
+
+            const currentStatus = currentStatusObj.status_name;
+            const currentStatusCode = currentStatusObj.status_code;
              
             const canPay = currentStatusCode === "CREATED";
 

@@ -8,4 +8,7 @@ export default defineConfig({
     environment: 'happy-dom', // was 'jsdom' -> use happy-dom to avoid parse5 ESM error
     setupFiles: './src/test/setup.js',
   },
+  server: {
+    port: 8000
+  }
 })
