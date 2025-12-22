@@ -11,7 +11,7 @@ function sortObject(obj) {
         var str = [];
         var key;
         for (key in obj){
-            if (obj.hasOwnProperty(key)) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
             str.push(encodeURIComponent(key));
             }
         }
@@ -251,6 +251,7 @@ const handleVnpayReturn = async (vnp_Params) => {
     vnp_Params = sortObject(vnp_Params);
 
     const secretKey = process.env.VNP_HASHSECRET;
+    const tmnCode = process.env.VNP_TMNCODE;
     const signData = qs.stringify(vnp_Params, { encode: false });
 
     const hmac = crypto.createHmac("sha512", secretKey);
