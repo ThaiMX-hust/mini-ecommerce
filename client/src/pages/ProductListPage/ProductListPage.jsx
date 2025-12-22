@@ -19,7 +19,7 @@ const ProductListPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [sort, setSort] = useState("price-asc");
-  
+
   // State cho search query - đọc từ URL params
   const [searchQuery, setSearchQuery] = useState(() => {
     const params = new URLSearchParams(location.search);
@@ -82,7 +82,7 @@ const ProductListPage = () => {
         filters.categories.some((selectedCatCode) =>
           product.categories.some(
             (productCat) => productCat.category_code === selectedCatCode
-        )
+          )
         )
       );
     }
@@ -110,7 +110,7 @@ const ProductListPage = () => {
       totalItems: filtered.length,
       totalPages: Math.ceil(filtered.length / ITEMS_PER_PAGE),
     };
-  }, [allProducts, filters, sort, currentPage, searchQuery]); 
+  }, [allProducts, filters, sort, currentPage, searchQuery]);
 
   const handleFilterChange = (filterName, value) => {
     setCurrentPage(1);
@@ -135,42 +135,42 @@ const ProductListPage = () => {
       {searchQuery && searchQuery.trim() && (
         <div className={styles.searchInfoWrapper}>
           <div className={styles.searchInfo}>
-            🔍 Showing results for: "<strong>{searchQuery}</strong>"
-            {paginatedProducts.totalItems === 0 && " - No products found"}
+            🔍 Kết quả tìm kiếm cho: "<strong>{searchQuery}</strong>"
+            {paginatedProducts.totalItems === 0 && " - Không tìm thấy sản phẩm"}
           </div>
         </div>
       )}
-      
+
       <div className={styles.container}>
         <SidebarFilters
           filters={filters}
           onFilterChange={handleFilterChange}
           availableCategories={allCategories}
         />
-        
+
         <main className={styles.mainContent}>
           <div className={styles.header}>
             <div className={styles.titleSection}>
               <h1 className={styles.title}>
-                {searchQuery ? "Search Results" : "All Products"}
+                {searchQuery ? "Kết quả tìm kiếm" : "Tất cả sản phẩm"}
               </h1>
               {!isLoading && paginatedProducts.totalItems > 0 && (
                 <div className={styles.info}>
-                  Showing {firstItemIndex}-{lastItemIndex} of{" "}
-                  {paginatedProducts.totalItems} products
+                  Hiển thị {firstItemIndex}-{lastItemIndex} trong{" "}
+                  {paginatedProducts.totalItems} sản phẩm
                 </div>
               )}
             </div>
-            
+
             <div className={styles.headerControls}>
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
                 className={styles.sortDropdown}
-                aria-label="Sort products"
+                aria-label="Sắp xếp sản phẩm"
               >
-                <option value="price-asc">💰 Price: Low to High</option>
-                <option value="price-desc">💎 Price: High to Low</option>
+                <option value="price-asc">💰 Giá: Thấp đến cao</option>
+                <option value="price-desc">💎 Giá: Cao đến thấp</option>
               </select>
             </div>
           </div>
@@ -178,7 +178,7 @@ const ProductListPage = () => {
           {isLoading ? (
             <div className={styles.loadingContainer}>
               <div className={styles.loadingSpinner}></div>
-              <p className={styles.loadingText}>Loading products...</p>
+              <p className={styles.loadingText}>Đang tải sản phẩm...</p>
             </div>
           ) : error ? (
             <div className={styles.errorContainer}>
@@ -205,13 +205,13 @@ const ProductListPage = () => {
               </div>
               <p className={styles.emptyMessage}>
                 {searchQuery
-                  ? `No products found for "${searchQuery}"`
-                  : "No products match your filters"}
+                  ? `Không tìm thấy sản phẩm cho "${searchQuery}"`
+                  : "Không có sản phẩm nào phù hợp với bộ lọc"}
               </p>
               <p className={styles.emptyHint}>
                 {searchQuery
-                  ? "Try searching with different keywords"
-                  : "Try adjusting your filters to see more products"}
+                  ? "Thử tìm kiếm với từ khóa khác"
+                  : "Thử điều chỉnh bộ lọc để xem thêm sản phẩm"}
               </p>
             </div>
           )}
