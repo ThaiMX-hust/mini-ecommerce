@@ -115,15 +115,8 @@ const handleVnpayIpn = async (vnp_Params) => {
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
 
-    let cleanParams = {};
-    for (let key in vnp_Params) {
-        if (key.startsWith('vnp_') && key !== 'vnp_SecureHash' && key !== 'vnp_SecureHashType') {
-            cleanParams[key] = vnp_Params[key];
-        }
-    }
-
     // Sắp xếp lại params
-    vnp_Params = sortObject(cleanParams);
+    vnp_Params = sortObject(vnp_Params);
 
     const secretKey = process.env.VNP_HASHSECRET;
     const signData = qs.stringify(vnp_Params, { encode: false });
@@ -258,15 +251,8 @@ const handleVnpayReturn = async (vnp_Params) => {
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
 
-    let cleanParams = {};
-    for (let key in vnp_Params) {
-        if (key.startsWith('vnp_') && key !== 'vnp_SecureHash' && key !== 'vnp_SecureHashType') {
-            cleanParams[key] = vnp_Params[key];
-        }
-    }
 
-
-    vnp_Params = sortObject(cleanParams);
+    vnp_Params = sortObject(vnp_Params);
 
     const secretKey = process.env.VNP_HASHSECRET;
     const signData = qs.stringify(vnp_Params, { encode: false });
