@@ -7,24 +7,20 @@ const emailService = require('../services/emailService');
 
 // sortObject: Sắp xếp theo key alphabet và trả về object đã sort
 function sortObject(obj) {
-    let sorted = {};
-    let str = [];
-    let key;
-    // Lấy key gốc
-    for (key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            str.push(key);
+        var sorted = {};
+        var str = [];
+        var key;
+        for (key in obj){
+            if (obj.hasOwnProperty(key)) {
+            str.push(encodeURIComponent(key));
+            }
         }
+        str.sort();
+        for (key = 0; key < str.length; key++) {
+            sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+        }
+        return sorted;
     }
-    // Sort key gốc
-    str.sort();
-    // Gán giá trị vào object mới theo thứ tự key đã sort
-    for (key = 0; key < str.length; key++) {
-        // Encode giá trị theo chuẩn VNPay (space thành dấu +)
-        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
-    }
-    return sorted;
-}
 
 const createPaymentUrl = async ({ orderId, ipAddr }) => {
     if (!process.env.VNP_TMNCODE || !process.env.VNP_HASHSECRET) {
