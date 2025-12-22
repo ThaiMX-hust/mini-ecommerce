@@ -22,21 +22,17 @@ const CartPanel = () => {
     }).format(numPrice);
   };
 
-  // Parse SKU để lấy Color và Size
-  // Format: PRODUCT-NAME-COLOR-SIZE-HASH_images
   const parseSkuOptions = (sku) => {
     try {
-      // Bỏ phần hash và "_images" ở cuối
       const skuWithoutHash = sku.split("-").slice(0, -1).join("-");
       const parts = skuWithoutHash.split("-");
 
-      // Lấy 2 phần cuối: Color và Size
       if (parts.length >= 2) {
         const size = parts[parts.length - 1];
         const color = parts[parts.length - 2];
         return `${color} / ${size}`;
       }
-      return sku; // Fallback về SKU gốc nếu không parse được
+      return sku;
     } catch (error) {
       console.error("Error parsing SKU:", error);
       return sku;

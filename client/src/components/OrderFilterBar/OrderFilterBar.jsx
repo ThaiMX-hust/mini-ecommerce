@@ -80,19 +80,6 @@ const OrderFilterBar = ({ filters, onFilterChange }) => {
             ))}
           </select>
         </div>
-
-        {/* Search Filter */}
-        <div className={styles.controlGroup}>
-          <label htmlFor="search">Tìm Kiếm</label>
-          <input
-            type="text"
-            id="search"
-            name="search"
-            value={filters.search}
-            onChange={onFilterChange}
-            placeholder="Mã đơn hàng, Tên khách hàng..."
-          />
-        </div>
       </div>
     </div>
   );

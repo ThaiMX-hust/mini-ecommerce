@@ -127,8 +127,8 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
       (opt) => opt.name && opt.values.length > 0
     );
     if (validOptions.length === 0) {
-      alert("Vui lòng thêm ít nhất một Options với giá trị.");
-      return;
+      setError("Vui lòng thêm ít nhất một Options với giá trị.");
+      return false;
     }
 
     const combinations = validOptions.reduce(
@@ -154,7 +154,7 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
     }));
 
     setProduct({ ...product, variants: newVariants });
-    setStep(3);
+    return true;
   };
 
   // ==================== STEP 3 HANDLERS ====================
@@ -414,14 +414,6 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
           </div>
         </div>
       ))}
-
-      <button
-        type="button"
-        className={styles.generateButton}
-        onClick={generateVariants}
-      >
-        Tự động tạo variants từ options
-      </button>
     </div>
   );
 
@@ -603,7 +595,17 @@ const ProductFormModal = ({ mode, productId, onClose, onSave }) => {
             )}
             {step < 3 ? (
               <button
-                onClick={() => setStep(step + 1)}
+                onClick={() => {
+                  setError("");
+                  if (step === 2) {
+                    // Generate variants trước khi chuyển sang step 3
+                    if (generateVariants()) {
+                      setStep(3);
+                    }
+                  } else {
+                    setStep(step + 1);
+                  }
+                }}
                 className={styles.btnPrimary}
               >
                 Tiếp tục

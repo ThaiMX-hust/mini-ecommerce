@@ -9,8 +9,20 @@ import StatusBadge from "../../../components/StatusBadge/StatusBadge";
 import styles from "./ProductManagement.module.css";
 
 const useDebounce = (value, delay) => {
-  /* ... */
-}; // Giữ nguyên hook debounce
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
 
 const ProductManagement = () => {
   const navigate = useNavigate();
