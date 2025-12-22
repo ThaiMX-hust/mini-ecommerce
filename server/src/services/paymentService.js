@@ -11,7 +11,7 @@ function sortObject(obj) {
         var str = [];
         var key;
         for (key in obj){
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            if (obj.hasOwnProperty(key)) {
             str.push(encodeURIComponent(key));
             }
         }
