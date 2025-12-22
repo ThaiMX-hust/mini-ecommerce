@@ -109,7 +109,7 @@ const ProductDetailPage = () => {
 
     const handleAddToCart = async () => {
         if (!isAuthenticated) {
-            alert('You need to login to add products to cart!');
+            alert('Bạn cần đăng nhập để thêm vào giỏ hàng!');
             window.location.href = '/login';
             return;
         }
@@ -117,34 +117,34 @@ const ProductDetailPage = () => {
     
 
         if (!activeVariant) {
-            alert('Please select all product options!');
+            alert('Vui lòng chọn tất cả các tùy chọn sản phẩm!');
             return;
         }
 
         if (activeVariant.stock <= 0) {
-            alert('This product is currently out of stock!');
+            alert('Sản phẩm hiện đang hết hàng!');
             return;
         }
 
         if (quantity <= 0 || quantity > activeVariant.stock) {
-            alert(`Quantity must be between 1 and ${activeVariant.stock}!`);
+            alert(`Số lượng phải nằm trong khoảng từ 1 đến ${activeVariant.stock}!`);
             return;
         }
 
         try {
             setAddingToCart(true);
             await addToCart(activeVariant.product_variant_id, quantity);
-            alert(`Added ${quantity} product(s) to the cart!`);
+            alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
             setQuantity(1);
         } catch (error) {
             console.error('Error adding to cart:', error);
             if (error.response?.status === 401) {
-                alert('Your session has expired. Please log in again!');
+                alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
                 window.location.href = '/login';
             } else if (error.response?.status === 400) {
-                alert(error.response.data.error || 'Failed to add product to cart!');
+                alert(error.response.data.error || 'Không thể thêm sản phẩm vào giỏ hàng!');
             } else {
-                alert('An error occurred. Please try again later!');
+                alert('Đã xảy ra lỗi. Vui lòng thử lại sau!');
             }
         } finally {
             setAddingToCart(false);
@@ -253,19 +253,19 @@ const ProductDetailPage = () => {
                         className={`${styles.tabButton} ${activeTab === 'description' ? styles.active : ''}`}
                         onClick={() => setActiveTab('description')}
                     >
-                        Description
+                        Mô tả sản phẩm
                     </button>
                     <button 
                         className={`${styles.tabButton} ${activeTab === 'reviews' ? styles.active : ''}`}
                         onClick={() => setActiveTab('reviews')}
                     >
-                        Reviews ({reviews.length})
+                        Đánh giá sản phẩm ({reviews.length})
                     </button>
                     <button 
                         className={`${styles.tabButton} ${activeTab === 'shipping' ? styles.active : ''}`}
                         onClick={() => setActiveTab('shipping')}
                     >
-                        Shipping Info
+                        Thông tin vận chuyển
                     </button>
                 </div>
 
@@ -273,7 +273,7 @@ const ProductDetailPage = () => {
                     {activeTab === 'description' && (
                         <div className={styles.description}>
                             <h3>Product Description</h3>
-                            <p>{productData.description || 'No description available.'}</p>
+                            <p>{productData.description || 'Không có mô tả sản phẩm nào.'}</p>
                         </div>
                     )}
                     
@@ -288,11 +288,12 @@ const ProductDetailPage = () => {
                     
                     {activeTab === 'shipping' && (
                         <div className={styles.description}>
-                            <h3>Shipping Information</h3>
-                            <p>Free shipping for orders over 500,000 VND</p>
-                            <p> Delivery within 3-5 business days</p>
-                            <p> 30-day return policy</p>
-                            <p> Cash on delivery available</p>
+                            <h3>Thông tin vận chuyển</h3>
+                            <p>Giỏ hàng trống</p>
+                            <p> Đơn hàng trên 500.000 VND</p>
+                            <p>Giao hàng trong 3-5 ngày công việc</p>
+                            <p> Chính sách trả về trong 30 ngày</p>
+                            <p> Thanh toán qua VNPay</p>
                         </div>
                     )}
                 </div>
@@ -301,7 +302,7 @@ const ProductDetailPage = () => {
             {/*  Related Products */}
             {relatedProducts.length > 0 && (
                 <div className={styles.relatedProducts}>
-                    <h2>You May Also Like</h2>
+                    <h2>Sản phẩm liên quan</h2>
                     <div className={styles.productGrid}>
                         {relatedProducts.map((product) => (
                             <ProductCard key={product.product_id} product={product} />

@@ -19,6 +19,7 @@ const AdminDashboard = () => {
         productsByCategory: []
     });
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         fetchDashboardStats();
@@ -27,34 +28,58 @@ const AdminDashboard = () => {
     const fetchDashboardStats = async () => {
         try {
             setLoading(true);
+            setError(null);
             
-            // Fetch products count
-            const productsRes = await api.get('/products', { params: { limit: 1 } });
-            const totalProducts = productsRes.data.total_items || 0;
+            // Sử dụng Promise.allSettled để tiếp tục ngay cả khi một số request thất bại
+            const [productsRes, ordersRes, categoriesRes, revenueRes] = await Promise.allSettled([
+                api.get('/products/all', { params: { limit: 1 } }), // Endpoint admin từ API contract
+                api.get('/orders/all'), // Endpoint admin
+                api.get('/categories'),
+                fetchRevenueStats()
+            ]);
 
-            // Fetch orders
-            const ordersRes = await api.get('/orders');
-            const orders = ordersRes.data.orders || [];
-            const totalOrders = orders.length;
-            
-            // Calculate revenue
-            const totalRevenue = orders.reduce((sum, order) => {
-                return sum + (order.total_price_after_discount || 0);
-            }, 0);
+            // Xử lý products
+            let totalProducts = 0;
+            if (productsRes.status === 'fulfilled') {
+                totalProducts = productsRes.value.data.total_items || 0;
+            }
 
-            // Count pending orders
-            const pendingOrders = orders.filter(order => {
-                const latestStatus = order.status_history?.[0]?.status_code;
-                return latestStatus === 'CREATED' || latestStatus === 'CONFIRMED';
-            }).length;
+            // Xử lý orders
+            let orders = [];
+            let totalOrders = 0;
+            let pendingOrders = 0;
+            if (ordersRes.status === 'fulfilled') {
+                orders = ordersRes.value.data.orders || [];
+                totalOrders = ordersRes.value.data.total_items || orders.length;
+                
+                // Đếm pending orders (CREATED hoặc CONFIRMED)
+                pendingOrders = orders.filter(order => {
+                    const status = order.status?.toUpperCase() || '';
+                    return status === 'CHỜ XÁC NHẬN' || status === 'ĐÃ XÁC NHẬN';
+                }).length;
+            }
+
+            // Xử lý revenue
+            let totalRevenue = 0;
+            if (revenueRes.status === 'fulfilled') {
+                totalRevenue = revenueRes.value?.revenue || 0;
+            } else {
+                // Fallback: tính từ orders
+                totalRevenue = orders.reduce((sum, order) => {
+                    return sum + (parseFloat(order.final_total_price) || 0);
+                }, 0);
+            }
 
             // Process chart data
             const revenueByDay = processRevenueByDay(orders);
             const ordersByStatus = processOrdersByStatus(orders);
             
-            // Fetch categories for product distribution
-            const categoriesRes = await api.get('/categories');
-            const productsByCategory = await processProductsByCategory(categoriesRes.data.categories);
+            // Process categories
+            let productsByCategory = [];
+            if (categoriesRes.status === 'fulfilled') {
+                const categories = categoriesRes.value.data.categories || [];
+                productsByCategory = await processProductsByCategory(categories);
+            }
 
             setStats({
                 totalProducts,
@@ -70,8 +95,29 @@ const AdminDashboard = () => {
             });
         } catch (error) {
             console.error('Error fetching dashboard stats:', error);
+            setError('Không thể tải dữ liệu dashboard. Vui lòng thử lại.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Fetch revenue từ stats API (theo API contract section 7.1)
+    const fetchRevenueStats = async () => {
+        try {
+            const today = new Date();
+            const lastMonth = new Date(today);
+            lastMonth.setMonth(today.getMonth() - 1);
+            
+            const response = await api.get('/stats/revenue', {
+                params: {
+                    from: lastMonth.toISOString().split('T')[0],
+                    to: today.toISOString().split('T')[0]
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching revenue stats:', error);
+            return null;
         }
     };
 
@@ -91,7 +137,7 @@ const AdminDashboard = () => {
         orders.forEach(order => {
             const orderDate = new Date(order.created_at).toISOString().split('T')[0];
             if (revenueMap.hasOwnProperty(orderDate)) {
-                revenueMap[orderDate] += order.total_price_after_discount || 0;
+                revenueMap[orderDate] += parseFloat(order.final_total_price) || 0;
             }
         });
 
@@ -104,50 +150,54 @@ const AdminDashboard = () => {
     // Process orders by status
     const processOrdersByStatus = (orders) => {
         const statusMap = {
-            'CREATED': 0,
-            'CONFIRMED': 0,
-            'SHIPPING': 0,
-            'COMPLETED': 0,
-            'CANCELLED': 0
+            'Chờ xác nhận': 0,
+            'Đã xác nhận': 0,
+            'Đang vận chuyển': 0,
+            'Hoàn thành': 0,
+            'Đã hủy': 0
         };
 
         orders.forEach(order => {
-            const latestStatus = order.status_history?.[0]?.status_code;
-            if (statusMap.hasOwnProperty(latestStatus)) {
-                statusMap[latestStatus]++;
+            const status = order.status || '';
+            if (statusMap.hasOwnProperty(status)) {
+                statusMap[status]++;
             }
         });
 
         return Object.entries(statusMap).map(([status, count]) => ({
-            status: status.charAt(0) + status.slice(1).toLowerCase(),
+            status,
             count
         }));
     };
 
     // Process products by category
     const processProductsByCategory = async (categories) => {
-        const categoryData = await Promise.all(
-            categories.slice(0, 5).map(async (category) => {
-                try {
-                    const res = await api.get('/products', {
-                        params: { category_id: category.category_id, limit: 1 }
-                    });
-                    return {
-                        name: category.name,
-                        value: res.data.total_items || 0
-                    };
-                } catch (error) {
-                    console.error('Error fetching category products:', error);
-                    return { name: category.name, value: 0 };
-                }
-            })
-        );
-        return categoryData.filter(item => item.value > 0);
+        try {
+            const categoryData = await Promise.all(
+                categories.slice(0, 5).map(async (category) => {
+                    try {
+                        const res = await api.get('/products', {
+                            params: { 
+                                categories: [category.category_code],
+                                limit: 1 
+                            }
+                        });
+                        return {
+                            name: category.category_name,
+                            value: res.data.total_items || 0
+                        };
+                    } catch (error) {
+                        console.error('Error fetching category products:', error);
+                        return { name: category.category_name, value: 0 };
+                    }
+                })
+            );
+            return categoryData.filter(item => item.value > 0);
+        } catch (error) {
+            console.error('Error processing products by category:', error);
+            return [];
+        }
     };
-
-    if (loading) {
-        return <div className={styles.loading}>Loading dashboard...</div>;
-    }
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -158,32 +208,60 @@ const AdminDashboard = () => {
 
     const COLORS = ['#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6'];
 
+    if (loading) {
+        return (
+            <div className={styles.loading}>
+                <div className={styles.spinner}></div>
+                <p>Đang tải dữ liệu dashboard...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={styles.error}>
+                <p>{error}</p>
+                <button onClick={fetchDashboardStats} className={styles.retryButton}>
+                    🔄 Thử lại
+                </button>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.dashboard}>
-            <h1 className={styles.title}>Dashboard Overview</h1>
+            <div className={styles.header}>
+                <div>
+                    <h1 className={styles.title}>Dashboard Overview</h1>
+                    <p className={styles.subtitle}>Tổng quan về hoạt động kinh doanh</p>
+                </div>
+                <button onClick={fetchDashboardStats} className={styles.refreshButton}>
+                    🔄 Làm mới
+                </button>
+            </div>
 
             {/* Stats Cards */}
             <div className={styles.statsGrid}>
                 <div className={`${styles.statCard} ${styles.blue}`}>
                     <div className={styles.statIcon}>📦</div>
                     <div className={styles.statInfo}>
-                        <h3>Total Products</h3>
-                        <p className={styles.statValue}>{stats.totalProducts}</p>
+                        <h3>Tổng sản phẩm</h3>
+                        <p className={styles.statValue}>{stats.totalProducts.toLocaleString()}</p>
                     </div>
                 </div>
 
                 <div className={`${styles.statCard} ${styles.green}`}>
                     <div className={styles.statIcon}>🛒</div>
                     <div className={styles.statInfo}>
-                        <h3>Total Orders</h3>
-                        <p className={styles.statValue}>{stats.totalOrders}</p>
+                        <h3>Tổng đơn hàng</h3>
+                        <p className={styles.statValue}>{stats.totalOrders.toLocaleString()}</p>
                     </div>
                 </div>
 
                 <div className={`${styles.statCard} ${styles.purple}`}>
                     <div className={styles.statIcon}>💰</div>
                     <div className={styles.statInfo}>
-                        <h3>Total Revenue</h3>
+                        <h3>Tổng doanh thu</h3>
                         <p className={styles.statValue}>{formatPrice(stats.totalRevenue)}</p>
                     </div>
                 </div>
@@ -191,8 +269,8 @@ const AdminDashboard = () => {
                 <div className={`${styles.statCard} ${styles.orange}`}>
                     <div className={styles.statIcon}>⏳</div>
                     <div className={styles.statInfo}>
-                        <h3>Pending Orders</h3>
-                        <p className={styles.statValue}>{stats.pendingOrders}</p>
+                        <h3>Đơn chờ xử lý</h3>
+                        <p className={styles.statValue}>{stats.pendingOrders.toLocaleString()}</p>
                     </div>
                 </div>
             </div>
@@ -201,44 +279,53 @@ const AdminDashboard = () => {
             <div className={styles.chartsGrid}>
                 {/* Revenue Trend */}
                 <div className={styles.chartCard}>
-                    <h2>Revenue Trend (Last 7 Days)</h2>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={chartData.revenueByDay}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="date" />
-                            <YAxis />
-                            <Tooltip formatter={(value) => formatPrice(value)} />
-                            <Legend />
-                            <Line 
-                                type="monotone" 
-                                dataKey="revenue" 
-                                stroke="#3498db" 
-                                strokeWidth={2}
-                                name="Doanh thu"
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
+                    <h2>📈 Xu hướng doanh thu (7 ngày gần nhất)</h2>
+                    {chartData.revenueByDay.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={chartData.revenueByDay}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" />
+                                <YAxis />
+                                <Tooltip formatter={(value) => formatPrice(value)} />
+                                <Legend />
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="revenue" 
+                                    stroke="#3498db" 
+                                    strokeWidth={2}
+                                    name="Doanh thu"
+                                    dot={{ fill: '#3498db' }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className={styles.noData}>Không có dữ liệu</div>
+                    )}
                 </div>
 
                 {/* Orders by Status */}
                 <div className={styles.chartCard}>
-                    <h2>Orders by Status</h2>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={chartData.ordersByStatus}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="status" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="count" fill="#2ecc71" name="Orders" />
-                        </BarChart>
-                    </ResponsiveContainer>
+                    <h2>📊 Đơn hàng theo trạng thái</h2>
+                    {chartData.ordersByStatus.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={300}>
+                            <BarChart data={chartData.ordersByStatus}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="status" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="count" fill="#2ecc71" name="Số đơn" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className={styles.noData}>Không có dữ liệu</div>
+                    )}
                 </div>
 
                 {/* Products by Category */}
                 {chartData.productsByCategory.length > 0 && (
                     <div className={styles.chartCard}>
-                        <h2>Products by Category</h2>
+                        <h2>🏷️ Sản phẩm theo danh mục</h2>
                         <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
                                 <Pie
@@ -264,16 +351,16 @@ const AdminDashboard = () => {
 
             {/* Quick Actions */}
             <div className={styles.quickActions}>
-                <h2>Quick Actions</h2>
+                <h2>⚡ Thao tác nhanh</h2>
                 <div className={styles.actionButtons}>
-                    <button onClick={() => window.location.href = '/admin/products/new'}>
-                        ➕ Add New Product
+                    <button onClick={() => window.location.href = '/admin/products'}>
+                        ➕ Thêm sản phẩm
                     </button>
                     <button onClick={() => window.location.href = '/admin/orders'}>
-                        📋 View Orders
+                        📋 Xem đơn hàng
                     </button>
                     <button onClick={() => window.location.href = '/admin/categories'}>
-                        🏷️ Manage Categories
+                        🏷️ Quản lý danh mục
                     </button>
                 </div>
             </div>

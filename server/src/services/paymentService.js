@@ -113,7 +113,7 @@ const handleVnpayIpn = async (vnp_Params) => {
     delete vnp_Params['vnp_SecureHashType'];
 
     // Sắp xếp lại params
-    vnp_Params = sortObjectForVerify(vnp_Params);
+    vnp_Params = sortObject(vnp_Params);
 
     const secretKey = process.env.VNP_HASHSECRET;
     const signData = qs.stringify(vnp_Params, { encode: false });
@@ -225,22 +225,7 @@ const handleVnpayIpn = async (vnp_Params) => {
     }
 };
 
-function sortObjectForVerify(obj) {
-    let sorted = {};
-    let str = [];
-    let key;
-    for (key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            str.push(key);
-        }
-    }
-    str.sort();
-    for (key = 0; key < str.length; key++) {
-        //  Encode giống như VNPay: encodeURIComponent và thay space thành +
-        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
-    }
-    return sorted;
-}
+
 
 
 
@@ -249,7 +234,7 @@ const handleVnpayReturn = async (vnp_Params) => {
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
 
-    vnp_Params = sortObjectForVerify(vnp_Params);
+    vnp_Params = sortObject(vnp_Params);
 
     const secretKey = process.env.VNP_HASHSECRET;
     const signData = qs.stringify(vnp_Params, { encode: false });

@@ -15,33 +15,43 @@ const OrderPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    useEffect(() => {
-        const fetchOrderHistory = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    navigate('/login');
-                    return;
-                }
-                
-                setLoading(true);
-                const response = await api.get('/orders');
-                setOrders(response.data.orders || response.data);
-                
-                //  Hiển thị thông báo nếu vừa tạo đơn hàng mới
-                if (location.state?.message) {
-                    alert(location.state.message);
-                }
-                
-            } catch (err) {
-                setError("Unable to load orders. Please try again.");
-                console.error("Error fetching orders:", err);
-            } finally {
-                setLoading(false);
+    // Hàm fetch orders - tách ra để tái sử dụng
+    const fetchOrderHistory = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                navigate('/login');
+                return;
             }
-        };
+            
+            setLoading(true);
+            const response = await api.get('/orders');
+            setOrders(response.data.orders || response.data);
+            
+            
+        } catch (err) {
+            setError("Unable to load orders. Please try again.");
+            console.error("Error fetching orders:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchOrderHistory();
     }, [navigate, location.state]);
+
+    // Thêm effect để refresh khi có query param từ payment result
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const fromPayment = searchParams.get('fromPayment');
+        
+        if (fromPayment === 'true') {
+            fetchOrderHistory();
+             // Xóa query param để tránh refresh lại liên tục
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location.search]);
 
     // Hàm thanh toán đơn hàng
     const handlePayNow = async (order) => {
@@ -69,13 +79,12 @@ const OrderPage = () => {
             await cancelOrder(cancelModal.order.order_id, reason);
             
             // Refresh danh sách đơn hàng
-            const response = await api.get('/orders');
-            setOrders(response.data.orders || response.data);
+            await fetchOrderHistory();
             
             // Đóng modal
             setCancelModal({ isOpen: false, order: null, isLoading: false });
             
-            alert('Order cancelled successfully!');
+            alert('Hủy đơn hàng thành công!');
         } catch (err) {
             console.error("Error cancelling order:", err);
             alert(err.response?.data?.error || "Failed to cancel order. Please try again.");
@@ -83,11 +92,6 @@ const OrderPage = () => {
         }
     };
 
-    // Kiểm tra đơn hàng có thể hủy không (chỉ hủy được khi ở trạng thái "Chờ xác nhận")
-    const canCancelOrder = (order) => {
-        const currentStatus = order.status_history?.[0]?.status_name || "";
-        return currentStatus === "Chờ xác nhận";
-    }; 
 
     const formatCurrency = (amount) => {
         return Number(amount).toLocaleString('vi-VN', { 
@@ -120,7 +124,7 @@ const OrderPage = () => {
     };
 
     if (loading) return <p className={styles.loading}>Đang tải danh sách đơn hàng...</p>
-if (error) return <p className={styles.error}>{error}</p>
+    if (error) return <p className={styles.error}>{error}</p>
 
 return (
   <>
@@ -137,9 +141,14 @@ return (
       ) : (
         <div className={styles.orderList}>
           {orders.map((order) => {
+            // Lấy phần tử CUỐI CÙNG (trạng thái mới nhất)
+            const latestStatusIndex = order.status_history?.length - 1 || 0;
             const currentStatus =
-              order.status_history?.[0]?.status_name || "Đang xử lý";
-            const isPending = currentStatus === "Chờ xác nhận";
+              order.status_history?.[latestStatusIndex]?.status_name || "Đang xử lý";
+            const currentStatusCode = 
+              order.status_history?.[latestStatusIndex]?.status_code || "";
+             
+            const canPay = currentStatusCode === "CREATED";
 
             return (
               <div key={order.order_id} className={styles.orderCard}>
@@ -176,7 +185,7 @@ return (
                     </div>
                   </div>
 
-                  {isPending && (
+                  {canPay && (
                     <button
                       onClick={() => handlePayNow(order)}
                       disabled={payingOrderId === order.order_id}
@@ -188,7 +197,8 @@ return (
                     </button>
                   )}
 
-                  {canCancelOrder(order) && (
+                 
+                  {canPay&& (
                     <button
                       onClick={() =>
                         setCancelModal({
@@ -202,6 +212,7 @@ return (
                       Huỷ đơn hàng
                     </button>
                   )}
+               
                 </div>
 
                 <hr className={styles.divider} />
