@@ -15,10 +15,9 @@ const CheckoutPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("vnpay"); // ✅ Thêm state chọn phương thức
+  const [paymentMethod, setPaymentMethod] = useState("vnpay");
   const navigate = useNavigate();
 
-  // Fetch cart data
   useEffect(() => {
     const fetchCart = async () => {
       try {
@@ -30,8 +29,8 @@ const CheckoutPage = () => {
         const res = await api.get("/cart");
         setCart(res.data);
       } catch (err) {
-        console.error("Error fetching cart data:", err);
-        setError("Unable to load item. Please try again.");
+        console.error("Lỗi khi tải giỏ hàng:", err);
+        setError("Không thể tải giỏ hàng. Vui lòng thử lại.");
       }
     };
     fetchCart();
@@ -50,13 +49,10 @@ const CheckoutPage = () => {
     setLoading(true);
 
     try {
-      // Tạo đơn hàng
       const orderRes = await api.post("/orders", formData);
       const { order_id, total_price_after_discount } = orderRes.data;
 
-      // ✅ Kiểm tra phương thức thanh toán
       if (paymentMethod === "vnpay") {
-        // Thanh toán ngay qua VNPay
         const paymentRes = await api.post("/payments/vnpay", {
           orderInfo: `Thanh toán đơn hàng ${order_id}`,
           orderId: order_id,
@@ -67,20 +63,19 @@ const CheckoutPage = () => {
           window.location.href = paymentRes.data.url;
         }
       } else {
-        // Thanh toán sau - redirect về Order History
         navigate(`/orders?new_order=${order_id}`, {
           state: {
             message:
-              "Order created successfully! You can pay anytime from Order History.",
+              "Đơn hàng đã được tạo thành công! Bạn có thể thanh toán bất kỳ lúc nào từ Lịch Sử Đơn Hàng.",
           },
         });
       }
     } catch (err) {
       const errorMessage =
         err.response?.data?.message ||
-        "An error occurred while processing the order.";
+        "Đã xảy ra lỗi trong quá trình xử lý đơn hàng.";
       setError(errorMessage);
-      console.error("Error creating order:", err);
+      console.error("Lỗi khi tạo đơn hàng:", err);
     } finally {
       setLoading(false);
     }
@@ -124,7 +119,7 @@ const CheckoutPage = () => {
               required
             />
 
-            {/* ✅ THÊM LỰA CHỌN PHƯƠNG THỨC THANH TOÁN */}
+            {/* THÊM LỰA CHỌN PHƯƠNG THỨC THANH TOÁN */}
             <h3>Phương Thức Thanh Toán</h3>
             <div className={styles.paymentMethodGroup}>
               <label className={styles.paymentMethodOption}>

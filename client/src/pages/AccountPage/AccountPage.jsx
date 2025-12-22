@@ -44,18 +44,34 @@ const AccountPage = () => {
 
         setProfile(profileRes.data);
 
-        const orders = ordersRes.data.orders;
-        const total = orders.length;
-        const pending = orders.filter(
-          (o) =>
-            o.status_history[o.status_history.length - 1]?.status_name ===
-            "Pending"
-        ).length;
-        const completed = orders.filter(
-          (o) =>
-            o.status_history[o.status_history.length - 1]?.status_name ===
-            "Completed"
-        ).length;
+        // Debug: Xem cấu trúc dữ liệu từ API
+        console.log("ordersRes.data:", ordersRes.data);
+
+        const orders = ordersRes.data.orders || ordersRes.data;
+        console.log("orders:", orders);
+        console.log("orders length:", orders?.length);
+
+        const total = orders?.length || 0;
+        const pending =
+          orders?.filter((o) => {
+            const latestStatus =
+              o.status_history?.[o.status_history.length - 1];
+            console.log(
+              "Order",
+              o.order_id,
+              "status:",
+              latestStatus?.status_code
+            );
+            return latestStatus?.status_code === "CREATED";
+          }).length || 0;
+        const completed =
+          orders?.filter(
+            (o) =>
+              o.status_history?.[o.status_history.length - 1]?.status_code ===
+              "CONFIRMED"
+          ).length || 0;
+
+        console.log("Stats:", { total, pending, completed });
         setOrderStats({ total, pending, completed });
       } catch (error) {
         console.error("Failed to fetch account data:", error);

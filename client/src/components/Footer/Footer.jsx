@@ -28,7 +28,7 @@ const Footer = () => {
                   Về chúng tôi
                 </Link>
                 <Link to="/contact" className={styles.link}>
-                  Liên hệ
+                  Liên hệ: 0123-456-789
                 </Link>
               </nav>
             </div>

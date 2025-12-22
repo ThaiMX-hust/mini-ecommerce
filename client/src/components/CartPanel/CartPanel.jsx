@@ -22,6 +22,27 @@ const CartPanel = () => {
     }).format(numPrice);
   };
 
+  // Parse SKU để lấy Color và Size
+  // Format: PRODUCT-NAME-COLOR-SIZE-HASH_images
+  const parseSkuOptions = (sku) => {
+    try {
+      // Bỏ phần hash và "_images" ở cuối
+      const skuWithoutHash = sku.split("-").slice(0, -1).join("-");
+      const parts = skuWithoutHash.split("-");
+
+      // Lấy 2 phần cuối: Color và Size
+      if (parts.length >= 2) {
+        const size = parts[parts.length - 1];
+        const color = parts[parts.length - 2];
+        return `${color} / ${size}`;
+      }
+      return sku; // Fallback về SKU gốc nếu không parse được
+    } catch (error) {
+      console.error("Error parsing SKU:", error);
+      return sku;
+    }
+  };
+
   const renderCartItems = () => {
     if (cartLoading && !cart) {
       return <p className={styles.loadingMessage}>Đang tải giỏ hàng...</p>;
@@ -44,9 +65,7 @@ const CartPanel = () => {
           <p className={styles.itemName}>{item.product.name}</p>
 
           <p className={styles.itemOptions}>
-            {item.variant.options
-              .map((opt) => `${opt.option_name}: ${opt.value}`)
-              .join(" / ")}
+            {parseSkuOptions(item.variant.sku)}
           </p>
 
           <div className={styles.priceInfo}>
@@ -60,10 +79,11 @@ const CartPanel = () => {
 
           <QuantitySelector
             quantity={item.quantity}
-            onQuantityChange={(newQuantity) =>
-              updateCartItemQuantity(item.cart_item_id, newQuantity)
-            }
-            maxStock={item.variant.stock_quantity}
+            onQuantityChange={(newQuantity) => {
+              console.log("Updating quantity:", item.cart_item_id, newQuantity);
+              updateCartItemQuantity(item.cart_item_id, newQuantity);
+            }}
+            maxStock={item.variant.stock_quantity || 999}
           />
         </div>
 
