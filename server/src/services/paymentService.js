@@ -57,8 +57,8 @@ const createPaymentUrl = async ({ orderId, ipAddr }) => {
     }
 
     // LẤY AMOUNT VÀ ORDER INFO TỪ DATABASE
-    const amount = Number(order.final_total_price);
-    const orderInfo = `Thanh toán đơn hàng ${orderId}`;
+    const amount = Math.round(Number(order.final_total_price) * 100);
+    const orderInfo = `Thanh toan don hang ${orderId}`;
 
     process.env.TZ = 'Asia/Ho_Chi_Minh';
 
@@ -81,7 +81,7 @@ const createPaymentUrl = async ({ orderId, ipAddr }) => {
     vnpParams['vnp_TxnRef'] = orderId;
     vnpParams['vnp_OrderInfo'] = orderInfo;
     vnpParams['vnp_OrderType'] = 'other';
-    vnpParams['vnp_Amount'] = amount * 100;
+    vnpParams['vnp_Amount'] = amount;
     vnpParams['vnp_ReturnUrl'] = returnUrl;
     vnpParams['vnp_IpAddr'] = finalIp;
     vnpParams['vnp_CreateDate'] = createDate;
@@ -112,8 +112,15 @@ const handleVnpayIpn = async (vnp_Params) => {
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
 
+    let cleanParams = {};
+    for (let key in vnp_Params) {
+        if (key.startsWith('vnp_') && key !== 'vnp_SecureHash' && key !== 'vnp_SecureHashType') {
+            cleanParams[key] = vnp_Params[key];
+        }
+    }
+
     // Sắp xếp lại params
-    vnp_Params = sortObject(vnp_Params);
+    vnp_Params = sortObject(cleanParams);
 
     const secretKey = process.env.VNP_HASHSECRET;
     const signData = qs.stringify(vnp_Params, { encode: false });
@@ -131,8 +138,16 @@ const handleVnpayIpn = async (vnp_Params) => {
             const prisma = orderRepository.getPrismaClientInstance();
 
             const order = await prisma.order.findUnique({
-                where: { order_id: orderId }
+                where: { order_id: orderId },
+                include: {
+                    history: {
+                        include: { status: true },
+                        orderBy: { changed_at: 'desc' },
+                        take: 1
+                    }
+                }
             });
+
             if (!order) {
                 console.error(`Order ${orderId} not found`);
                 return { RspCode: '01', Message: 'Order not found' };
@@ -141,6 +156,12 @@ const handleVnpayIpn = async (vnp_Params) => {
             if (Number(order.final_total_price) != amount) {
                 console.error(`Amount mismatch`);
                 return { RspCode: '04', Message: 'Invalid amount' };
+            }
+
+            const currentStatus = order.history[0]?.status.order_status_code;
+            if (currentStatus === 'CONFIRMED' || currentStatus === 'CANCELLED') {
+                console.log(`Order ${orderId} already updated. Status: ${currentStatus}`);
+                return { RspCode: '02', Message: 'Order already confirmed' };
             }
 
             if (rspCode == '00') {
@@ -234,7 +255,15 @@ const handleVnpayReturn = async (vnp_Params) => {
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
 
-    vnp_Params = sortObject(vnp_Params);
+    let cleanParams = {};
+    for (let key in vnp_Params) {
+        if (key.startsWith('vnp_') && key !== 'vnp_SecureHash' && key !== 'vnp_SecureHashType') {
+            cleanParams[key] = vnp_Params[key];
+        }
+    }
+
+
+    vnp_Params = sortObject(cleanParams);
 
     const secretKey = process.env.VNP_HASHSECRET;
     const signData = qs.stringify(vnp_Params, { encode: false });

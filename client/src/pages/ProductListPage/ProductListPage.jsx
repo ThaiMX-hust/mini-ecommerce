@@ -169,8 +169,8 @@ const ProductListPage = () => {
                 className={styles.sortDropdown}
                 aria-label="Sắp xếp sản phẩm"
               >
-                <option value="price-asc">💰 Giá: Thấp đến cao</option>
-                <option value="price-desc">💎 Giá: Cao đến thấp</option>
+                <option value="price-asc"> Giá: Thấp đến cao</option>
+                <option value="price-desc"> Giá: Cao đến thấp</option>
               </select>
             </div>
           </div>

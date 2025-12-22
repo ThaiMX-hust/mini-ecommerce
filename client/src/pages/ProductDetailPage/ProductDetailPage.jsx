@@ -307,11 +307,9 @@ const ProductDetailPage = () => {
           {activeTab === "shipping" && (
             <div className={styles.description}>
               <h3>Thông tin vận chuyển</h3>
-              <p>Giỏ hàng trống</p>
-              <p> Đơn hàng trên 500.000 VND</p>
-              <p>Giao hàng trong 3-5 ngày công việc</p>
-              <p> Chính sách trả về trong 30 ngày</p>
-              <p> Thanh toán qua VNPay</p>
+              <p>🚚 Miễn phí vận chuyển cho đơn hàng từ 500.000₫</p>
+              <p>⏱️ Thời gian giao hàng: từ 3–5 ngày làm việc (không tính Thứ 7, Chủ nhật & ngày lễ)</p>
+              <p>💳 Phương thức thanh toán: thanh toán trực tuyến qua VNPay</p>
             </div>
           )}
         </div>
