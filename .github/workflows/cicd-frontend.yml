@@ -38,8 +38,9 @@ jobs:
           file: ./client/Dockerfile
           push: true
           build-args: |
-            VITE_API_BASE_URL= ${{ secrets.VITE_API_BASE_URL }}
-            VITE_STRIPE_PUBLISHABLE_KEY = ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
+            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+            VITE_STRIPE_PUBLISHABLE_KEY=${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
+
           tags: |
             taihb2005/mini-ecommerce-client:latest
             taihb2005/mini-ecommerce-client:${{ github.sha }}
