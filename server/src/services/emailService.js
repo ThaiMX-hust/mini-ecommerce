@@ -4,15 +4,22 @@ const nodemailer = require('nodemailer');
 const { order } = require("../infrastructure/prisma");
 const { formatMoney } = require("../utils/moneyFormatUtils")
 
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    }
-});
+const SibApiV3Sdk = require("sib-api-v3-sdk");
+
+const client = SibApiV3Sdk.ApiClient.instance;
+client.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
+
+const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+
+// const transporter = nodemailer.createTransport({
+//     host: process.env.SMTP_HOST,
+//     port: process.env.SMTP_PORT,
+//     secure: process.env.SMTP_SECURE === 'true',
+//     auth: {
+//         user: process.env.SMTP_USER,
+//         pass: process.env.SMTP_PASS
+//     }
+// });
 
 async function loadTemplate(template_dir, token) {
     const filePath = path.join(__dirname, "../templates", "email", template_dir);
@@ -23,11 +30,22 @@ async function loadTemplate(template_dir, token) {
 }
 
 async function sendMail(from, to, subject, html) {
-    await transporter.verify();
-    console.log("SMTP connection OK");
+    // await transporter.verify();
+    // console.log("SMTP connection OK");
 
-    const mailOptions = { from: from, to: to, subject: subject, html: html }
-    return await transporter.sendMail(mailOptions);
+    // const mailOptions = { from: from, to: to, subject: subject, html: html };
+    // return await transporter.sendMail(mailOptions);
+
+    const result = await emailApi.sendTransacEmail({
+        sender: {
+            email: process.env.MAIL_FROM_EMAIL,
+            name: process.env.MAIL_FROM_NAME,
+        },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+    });
+    return result;
 }
 
 async function sendResetPasswordEmail(to, token) {
