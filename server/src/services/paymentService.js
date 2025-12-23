@@ -192,9 +192,9 @@ const handleVnpayIpn = async (vnp_Params) => {
 
 
                 const order = await orderRepository.getDetail(orderId);
-                //const userEmail = await userRepository.getUserById(order.user_id, prisma);
+                const userEmail = await userRepository.getUserById(order.user_id, prisma);
 
-                //await emailService.sendPurchaseSuccessfullyEmail(userEmail, order);
+                await emailService.sendPurchaseSuccessfullyEmail(userEmail, order);
 
                 console.log(`Payment for order ${orderId} is successfull`);
                 return { RspCode: '00', Message: 'Success' };
