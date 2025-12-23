@@ -5,12 +5,35 @@ import styles from "./PaymentResultPage.module.css";
 const PaymentResultPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const success = searchParams.get("success") === "true";
-  const message = searchParams.get("message") || "Unknown error";
+  
+  // Hỗ trợ cả VNPay và Stripe
+  const vnpaySuccess = searchParams.get("success") === "true";
+  const stripeStatus = searchParams.get("redirect_status");
+  const paymentIntent = searchParams.get("payment_intent");
+  
+  // Xác định thành công hay thất bại
+  const success = vnpaySuccess || stripeStatus === "succeeded";
+  
+  // Lấy message và orderId
+  let message = searchParams.get("message");
   const orderId = searchParams.get("orderId");
+  
+  // Tạo message phù hợp nếu chưa có
+  if (!message) {
+    if (stripeStatus === "succeeded") {
+      message = "Thanh toán qua Stripe thành công!";
+    } else if (stripeStatus === "failed") {
+      message = "Thanh toán qua Stripe thất bại. Vui lòng thử lại.";
+    } else if (stripeStatus === "processing") {
+      message = "Thanh toán đang được xử lý. Vui lòng đợi...";
+    } else if (stripeStatus === "requires_payment_method") {
+      message = "Thanh toán yêu cầu phương thức thanh toán khác.";
+    } else {
+      message = success ? "Thanh toán thành công!" : "Thanh toán thất bại!";
+    }
+  }
 
   const handleBackToOrders = () => {
-    // Thêm query param để trigger refresh
     navigate("/orders?fromPayment=true");
   };
 
@@ -24,6 +47,11 @@ const PaymentResultPage = () => {
             <p className={styles.message}>{message}</p>
             {orderId && (
               <p className={styles.orderId}>Mã đơn hàng: {orderId}</p>
+            )}
+            {paymentIntent && (
+              <p className={styles.paymentIntent}>
+                Payment Intent: {paymentIntent}
+              </p>
             )}
             <div className={styles.actions}>
               <button
@@ -42,9 +70,20 @@ const PaymentResultPage = () => {
             <div className={styles.iconError}>✕</div>
             <h1 className={styles.title}>Thanh toán thất bại</h1>
             <p className={styles.message}>{message}</p>
+            {orderId && (
+              <p className={styles.orderId}>Mã đơn hàng: {orderId}</p>
+            )}
             <div className={styles.actions}>
-              <Link to="/checkout" className={styles.btnPrimary}>
-                Thử lại
+              {orderId && (
+                <button
+                  onClick={() => navigate(`/orders`)}
+                  className={styles.btnPrimary}
+                >
+                  Thử thanh toán lại
+                </button>
+              )}
+              <Link to="/checkout" className={styles.btnSecondary}>
+                Về trang checkout
               </Link>
               <Link to="/" className={styles.btnSecondary}>
                 Về trang chủ

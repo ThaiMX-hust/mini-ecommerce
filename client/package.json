@@ -13,6 +13,8 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^5.4.1",
+    "@stripe/stripe-js": "^8.6.0",
     "axios": "^1.12.2",
     "jwt-decode": "^4.0.0",
     "rc-slider": "^11.1.9",

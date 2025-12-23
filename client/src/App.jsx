@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { StripeProvider } from "./contexts/StripeContext";
 import Layout from "./components/Layout/Layout";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import HomePage from "./pages/HomePage/HomePage";
@@ -26,6 +27,7 @@ import CategoryManagement from "./pages/Admin/CategoryManagement/CategoryManagem
 
 function App() {
   return (
+    <StripeProvider>
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
@@ -60,6 +62,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+  </StripeProvider>
   );
 }
 

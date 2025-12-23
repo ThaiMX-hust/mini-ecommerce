@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
+import StripeCheckout from "../../components/StripeCheckout/StripeCheckout";
 import styles from "./CheckoutPage.module.css";
 
 const CheckoutPage = () => {
@@ -21,6 +22,11 @@ const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("vnpay");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Stripe specific states
+  const [stripeClientSecret, setStripeClientSecret] = useState(null);
+  const [currentOrderId, setCurrentOrderId] = useState(null);
+  const [showStripeForm, setShowStripeForm] = useState(false);
 
   /* ===== FETCH CART ===== */
   useEffect(() => {
@@ -51,45 +57,91 @@ const CheckoutPage = () => {
     setLoading(true);
 
     try {
-        /* === 1. TẠO ĐƠN HÀNG === */
-        const orderRes = await api.post("/orders", {
+      // 1. Tạo đơn hàng
+      const orderRes = await api.post("/orders", {
         receiver_name: formData.receiver_name,
         phone: formData.phone,
         address: formData.address,
-        });
+      });
 
-        const { order_id } = orderRes.data;
+      const { order_id } = orderRes.data;
+      setCurrentOrderId(order_id);
 
-        /* === 2. THANH TOÁN === */
-        if (paymentMethod === "vnpay") {
+      // 2. Xử lý thanh toán theo phương thức
+      if (paymentMethod === "vnpay") {
         const paymentRes = await api.post("/payments/vnpay", {
-            orderId: order_id, 
+          orderId: order_id,
         });
 
         if (paymentRes.data?.url) {
-            window.location.href = paymentRes.data.url;
+          window.location.href = paymentRes.data.url;
         } else {
-            throw new Error("Không lấy được link thanh toán VNPay");
+          throw new Error("Không lấy được link thanh toán VNPay");
         }
-        } else {
+      } else if (paymentMethod === "stripe") {
+        // Lấy client secret từ backend
+        const paymentRes = await api.post("/payments/stripe", {
+          orderId: order_id,
+        });
+
+        setStripeClientSecret(paymentRes.data.clientSecret);
+        setShowStripeForm(true);
+        setLoading(false);
+      } else {
         // Thanh toán sau
         navigate("/orders", {
-            state: {
-            message:
-                "Đơn hàng đã được tạo. Vui lòng thanh toán để đơn hàng được xử lý.",
-            },
+          state: {
+            message: "Đơn hàng đã được tạo. Vui lòng thanh toán để đơn hàng được xử lý.",
+          },
         });
-        }
+      }
     } catch (err) {
-        console.error(err);
-        setError(
+      console.error(err);
+      setError(
         err.response?.data?.error ||
-            "Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại."
-        );
-    } finally {
-        setLoading(false);
+          "Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại."
+      );
+      setLoading(false);
     }
-};
+  };
+
+  const handleStripeSuccess = () => {
+    navigate("/orders", {
+      state: {
+        message: "Thanh toán thành công! Đơn hàng đã được xác nhận.",
+      },
+    });
+  };
+
+  const handleStripeError = (error) => {
+    setError(error.message || "Thanh toán thất bại. Vui lòng thử lại.");
+    setShowStripeForm(false);
+    setStripeClientSecret(null);
+  };
+
+  // Nếu đang hiển thị form Stripe
+  if (showStripeForm && stripeClientSecret) {
+    return (
+      <div className={styles.container}>
+        <h2>Thanh toán qua Stripe</h2>
+        <StripeCheckout
+          orderId={currentOrderId}
+          clientSecret={stripeClientSecret}
+          onSuccess={handleStripeSuccess}
+          onError={handleStripeError}
+        />
+        <button 
+          onClick={() => {
+            setShowStripeForm(false);
+            setStripeClientSecret(null);
+          }}
+          className={styles.backButton}
+        >
+          ← Quay lại
+        </button>
+      </div>
+    );
+  }
 
   /* ===== RENDER ===== */
   return (
@@ -137,8 +189,21 @@ const CheckoutPage = () => {
                   onChange={(e) => setPaymentMethod(e.target.value)}
                 />
                 <div className={styles.radioLabel}>
-                  <strong>💳 Thanh toán ngay qua VNPay</strong>
-                  <p>Chuyển hướng sang VNPay để thanh toán an toàn</p>
+                  <strong>💳 VNPay</strong>
+                  <p>Thanh toán qua cổng VNPay</p>
+                </div>
+              </label>
+
+              <label className={styles.paymentMethodOption}>
+                <input
+                  type="radio"
+                  value="stripe"
+                  checked={paymentMethod === "stripe"}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                />
+                <div className={styles.radioLabel}>
+                  <strong>💳 Stripe</strong>
+                  <p>Thanh toán quốc tế qua Stripe (Visa, Mastercard, ...)</p>
                 </div>
               </label>
 
@@ -171,6 +236,8 @@ const CheckoutPage = () => {
                 ? "Đang xử lý..."
                 : paymentMethod === "vnpay"
                 ? "Thanh toán qua VNPay"
+                : paymentMethod === "stripe"
+                ? "Thanh toán qua Stripe"
                 : "Đặt hàng"}
             </button>
           </form>

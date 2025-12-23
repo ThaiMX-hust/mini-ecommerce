@@ -61,8 +61,48 @@ const vnpayReturn = async (req, res) => {
     
 };
 
+
+// ============= STRIPE CONTROLLERS =============
+
+const createStripePayment = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+
+        if (!orderId) {
+            return res.status(400).json({ error: 'Order ID is required' });
+        }
+
+        const result = await paymentService.createStripePaymentIntent({ orderId });
+        
+        res.status(200).json({
+            clientSecret: result.clientSecret,
+            paymentIntentId: result.paymentIntentId
+        });
+    } catch (error) {
+        console.error('Error creating Stripe payment:', error);
+        res.status(500).json({ error: error.message || 'Internal server error' });
+    }
+};
+
+const stripeWebhook = async (req, res) => {
+    const signature = req.headers['stripe-signature'];
+    
+    try {
+        // rawBody được xử lý bởi middleware đặc biệt cho webhook
+        const result = await paymentService.handleStripeWebhook(signature, req.body);
+        
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('Error handling Stripe webhook:', error);
+        res.status(400).json({ error: 'Webhook error' });
+    }
+};
+
 module.exports = {
     createPayment,
     vnpayIpn,
     vnpayReturn,
+    // Stripe exports
+    createStripePayment,
+    stripeWebhook
 };

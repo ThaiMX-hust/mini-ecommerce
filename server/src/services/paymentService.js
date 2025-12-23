@@ -4,6 +4,7 @@ const qs = require('qs');
 const userRepository = require('../repositories/userRepository');
 const orderRepository = require('../repositories/ordersRepository');
 const emailService = require('../services/emailService');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // sortObject: Sắp xếp theo key alphabet và trả về object đã sort
 function sortObject(obj) {
@@ -298,9 +299,200 @@ const handleVnpayReturn = async (vnp_Params) => {
          return { isSuccess: false, message: 'Invalid signature', orderId };
     }
 };
+// ============= STRIPE PAYMENT FUNCTIONS =============
+
+/**
+ * Tạo Stripe Payment Intent
+ */
+const createStripePaymentIntent = async ({ orderId }) => {
+    if (!process.env.STRIPE_SECRET_KEY) {
+        throw new Error('Stripe configuration is missing in environment variables');
+    }
+
+    const prisma = orderRepository.getPrismaClientInstance();
+    const order = await prisma.order.findUnique({
+        where: { order_id: orderId },
+        include: {
+            history: {
+                include: { status: true },
+                orderBy: { changed_at: 'desc' }
+            },
+            user: true
+        }
+    });
+
+    if (!order) {
+        throw new Error('Order not found');
+    }
+
+    const currentStatus = order.history[0]?.status.order_status_code;
+    if (currentStatus !== 'CREATED') {
+        throw new Error('Order has already been paid or cancelled');
+    }
+
+    // Stripe yêu cầu amount tính bằng cents (VNĐ không có decimal)
+    const amount = Math.round(Number(order.final_total_price));
+
+    // Tạo Payment Intent
+    const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'vnd',
+        metadata: {
+            order_id: orderId,
+            user_id: order.user_id
+        },
+        description: `Payment for order ${orderId}`,
+        receipt_email: order.user.email,
+        automatic_payment_methods: {
+            enabled: true,
+        }
+    });
+
+    return {
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id
+    };
+};
+
+/**
+ * Xử lý Stripe Webhook
+ */
+const handleStripeWebhook = async (signature, rawBody) => {
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    console.log("webhook");
+    
+    try {
+        const event = stripe.webhooks.constructEvent(
+            rawBody,
+            signature,
+            webhookSecret
+        );
+
+        const prisma = orderRepository.getPrismaClientInstance();
+
+        switch (event.type) {
+            case 'payment_intent.succeeded':
+                const paymentIntent = event.data.object;
+                const orderId = paymentIntent.metadata.order_id;
+
+                // Kiểm tra order tồn tại
+                const order = await prisma.order.findUnique({
+                    where: { order_id: orderId },
+                    include: {
+                        history: {
+                            include: { status: true },
+                            orderBy: { changed_at: 'desc' },
+                            take: 1
+                        }
+                    }
+                });
+
+                if (!order) {
+                    console.error(`Order ${orderId} not found`);
+                    return { received: false, error: 'Order not found' };
+                }
+
+                const currentStatus = order.history[0]?.status.order_status_code;
+                if (currentStatus === 'CONFIRMED' || currentStatus === 'CANCELLED') {
+                    console.log(`Order ${orderId} already processed`);
+                    return { received: true };
+                }
+
+                // Cập nhật trạng thái thành CONFIRMED
+                const confirmedStatus = await orderRepository.getStatusByCode('CONFIRMED');
+                if (!confirmedStatus) {
+                    console.error('CONFIRMED status not found');
+                    return { received: false, error: 'Status not found' };
+                }
+
+                await prisma.orderStatusHistory.create({
+                    data: {
+                        order_id: orderId,
+                        order_status_id: confirmedStatus.order_status_id,
+                        changed_by: null,
+                        note: `Payment successful via Stripe. Payment Intent: ${paymentIntent.id}`
+                    }
+                });
+
+                await prisma.order.update({
+                    where: { order_id: orderId },
+                    data: { updated_at: new Date() }
+                });
+
+                // Gửi email xác nhận
+                const orderDetail = await orderRepository.getDetail(orderId);
+                const userEmail = order.user.email;
+                await emailService.sendPurchaseSuccessfullyEmail(userEmail, orderDetail);
+
+                console.log(`Stripe payment successful for order ${orderId}`);
+                break;
+
+            case 'payment_intent.payment_failed':
+                const failedPayment = event.data.object;
+                const failedOrderId = failedPayment.metadata.order_id;
+
+                const failedOrder = await prisma.order.findUnique({
+                    where: { order_id: failedOrderId },
+                    include: { items: true }
+                });
+
+                if (!failedOrder) {
+                    console.error(`Order ${failedOrderId} not found`);
+                    return { received: false };
+                }
+
+                // Cập nhật trạng thái thành CANCELLED
+                const cancelledStatus = await orderRepository.getStatusByCode('CANCELLED');
+                if (!cancelledStatus) {
+                    console.error('CANCELLED status not found');
+                    return { received: false };
+                }
+
+                await prisma.orderStatusHistory.create({
+                    data: {
+                        order_id: failedOrderId,
+                        order_status_id: cancelledStatus.order_status_id,
+                        changed_by: null,
+                        note: `Payment failed via Stripe. Payment Intent: ${failedPayment.id}`
+                    }
+                });
+
+                // Hoàn lại stock
+                for (const item of failedOrder.items) {
+                    await prisma.productVariant.updateMany({
+                        where: { product_variant_id: item.product_variant_id },
+                        data: {
+                            stock_quantity: { increment: item.quantity },
+                            version: { increment: 1 }
+                        }
+                    });
+                }
+
+                await prisma.order.update({
+                    where: { order_id: failedOrderId },
+                    data: { updated_at: new Date() }
+                });
+
+                console.log(`Stripe payment failed for order ${failedOrderId}`);
+                break;
+
+            default:
+                console.log(`Unhandled Stripe event type: ${event.type}`);
+        }
+
+        return { received: true };
+
+    } catch (error) {
+        console.error('Stripe webhook error:', error);
+        throw error;
+    }
+};
 
 module.exports = {
     createPayment: createPaymentUrl,
     handleVnpayIpn: handleVnpayIpn,
     handleVnpayReturn: handleVnpayReturn,
+    // Stripe functions
+    createStripePaymentIntent,
+    handleStripeWebhook
 };

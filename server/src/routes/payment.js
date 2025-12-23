@@ -12,4 +12,11 @@ router.get('/vnpay/ipn', paymentController.vnpayIpn);
 // VNPay trả về kết quả thanh toán (Return)
 router.get('/vnpay/return', paymentController.vnpayReturn);
 
+
+
+// Stripe routes
+router.post('/stripe', authenticate, paymentController.createStripePayment);
+
+
+
 module.exports = router;
