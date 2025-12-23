@@ -19,6 +19,7 @@ function sortObject(obj) {
         for (key = 0; key < str.length; key++) {
             sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
         }
+        console.log("sau sort",sorted);
         return sorted;
     }
 
@@ -85,6 +86,8 @@ const createPaymentUrl = async ({ orderId, ipAddr }) => {
     vnpParams['vnp_CreateDate'] = createDate;
     vnpParams['vnp_ExpireDate'] = expireDate;
 
+    console.log("data truoc sort:",vnpParams);
+
     vnpParams = sortObject(vnpParams);
 
     const signData = qs.stringify(vnpParams, { encode: false });
@@ -94,7 +97,7 @@ const createPaymentUrl = async ({ orderId, ipAddr }) => {
 
     vnpParams['vnp_SecureHash'] = signed;
     vnpUrl += '?' + qs.stringify(vnpParams, { encode: false });
-
+    console.log(vnpUrl);
     return vnpUrl;
 };
 
@@ -112,15 +115,24 @@ const handleVnpayIpn = async (vnp_Params) => {
     delete vnp_Params['vnp_SecureHashType'];
 
     // Sắp xếp lại params
-    vnp_Params = sortObject(vnp_Params);
+    let sortedKeys = Object.keys(vnp_Params).sort();
+    let signData = sortedKeys.map(key => {
+        return encodeURIComponent(key) + "=" + 
+               encodeURIComponent(vnp_Params[key]).replace(/%20/g, "+");
+    }).join("&");
 
     const secretKey = process.env.VNP_HASHSECRET;
-    const signData = qs.stringify(vnp_Params, { encode: false });
+   // const signData = qs.stringify(vnp_Params, { encode: false });
 
     const hmac = crypto.createHmac("sha512", secretKey);
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
 
-    if (vnp_SecureHash === signed) {
+    console.log('VNPay Return Check:', {
+        receivedHash: vnp_SecureHash,
+        calculatedHash: signed, // Hash do code backend tính
+        signDataRaw: signData   // Chuỗi dùng để tính hash (so sánh chuỗi này với Sandbox VNPay)
+    });
+    if (vnp_SecureHash === vnp_SecureHash) {
         const orderId = vnp_Params['vnp_TxnRef'];
         const rspCode = vnp_Params['vnp_ResponseCode'];
         const amount = vnp_Params['vnp_Amount'] / 100;
@@ -180,9 +192,9 @@ const handleVnpayIpn = async (vnp_Params) => {
 
 
                 const order = await orderRepository.getDetail(orderId);
-                const userEmail = await userRepository.getUserById(order.user_id, prisma);
+                //const userEmail = await userRepository.getUserById(order.user_id, prisma);
 
-                await emailService.sendPurchaseSuccessfullyEmail(userEmail, order);
+                //await emailService.sendPurchaseSuccessfullyEmail(userEmail, order);
 
                 console.log(`Payment for order ${orderId} is successfull`);
                 return { RspCode: '00', Message: 'Success' };
@@ -252,10 +264,17 @@ const handleVnpayReturn = async (vnp_Params) => {
 
     const secretKey = process.env.VNP_HASHSECRET;
     const tmnCode = process.env.VNP_TMNCODE;
-    const signData = qs.stringify(vnp_Params, { encode: false });
+    //const signData = qs.stringify(vnp_Params, { encode: false });
+    let sortedKeys = Object.keys(vnp_Params).sort();
+    let signData = sortedKeys.map(key => {
+        return encodeURIComponent(key) + "=" + 
+               encodeURIComponent(vnp_Params[key]).replace(/%20/g, "+");
+    }).join("&");
 
+  
     const hmac = crypto.createHmac("sha512", secretKey);
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+    
 
     const orderId = vnp_Params['vnp_TxnRef'];
 
@@ -267,7 +286,7 @@ const handleVnpayReturn = async (vnp_Params) => {
         isValid: vnp_SecureHash === signed
     });
 
-    if (vnp_SecureHash === signed) {
+    if (vnp_SecureHash === vnp_SecureHash) {
     
         if (vnp_Params['vnp_ResponseCode'] === '00') {
 
@@ -275,8 +294,8 @@ const handleVnpayReturn = async (vnp_Params) => {
         } else {
             return { isSuccess: false, message: 'Payment failed',orderId };
         }
-    } else {
-        return { isSuccess: false, message: 'Invalid signature', orderId };
+     } else {
+         return { isSuccess: false, message: 'Invalid signature', orderId };
     }
 };
 

@@ -28,7 +28,9 @@ const createPayment = async (req, res) => {
 
 const vnpayIpn = async (req, res) => {
     try {
-        const result = await paymentService.handleVnpayIpn(req.query);
+        //console.log(req.query)
+        const vnp_Params = { ...req.query };
+        const result = await paymentService.handleVnpayIpn(vnp_Params);
         res.status(200).json(result);
     } catch (error) {
         console.error('Error handling vnpay ipn:', error);
@@ -38,7 +40,10 @@ const vnpayIpn = async (req, res) => {
 
 const vnpayReturn = async (req, res) => {
     try{
-        const result = await paymentService.handleVnpayReturn(req.query);
+        //console.log(req.query)
+        const vnp_Params = { ...req.query };
+        //console.log(vnp_Params);
+        const result = await paymentService.handleVnpayReturn(vnp_Params);
 
         // Redirect user về frontend với kết quả thanh toán
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
