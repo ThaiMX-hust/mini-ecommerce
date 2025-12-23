@@ -50,7 +50,7 @@ async function sendMail(from, to, subject, html) {
 
 async function sendResetPasswordEmail(to, token) {
     const subject = "Reset your password";
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/forgot-password?token=${token}`;
     const html = (await loadTemplate("resetPassword.html"))
                 .replace(/{{RESET_URL}}/g, resetUrl)
                 .replace(/{{TOKEN}}/g, token);
