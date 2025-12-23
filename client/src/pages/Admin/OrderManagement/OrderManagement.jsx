@@ -1,9 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { getAllOrders, cancelOrder } from "../../../api/orderApi";
+import {
+  getAllOrders,
+  cancelOrder,
+  updateOrderStatus,
+} from "../../../api/orderApi";
 import Pagination from "../../../components/Pagination/Pagination";
 import OrderStatusBadge from "../../../components/OrderStatusBadge/OrderStatusBadge";
 import CancelOrderModal from "../../../components/CancelOrderModal/CancelOrderModal";
 import OrderDetailModal from "../../../components/OrderDetailModal/OrderDetailModal";
+import EditOrderStatusModal from "../../../components/EditOrderStatusModal/EditOrderStatusModal";
 import OrderFilterBar from "../../../components/OrderFilterBar/OrderFilterBar";
 import styles from "./OrderManagement.module.css";
 
@@ -40,6 +45,11 @@ const OrderManagement = () => {
   const debouncedSearch = useDebounce(filters.search, 500);
 
   const [cancelModal, setCancelModal] = useState({
+    isOpen: false,
+    order: null,
+    isLoading: false,
+  });
+  const [editModal, setEditModal] = useState({
     isOpen: false,
     order: null,
     isLoading: false,
@@ -105,6 +115,18 @@ const OrderManagement = () => {
     } catch (error) {
       console.error("Failed to cancel order:", error);
       setCancelModal((prev) => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  const handleEditConfirm = async (statusCode, note) => {
+    setEditModal((prev) => ({ ...prev, isLoading: true }));
+    try {
+      await updateOrderStatus(editModal.order.order_id, statusCode, note);
+      setEditModal({ isOpen: false, order: null, isLoading: false });
+      fetchOrders(); // Refresh list
+    } catch (error) {
+      console.error("Failed to update order status:", error);
+      setEditModal((prev) => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -180,6 +202,13 @@ const OrderManagement = () => {
                         <i className="fas fa-eye"></i>
                       </button>
                       <button
+                        onClick={() => setEditModal({ isOpen: true, order })}
+                        className={`${styles.iconButton} ${styles.edit}`}
+                        aria-label="Edit Status"
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button
                         onClick={() => setCancelModal({ isOpen: true, order })}
                         className={`${styles.iconButton} ${styles.danger}`}
                         aria-label="Cancel Order"
@@ -215,6 +244,15 @@ const OrderManagement = () => {
         onConfirm={handleCancelConfirm}
         order={cancelModal.order}
         isLoading={cancelModal.isLoading}
+      />
+      <EditOrderStatusModal
+        isOpen={editModal.isOpen}
+        onClose={() =>
+          setEditModal({ isOpen: false, order: null, isLoading: false })
+        }
+        onConfirm={handleEditConfirm}
+        order={editModal.order}
+        isLoading={editModal.isLoading}
       />
       <OrderDetailModal
         isOpen={detailModal.isOpen}

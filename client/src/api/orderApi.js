@@ -37,3 +37,17 @@ export const cancelOrder = (orderId, reason) => {
   // If it's truly GET, the backend needs to change how it accepts the 'reason'.
   return api.post(`/orders/${orderId}/cancel`, { reason });
 };
+
+/**
+ * [ADMIN] Updates the status of an order.
+ * @param {string} orderId - The ID of the order to update.
+ * @param {string} statusCode - The new status code.
+ * @param {string} note - Optional note for the status change.
+ * @returns {Promise<object>}
+ */
+export const updateOrderStatus = (orderId, statusCode, note) => {
+  return api.patch(`/orders/${orderId}`, {
+    status_code: statusCode,
+    note: note || undefined,
+  });
+};

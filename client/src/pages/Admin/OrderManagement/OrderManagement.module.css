@@ -80,6 +80,9 @@
 .iconButton:hover {
   color: #3b82f6;
 }
+.edit:hover {
+  color: #f59e0b;
+}
 .danger:hover {
   color: #ef4444;
 }
