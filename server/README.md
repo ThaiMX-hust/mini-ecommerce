@@ -36,3 +36,7 @@ Ngày phát hành:07/15
 Mật khẩu OTP:123456
 
 npx prisma studio
+
+Success: 4242 4242 4242 4242
+Declined: 4000 0000 0000 0002
+Requires authentication: 4000 0025 0000 3155

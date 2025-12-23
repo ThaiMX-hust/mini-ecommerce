@@ -17,11 +17,6 @@ router.get('/vnpay/return', paymentController.vnpayReturn);
 // Stripe routes
 router.post('/stripe', authenticate, paymentController.createStripePayment);
 
-// Stripe webhook - KHÔNG dùng authenticate middleware
-// Cần rawBody middleware đặc biệt
-router.post('/stripe/webhook', 
-    express.raw({ type: 'application/json' }),
-    paymentController.stripeWebhook
-);
+
 
 module.exports = router;

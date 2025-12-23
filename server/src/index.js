@@ -12,6 +12,13 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
+
+app.post(
+    '/api/v1/payments/stripe/webhook',
+    express.raw({ type: 'application/json' }),
+    require('./controllers/paymentController').stripeWebhook
+);
+
 app.use(express.json());
 
 // Health check route
@@ -33,10 +40,10 @@ app.use('/api/v1/payments', require('./routes/payment'));
 app.use('/api/v1/refunds', require('./routes/refunds'));
 
 app.use('/api/v1/stats', require('./routes/stats'));
-app.use('/api/v1/payments/stripe/webhook', express.raw({ type: 'application/json' }));
+
 
 // Middleware JSON thông thường cho các route khác
-app.use(express.json());
+
 
 
 app.use(errorHandler);

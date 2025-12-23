@@ -4,6 +4,7 @@ const qs = require('qs');
 const userRepository = require('../repositories/userRepository');
 const orderRepository = require('../repositories/ordersRepository');
 const emailService = require('../services/emailService');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // sortObject: Sắp xếp theo key alphabet và trả về object đã sort
 function sortObject(obj) {
@@ -339,6 +340,7 @@ const createStripePaymentIntent = async ({ orderId }) => {
  */
 const handleStripeWebhook = async (signature, rawBody) => {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    console.log("webhook");
     
     try {
         const event = stripe.webhooks.constructEvent(
