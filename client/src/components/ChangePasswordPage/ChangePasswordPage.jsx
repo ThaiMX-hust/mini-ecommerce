@@ -75,7 +75,7 @@ const ChangePasswordPage = () => {
 
         <form onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
-            <label htmlFor="old_password">Old Password</label>
+            <label htmlFor="old_password">Mật khẩu cũ</label>
             <input
               type="password"
               id="old_password"
@@ -86,7 +86,7 @@ const ChangePasswordPage = () => {
             />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="new_password">New Password</label>
+            <label htmlFor="new_password">Mật khẩu mới</label>
             <input
               type="password"
               id="new_password"
@@ -97,7 +97,7 @@ const ChangePasswordPage = () => {
             />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="confirm_password">Confirm New Password</label>
+            <label htmlFor="confirm_password">Xác nhận mật khẩu mới</label>
             <input
               type="password"
               id="confirm_password"
@@ -113,7 +113,7 @@ const ChangePasswordPage = () => {
               onClick={() => navigate("/account")}
               className={`${styles.button} ${styles.cancelButton}`}
             >
-              Back to Account
+              Quay lại
             </button>
             <button
               type="submit"
