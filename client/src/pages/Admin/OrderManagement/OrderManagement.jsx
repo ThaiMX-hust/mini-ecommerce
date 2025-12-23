@@ -35,7 +35,7 @@ const OrderManagement = () => {
 
   const [filters, setFilters] = useState({
     page: 1,
-    limit: 10,
+    limit: 5,
     status_code: "",
     sort_by: "created_at",
     sort_order: "desc",
