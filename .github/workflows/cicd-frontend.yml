@@ -38,7 +38,8 @@ jobs:
           file: ./client/Dockerfile
           push: true
           build-args: |
-            VITE_API_BASE_URL=https://api-miniecommerce.up.railway.app/api/v1
+            VITE_API_BASE_URL= ${{ secrets.VIE_API_BASE_URL }}
+            VITE_STRIPE_PUBLISHABLE_KEY = ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
           tags: |
             taihb2005/mini-ecommerce-client:latest
             taihb2005/mini-ecommerce-client:${{ github.sha }}
