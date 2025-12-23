@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllProducts, softDeleteProduct } from "../../../api/productApi";
+import {
+  getAllProducts,
+  deleteProductPermanently,
+} from "../../../api/productApi";
 import Pagination from "../../../components/Pagination/Pagination";
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 import ProductDetailModal from "../../../components/ProductDetailModal/ProductDetailModal";
@@ -111,7 +114,7 @@ const ProductManagement = () => {
     if (!modalState.productToDelete) return;
     setModalState((prev) => ({ ...prev, isLoading: true }));
     try {
-      await softDeleteProduct(modalState.productToDelete.product_id);
+      await deleteProductPermanently(modalState.productToDelete.product_id);
       // Refresh the product list after deletion
       fetchProducts(currentPage, debouncedSearchTerm);
       closeDeleteModal();
@@ -257,7 +260,7 @@ const ProductManagement = () => {
         onConfirm={handleDeleteConfirm}
         isLoading={modalState.isLoading}
         title="Xác Nhận Xóa"
-        message={`Bạn có chắc chắn muốn xóa sản phẩm "${modalState.productToDelete?.name}"? Hành động này có thể hoàn tác (xóa mềm).`}
+        message={`Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm "${modalState.productToDelete?.name}"? Hành động này không thể hoàn tác.`}
         confirmText="Xóa"
       />
 

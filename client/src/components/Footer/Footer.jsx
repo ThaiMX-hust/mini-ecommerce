@@ -48,7 +48,7 @@ const Footer = () => {
               <p className={styles.projectInfo}>
                 Dự án học phần Công nghệ Web
                 <br />
-                <strong>IT3080</strong> – Công nghệ Web và dịch vụ trực tuyến
+                <strong>IT4409</strong> – Công nghệ Web và dịch vụ trực tuyến
                 <br />
                 Trường Đại học Bách Khoa Hà Nội
                 <br />
