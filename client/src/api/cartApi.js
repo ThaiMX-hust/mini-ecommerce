@@ -1,7 +1,7 @@
 import api from "../api.js";
 export const getCart = () => {
   return api.get("/cart");
-};
+}; 
 
 export const addItemToCart = (item) => {
   // item là { product_variant_id: "...", quantity: ... }
